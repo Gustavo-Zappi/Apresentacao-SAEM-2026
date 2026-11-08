@@ -4,19 +4,19 @@
 
 create extension if not exists pgcrypto with schema extensions;
 
-create schema if not exists private;
-revoke all on schema private from public, anon, authenticated;
+create schema if not exists saem_private;
+revoke all on schema saem_private from public, anon, authenticated;
 
-create table if not exists private.config (
+create table if not exists saem_private.config (
   key   text primary key,
   value text not null
 );
 
--- Chave do apresentador (guardada como hash). TROQUE antes do evento:
---   update private.config set value = encode(extensions.digest('MINHA-CHAVE', 'sha256'), 'hex') where key = 'presenter_key_sha256';
-insert into private.config (key, value)
-values ('presenter_key_sha256', encode(extensions.digest('troque-esta-chave', 'sha256'), 'hex'))
-on conflict (key) do nothing;
+-- Instalação: sem chave padrão. Inserir o hash SHA-256 de uma chave aleatória
+-- por canal privado após aplicar a migration e ANTES de liberar o palco:
+-- insert into saem_private.config (key, value)
+-- values ('presenter_key_sha256', '<hash-sha256-da-chave-gerada>')
+-- on conflict (key) do update set value = excluded.value;
 
 create table if not exists public.live_state (
   id          text primary key,
@@ -65,7 +65,7 @@ with check (
 
 -- ---------------------------------------------------------------- RPCs do palco
 
-create or replace function private.valid_key(p_key text)
+create or replace function saem_private.valid_key(p_key text)
 returns boolean
 language sql
 stable
@@ -73,7 +73,7 @@ security definer
 set search_path = ''
 as $$
   select exists (
-    select 1 from private.config
+    select 1 from saem_private.config
     where key = 'presenter_key_sha256'
       and value = encode(extensions.digest(coalesce(p_key, ''), 'sha256'), 'hex')
   );
@@ -85,7 +85,7 @@ language sql
 stable
 security definer
 set search_path = ''
-as $$ select private.valid_key(p_key); $$;
+as $$ select saem_private.valid_key(p_key); $$;
 
 create or replace function public.set_live_state(p_key text, p_event text, p_question_id text, p_phase text)
 returns boolean
@@ -94,7 +94,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  if not private.valid_key(p_key) then
+  if not saem_private.valid_key(p_key) then
     return false;
   end if;
   update public.live_state
@@ -111,7 +111,7 @@ security definer
 set search_path = ''
 as $$
 begin
-  if not private.valid_key(p_key) then
+  if not saem_private.valid_key(p_key) then
     return false;
   end if;
   delete from public.responses where question_id = p_question_id;
@@ -126,8 +126,8 @@ grant execute on function public.check_presenter_key(text) to anon, authenticate
 grant execute on function public.set_live_state(text, text, text, text) to anon, authenticated;
 grant execute on function public.reset_question(text, text) to anon, authenticated;
 
--- private.valid_key é chamada só pelas RPCs (security definer)
-revoke all on function private.valid_key(text) from public, anon, authenticated;
+-- saem_private.valid_key é chamada só pelas RPCs (security definer)
+revoke all on function saem_private.valid_key(text) from public, anon, authenticated;
 
 -- Realtime: o palco escuta INSERTs em responses (a plateia usa polling no live_state)
 do $$

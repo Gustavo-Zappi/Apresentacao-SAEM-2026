@@ -30,25 +30,14 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | S | Simular votos (só modo local) |
 | H | Ajuda |
 
-## Ligar o banco (Supabase)
+## Banco e publicação (VPS)
 
-1. Crie um projeto em supabase.com (região São Paulo, `sa-east-1`).
-2. SQL Editor: rode `supabase/migrations/20261108000000_saem_live.sql`.
-3. Troque a chave do apresentador:
-   ```sql
-   update private.config
-      set value = encode(extensions.digest('SUA-CHAVE-FORTE', 'sha256'), 'hex')
-    where key = 'presenter_key_sha256';
-   ```
-4. Copie `.env.example` para `.env` e preencha URL e anon key (Project Settings > API).
-5. Abra o palco uma vez com `/palco?key=SUA-CHAVE-FORTE`. A chave fica salva no navegador e some da URL.
-   O indicador no canto inferior direito fica verde: **ao vivo**.
-
-## Deploy (Vercel)
-
-1. Importe o repositório na Vercel e defina **Root Directory = `app`**.
-2. Variáveis: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_PUBLIC_URL` (domínio final, vai no QR).
-3. `vercel.json` já trata as rotas `/palco` e `/notas`.
+- Banco: projeto Supabase **Banco de Apps**, ref `fupmaoucveabjvjlrmog`. Frontend usa somente a chave pública `anon`; a migration `supabase/migrations/20261108000000_saem_live.sql` cria apenas recursos próprios da palestra.
+- O palco exige chave de apresentador, cujo SHA-256 fica no schema `saem_private` do banco. Hermes mantém a chave em arquivo local 0600 na VPS; Gustavo deve pedi-la a Hermes por canal seguro. Não coloque a chave em commits, logs, tickets ou mensagens; o link `/palco?key=...` a grava no localStorage do navegador e a remove da URL.
+- Público: `https://saem2026.meetoliver.com.br/` (plateia), `/palco` (projetor) e `/notas` (notas). O QR aponta para a página da plateia.
+- **Somente Hermes publica na VPS, quando Gustavo solicitar**. Outros agentes editam código, testes e documentação, enviam branch/PR e informam o commit; não acessam o servidor, não implantam migrations remotas e não alteram DNS ou segredos.
+- Comandos, checklist e verificação: [`docs/operacao-vps.md`](../docs/operacao-vps.md). A infraestrutura de publicação versionada fica em `deploy/`. Commit/push não dispara deploy automático.
+- Para ensaio sem Supabase, `npm run dev` sem `.env`: o modo local sincroniza apenas abas do **mesmo navegador**, não celulares reais.
 
 ## Editar conteúdo
 
@@ -61,4 +50,4 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 
 ## Depois da palestra
 
-Resultado consolidado: `select * from resultados;` no SQL Editor (ou exporte a tabela `responses` em CSV).
+Resultado consolidado: `select * from public.resultados;` no SQL Editor do projeto **Banco de Apps** (ou exporte a tabela `public.responses` em CSV).
