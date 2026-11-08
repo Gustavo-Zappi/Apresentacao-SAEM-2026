@@ -19,6 +19,7 @@ services:
         traefik.docker.network: traefik_public
         traefik.http.routers.saem2026.rule: "Host(`saem2026.meetoliver.com.br`)"
         traefik.http.routers.saem2026.entrypoints: websecure
+        traefik.http.routers.saem2026.priority: "100"
         traefik.http.routers.saem2026.tls: "true"
         traefik.http.routers.saem2026.tls.certresolver: le
         traefik.http.routers.saem2026.service: saem2026-service
