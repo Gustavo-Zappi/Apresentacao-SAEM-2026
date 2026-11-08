@@ -4,17 +4,27 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { SplitText } from 'gsap/SplitText'
 import { DrawSVGPlugin } from 'gsap/DrawSVGPlugin'
+// Fontes servidas pelo próprio site (a CSP da VPS bloqueia Google Fonts)
+import '@fontsource/poppins/latin-300.css'
+import '@fontsource/poppins/latin-400.css'
+import '@fontsource/poppins/latin-500.css'
+import '@fontsource/poppins/latin-600.css'
+import '@fontsource/poppins/latin-700.css'
+import '@fontsource/poppins/latin-800.css'
+import '@fontsource/jetbrains-mono/latin-400.css'
+import '@fontsource/jetbrains-mono/latin-600.css'
 import './styles.css'
 
 gsap.registerPlugin(useGSAP, SplitText, DrawSVGPlugin)
 
-// Rotas: "/" plateia (celular) · "/palco" apresentação · "/notas" notas do apresentador
+// Rotas: "/" plateia (celular) · "/palco" apresentação · "/notas" notas · "/status" diagnóstico
 const Audience = lazy(() => import('./audience/Audience'))
 const Deck = lazy(() => import('./stage/Deck'))
 const Notes = lazy(() => import('./stage/Notes'))
+const Status = lazy(() => import('./status/Status'))
 
 const path = location.pathname.replace(/\/+$/, '') || '/'
-const Page = path === '/palco' ? Deck : path === '/notas' ? Notes : Audience
+const Page = path === '/palco' ? Deck : path === '/notas' ? Notes : path === '/status' ? Status : Audience
 
 document.body.dataset.route = path
 

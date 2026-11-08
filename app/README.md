@@ -26,6 +26,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | F | Tela cheia |
 | B ou . | Tela preta |
 | O | Abrir janela de notas e cronômetro |
+| K | Informar a chave do apresentador (fica salva neste navegador) |
 | R | Zerar respostas da pergunta atual |
 | S | Simular votos (só modo local) |
 | H | Ajuda |
@@ -38,6 +39,13 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 - **Somente Hermes publica na VPS, quando Gustavo solicitar**. Outros agentes editam código, testes e documentação, enviam branch/PR e informam o commit; não acessam o servidor, não implantam migrations remotas e não alteram DNS ou segredos.
 - Comandos, checklist e verificação: [`docs/operacao-vps.md`](../docs/operacao-vps.md). A infraestrutura de publicação versionada fica em `deploy/`. Commit/push não dispara deploy automático.
 - Para ensaio sem Supabase, `npm run dev` sem `.env`: o modo local sincroniza apenas abas do **mesmo navegador**, não celulares reais.
+
+## Checklist do dia (5 min)
+
+1. No notebook do projetor, abra `/status`. Tudo deve estar ✓. Se "Chave do apresentador" estiver ✗, abra `/palco` e tecle **K**.
+2. Em `/palco`, o indicador no canto inferior direito deve dizer **ao vivo** (verde). Em amarelo, ele diz o motivo; clicar nele pede a chave.
+3. Vá ao slide 2 (primeira votação) e responda com o seu celular. O voto deve aparecer no telão em até 3 s.
+4. Se votou em ensaio, tecle **R** no slide de cada pergunta para zerar antes da palestra.
 
 ## Editar conteúdo
 

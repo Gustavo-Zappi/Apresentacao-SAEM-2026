@@ -7,12 +7,14 @@ import WordCloud from './WordCloud'
 import { QUESTION_BY_ID } from '../data/questions'
 import { useResponses } from '../lib/useResponses'
 import { audienceUrl, audienceUrlLabel } from '../config'
+import { useSynced } from '../stage/sync'
 
 /** Slide de pergunta ao vivo. Passo 0: votação aberta. Passo 1: encerra e revela. */
 export default function Poll({ qid, step, kicker = 'Pergunta ao vivo' }: { qid: string; step: number; kicker?: string }) {
   const q = QUESTION_BY_ID[qid]
   const { counts, total } = useResponses(qid)
   const revealed = step >= 1
+  const synced = useSynced()
   const barsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -78,7 +80,11 @@ export default function Poll({ qid, step, kicker = 'Pergunta ao vivo' }: { qid: 
             <span>{total === 1 ? 'resposta' : 'respostas'}</span>
           </div>
           <div className="status-pill">
-            <span className="pill">{revealed ? '■ votação encerrada' : '● votação aberta'}</span>
+            {synced ? (
+              <span className="pill">{revealed ? '■ votação encerrada' : '● votação aberta'}</span>
+            ) : (
+              <span className="pill" style={{ color: '#FFB547', borderColor: '#FFB547', background: 'rgba(255,181,71,.12)' }}>⚠ celulares fora de sincronia</span>
+            )}
           </div>
         </div>
       </div>

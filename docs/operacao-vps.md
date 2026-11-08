@@ -42,6 +42,12 @@ Não copiar `.env` para o diretório público. Em deploys posteriores, repetir i
 - Confirmar `sudo -n docker service ps saem2026_web`, headers HTML e asset JS, console sem CSP bloqueando Supabase, palco autenticado, voto de celular real refletido no palco e resultados após reload.
 - Se uma atualização falhar, restaurar o artefato estático anterior e reiniciar apenas `saem2026_web`; migrations exigem rollback separado/avaliação explícita. Nunca apagar respostas de produção como forma de rollback.
 
+## Diagnóstico rápido
+
+- `/status` (no navegador do palco) testa: build conectado ao Supabase, leitura de `live_state`, chave do apresentador salva e válida, leitura de respostas e canal Realtime.
+- Sem chave válida o palco mostra alerta amarelo ("sem chave: plateia não sincroniza") e o slide de votação mostra "celulares fora de sincronia". Os celulares ficam em "Olhe para o palco" até o palco autenticar. Tecla **K** informa a chave sem precisar de link.
+- Fontes são servidas pelo próprio site (`@fontsource`), compatível com `font-src 'self'` da CSP.
+
 ## Entrega para outros agentes
 
 Trabalhar em branch, rodar `npm ci && npm run build`, enviar PR/commit e relatar a Hermes alterações de banco/deploy. Não considerar PR, merge ou Git push como publicação. Na solicitação de atualização, informar commit SHA e mudanças de migration; Hermes fará revisão, build, deploy e verificação. Não sobrescrever `app/.env.production.local` nem arquivos de runtime da VPS.

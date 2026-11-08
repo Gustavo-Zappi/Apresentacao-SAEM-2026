@@ -4,11 +4,12 @@ import FlowField, { setFlow } from '../components/FlowField'
 import { SLIDES } from './slides'
 import { QUESTION_BY_ID } from '../data/questions'
 import { live } from '../lib/live'
+import { SyncContext } from './sync'
 import { participantId } from '../lib/participant'
 
 type Pos = { i: number; s: number }
 
-const KEY_STORE = 'saem-presenter-key'
+export const KEY_STORE = 'saem-presenter-key'
 const POS_STORE = 'saem-deck-pos'
 export const DECK_CHANNEL = 'saem-deck'
 
@@ -52,9 +53,19 @@ export default function Deck() {
   const [scale, setScale] = useState(1)
   const [help, setHelp] = useState(false)
   const [black, setBlack] = useState(false)
-  const [key] = useState(presenterKey)
+  const [key, setKey] = useState(presenterKey)
   const [keyOk, setKeyOk] = useState<boolean | null>(null)
+  const [syncErr, setSyncErr] = useState(false)
   const lastPush = useRef('')
+
+  const askKey = useCallback(() => {
+    const k = window.prompt('Chave do apresentador (fica salva só neste navegador):', '')
+    if (!k) return
+    try { localStorage.setItem(KEY_STORE, k.trim()) } catch { /* ignora */ }
+    lastPush.current = ''
+    setKeyOk(null)
+    setKey(k.trim())
+  }, [])
 
   shownRef.current = shown
 
@@ -67,6 +78,10 @@ export default function Deck() {
   }, [])
 
   useEffect(() => {
+    if (live.mode === 'supabase' && !key) {
+      setKeyOk(false)
+      return
+    }
     live.checkKey(key).then(setKeyOk).catch(() => setKeyOk(false))
   }, [key])
 
@@ -157,7 +172,20 @@ export default function Deck() {
     const sig = `${qid}|${phase}`
     if (sig === lastPush.current) return
     lastPush.current = sig
-    live.setState(key, qid, phase)
+    let cancelled = false
+    let timer: number | undefined
+    // reenvia até o banco aceitar (rede instável no anfiteatro)
+    const push = async (attempt: number) => {
+      const ok = await live.setState(key, qid, phase).catch(() => false)
+      if (cancelled) return
+      setSyncErr(!ok)
+      if (!ok && attempt < 20) timer = window.setTimeout(() => push(attempt + 1), Math.min(1000 * 2 ** attempt, 8000))
+    }
+    push(0)
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
   }, [shown, canControl, key])
 
   /* teclado (clicker envia PageUp/PageDown) */
@@ -174,6 +202,7 @@ export default function Deck() {
       else if (k === 'h' || k === '?') setHelp((v) => !v)
       else if (k === 'Escape') { setHelp(false); setBlack(false) }
       else if (k === 'o') window.open('/notas', 'saem-notas', 'width=1100,height=760')
+      else if (k === 'k') askKey()
       else if (k === 'r') {
         const qid = SLIDES[shownRef.current.i].question
         if (qid && confirm(`Apagar todas as respostas de "${qid}"?`)) live.resetQuestion(key, qid)
@@ -181,7 +210,7 @@ export default function Deck() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [next, prev, go, key])
+  }, [next, prev, go, key, askKey])
 
   /* ensaio: gera votos falsos no modo local */
   function simulate() {
@@ -202,21 +231,33 @@ export default function Deck() {
 
   const Comp = SLIDES[shown.i].Component
   const total = SLIDES.length
-  const mode = live.mode === 'local' ? 'modo local' : keyOk ? 'ao vivo' : keyOk === false ? 'sem chave: plateia não sincroniza' : 'conectando'
+  const mode =
+    live.mode === 'local'
+      ? 'modo local: celulares NÃO sincronizam'
+      : keyOk === null
+        ? 'conectando'
+        : !keyOk
+          ? (key ? 'chave inválida' : 'sem chave') + ': plateia não sincroniza (tecla K)'
+          : syncErr
+            ? 'falha ao sincronizar, tentando de novo'
+            : 'ao vivo'
+  const alert = live.mode === 'local' || keyOk === false || syncErr
 
   return (
     <div className="viewport" onClick={(e) => { if (e.detail === 1 && e.clientX > window.innerWidth * 0.85) next() }}>
       <FlowField />
       <div className="stage" style={{ transform: `scale(${scale}) translate(-960px, -540px)` }}>
         <div ref={innerRef} style={{ position: 'absolute', inset: 0 }}>
-          <Comp key={shown.i} step={shown.s} />
+          <SyncContext.Provider value={!alert || live.mode === 'local'}>
+            <Comp key={shown.i} step={shown.s} />
+          </SyncContext.Provider>
         </div>
       </div>
       <div ref={wipeRef} className="wipe" />
       {black && <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 40 }} />}
       <div className="progress" style={{ width: `${((shown.i + 1) / total) * 100}%` }} />
-      <div className="hud">
-        <span><i className={`dot ${live.mode === 'local' ? 'warn' : keyOk ? 'on' : ''}`} />{mode}</span>
+      <div className={`hud ${alert ? 'alert' : ''}`} onClick={(e) => { e.stopPropagation(); if (live.mode === 'supabase' && !keyOk) askKey() }}>
+        <span><i className={`dot ${alert ? 'warn' : keyOk ? 'on' : ''}`} />{mode}</span>
         <span>{shown.i + 1}/{total}</span>
       </div>
       {help && (
@@ -227,6 +268,7 @@ export default function Deck() {
             <div><kbd>F</kbd>tela cheia</div>
             <div><kbd>B</kbd>tela preta</div>
             <div><kbd>O</kbd>abrir notas do apresentador</div>
+            <div><kbd>K</kbd>informar chave do apresentador</div>
             <div><kbd>R</kbd>zerar respostas da pergunta atual</div>
             {live.mode === 'local' && <div><kbd>S</kbd>simular votos (ensaio)</div>}
             <div><kbd>Home / End</kbd>início / fim</div>

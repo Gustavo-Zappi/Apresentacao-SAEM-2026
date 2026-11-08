@@ -199,3 +199,17 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 @media (prefers-reduced-motion: reduce) {
   .progress, .bar > * { transition: none; }
 }
+
+.hud.alert { font-size: 15px; color: #FFB547; background: rgba(18, 15, 46, 0.85); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 181, 71, 0.5); cursor: pointer; }
+
+/* ================================================================ DIAGNÓSTICO */
+.status { position: fixed; inset: 0; overflow: auto; padding: 32px 20px; font-family: var(--f-display); }
+.status-wrap { max-width: 760px; margin: 0 auto; }
+.status h1 { font-size: 28px; margin-bottom: 6px; }
+.status .row { display: grid; grid-template-columns: 32px 1fr; gap: 12px; padding: 16px 0; border-top: 1px solid var(--c-faint); }
+.status .ic { font: 700 20px var(--f-mono); }
+.status .ok { color: var(--c-ok); }
+.status .bad { color: var(--c-warn); }
+.status .t { font-weight: 600; font-size: 18px; }
+.status .d { color: var(--c-mist); font-size: 15px; margin-top: 4px; line-height: 1.5; word-break: break-word; }
+.status button { margin-top: 20px; padding: 12px 20px; border-radius: 10px; background: var(--c-purple); font-weight: 600; }
