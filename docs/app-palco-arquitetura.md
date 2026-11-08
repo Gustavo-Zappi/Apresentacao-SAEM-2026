@@ -1,5 +1,7 @@
 # App de palco SAEM 2026: pesquisa, decisão e arquitetura
 
+> **Documento histórico do protótipo.** A V1 em produção usa Supabase **Banco de Apps** + VPS Docker Swarm/Traefik, não Vercel. Procedimento vigente: [`docs/operacao-vps.md`](operacao-vps.md); instruções para agentes: [`app/README.md`](../app/README.md). As referências a Vercel e pendências abaixo registram a proposta original, não o estado atual.
+
 **Critério de sucesso:** apresentação 100% web, animada, que roda no projetor e conversa com o celular da plateia via QR code, gravando cada resposta em banco, sem depender de ferramenta de terceiros (Mentimeter, Slido) e com plano B se a rede cair.
 
 ## Recomendação
