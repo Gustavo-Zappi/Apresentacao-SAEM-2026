@@ -4,32 +4,6 @@ import { audienceUrl } from '../../config'
 import { SPEAKER } from '../speaker'
 import type { SlideProps } from '../types'
 
-export function FabricaEscritorio({ step }: SlideProps) {
-  const fab = ['Manutenção preditiva', 'Design generativo', 'Simulação com modelos substitutos', 'Gêmeo digital', 'Inspeção visual de qualidade']
-  const esc = ['Agentes que executam processos de TI', 'Atendimento ao cliente', 'Back office e operações']
-  return (
-    <Slide step={step}>
-      <div className="kicker" data-in>Bloco 2 · Organizações</div>
-      <h1 className="h1" data-split>Do chão de fábrica ao escritório</h1>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', marginTop: 64, gap: 48 }}>
-        <div className="card" data-in>
-          <div className="mono accent" style={{ fontSize: 22, letterSpacing: '0.14em', marginBottom: 24 }}>CHÃO DE FÁBRICA</div>
-          {fab.map((f) => (
-            <div key={f} style={{ fontSize: 32, padding: '14px 0', borderTop: '1px solid rgba(255,255,255,.1)' }}>{f}</div>
-          ))}
-        </div>
-        <div className="card" data-step="1">
-          <div className="mono accent" style={{ fontSize: 22, letterSpacing: '0.14em', marginBottom: 24 }}>ESCRITÓRIO E SERVIÇOS</div>
-          {esc.map((f) => (
-            <div key={f} style={{ fontSize: 32, padding: '14px 0', borderTop: '1px solid rgba(255,255,255,.1)' }}>{f}</div>
-          ))}
-          <p style={{ marginTop: 28, fontSize: 24 }}>Casos reais, clientes anonimizados.</p>
-        </div>
-      </div>
-    </Slide>
-  )
-}
-
 export function Gargalos({ step }: SlideProps) {
   const G = [
     ['Especificar', 'Como a cota e a tolerância no desenho: quem especifica bem comanda a ferramenta.'],
@@ -70,18 +44,18 @@ const GES = [
 export function Carreiras({ step }: SlideProps) {
   const col = (title: string, rows: string[][], s: number) => (
     <div data-step={s}>
-      <div className="mono accent" style={{ fontSize: 22, letterSpacing: '0.14em', marginBottom: 20 }}>{title}</div>
+      <div className="mono accent-t" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 20 }}>{title}</div>
       {rows.map(([f, p]) => (
         <div key={f} style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-          <div style={{ fontSize: 31, fontWeight: 600 }}>{f}</div>
-          <div className="muted" style={{ fontSize: 22, marginTop: 4 }}>ponte: {p}</div>
+          <div style={{ fontSize: 34, fontWeight: 700 }}>{f}</div>
+          <div className="muted" style={{ fontSize: 27, marginTop: 4 }}>ponte: {p}</div>
         </div>
       ))}
     </div>
   )
   return (
     <Slide step={step}>
-      <div className="kicker" data-in>Bloco 3 · Carreiras</div>
+      <div className="kicker" data-in>Quem vai redesenhar a fábrica</div>
       <h1 className="h1" data-split>Cada gargalo vira uma função</h1>
       <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 48 }}>
         {col('TECNOLOGIA', TEC, 0)}
@@ -104,10 +78,10 @@ export function Acoes({ step }: SlideProps) {
       <div style={{ marginTop: 72 }}>
         {A.map(([t, d], i) => (
           <div key={t} data-step={i} style={{ display: 'flex', gap: 48, alignItems: 'baseline', padding: '30px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-            <span className="mono accent" style={{ fontSize: 64, fontWeight: 600 }}>{i + 1}</span>
+            <span className="mono accent-t" style={{ fontSize: 72, fontWeight: 700 }}>{i + 1}</span>
             <div>
               <div style={{ fontSize: 50, fontWeight: 700, letterSpacing: '-0.02em' }}>{t}</div>
-              <div className="lead" style={{ fontSize: 32, marginTop: 6 }}>{d}</div>
+              <div className="lead" style={{ fontSize: 36, marginTop: 6 }}>{d}</div>
             </div>
           </div>
         ))}
@@ -123,8 +97,8 @@ export function Obrigado({ step }: SlideProps) {
       <p className="lead" data-in style={{ marginTop: 32 }}>Obrigado, SAEM 2026.</p>
       <div data-in style={{ marginTop: 72, display: 'flex', gap: 56, alignItems: 'center' }}>
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: 34, fontWeight: 600 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 24, marginTop: 6 }}>{SPEAKER.role}</div>
+          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
+          <div className="muted" style={{ fontSize: 32, marginTop: 6 }}>{SPEAKER.role}</div>
         </div>
         <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 64 }} />
         <div className="qr-card" style={{ width: 200, padding: 14, borderRadius: 16 }}>

@@ -4,9 +4,6 @@ export const SPEAKER = {
   role: 'Head of AI · 4MATT',
 }
 
-// Marcos da trajetória (slide "Eu sentei nessas cadeiras").
-// Acrescente etapas intermediárias reais (estágio, primeiro emprego, transição) para contar a história.
-export const TRAJETORIA: { label: string; detail: string }[] = [
-  { label: 'Engenharia Mecânica', detail: 'nestas cadeiras' },
-  { label: 'Head of AI', detail: '4MATT' },
-]
+// Universidade da graduação. A busca pública associa a Trem Ki Voa e a IC
+// (Pellegrini, Zappi e Vilalta, ERMAC-RS 2020) à UFSJ: confirme.
+export const GRADUACAO = 'Engenharia Mecânica · UFSJ'

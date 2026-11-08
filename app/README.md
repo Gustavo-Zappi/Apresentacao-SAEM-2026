@@ -53,7 +53,9 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 |---|---|
 | Perguntas e respostas certas | `src/data/questions.ts` |
 | Ordem dos slides, notas e tempos | `src/stage/slides/index.tsx` |
-| Nome, cargo e trajetória | `src/stage/speaker.ts` |
+| Nome, cargo e universidade | `src/stage/speaker.ts` |
+| Fotos da trajetória | `public/fotos/` (ver `LEIA-ME.txt`) |
+| Cena 3D da fábrica | `src/three/factory.ts` |
 | Cores e tipografia (4MATT) | `src/styles.css` |
 
 ## Depois da palestra

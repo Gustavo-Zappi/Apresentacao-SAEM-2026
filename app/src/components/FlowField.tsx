@@ -6,13 +6,14 @@ import gsap from 'gsap'
  * É a "assinatura" visual da palestra (escoamento → Navier-Stokes) e muda de regime por slide:
  * laminar (calmo), turbulent (caos controlado) e still (quase parado, para leitura).
  */
-export type FlowMode = 'laminar' | 'turbulent' | 'still' | 'surge'
+export type FlowMode = 'laminar' | 'turbulent' | 'still' | 'surge' | 'none'
 
 const PRESETS: Record<FlowMode, { speed: number; freq: number; swirl: number; alpha: number; drift: number }> = {
-  still: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0.18, drift: 1 },
-  laminar: { speed: 1.1, freq: 0.0018, swirl: 0.9, alpha: 0.42, drift: 1 },
-  turbulent: { speed: 2.4, freq: 0.0058, swirl: 3.2, alpha: 0.6, drift: 0.25 },
-  surge: { speed: 4.2, freq: 0.0024, swirl: 1.2, alpha: 0.75, drift: 1.6 },
+  still: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0.1, drift: 1 },
+  laminar: { speed: 1.1, freq: 0.0018, swirl: 0.9, alpha: 0.24, drift: 1 },
+  turbulent: { speed: 2.4, freq: 0.0058, swirl: 3.2, alpha: 0.5, drift: 0.25 },
+  none: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0, drift: 1 },
+  surge: { speed: 4.2, freq: 0.0024, swirl: 1.2, alpha: 0.6, drift: 1.6 },
 }
 
 const params = { ...PRESETS.laminar }
@@ -81,6 +82,11 @@ export default function FlowField() {
       ctx.fillStyle = 'rgba(0,0,0,0.075)'
       ctx.fillRect(0, 0, w, h)
       ctx.globalCompositeOperation = 'source-over'
+      // modo 'none' (slides 3D): só apaga o rastro, sem desenhar, para poupar a GPU
+      if (params.alpha < 0.01) {
+        raf = requestAnimationFrame(frame)
+        return
+      }
       ctx.lineWidth = 1.2
       for (let ci = 0; ci < COLORS.length; ci++) {
         ctx.strokeStyle = COLORS[ci]

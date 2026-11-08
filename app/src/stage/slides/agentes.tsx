@@ -1,0 +1,113 @@
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
+import Slide from '../../components/Slide'
+import type { SlideProps } from '../types'
+
+/* ---------------------------------------------------------------- Definição: malha fechada */
+
+// Blocos do diagrama (coordenadas do SVG 1660×520)
+const B = [
+  { id: 'obj', x: 0, y: 190, w: 250, label: 'Objetivo', sub: 'setpoint' },
+  { id: 'plan', x: 400, y: 190, w: 300, label: 'Planejar', sub: 'controlador' },
+  { id: 'tool', x: 800, y: 190, w: 300, label: 'Ferramentas', sub: 'atuador' },
+  { id: 'world', x: 1200, y: 190, w: 300, label: 'Resultado', sub: 'planta' },
+  { id: 'check', x: 800, y: 400, w: 300, label: 'Verificar', sub: 'sensor' },
+]
+const H = 110
+const LOOP = 'M 250 245 L 400 245 M 700 245 L 800 245 M 1100 245 L 1200 245 M 1350 300 L 1350 455 L 1100 455 M 800 455 L 330 455 L 330 245'
+
+export function AgenteDef({ step }: SlideProps) {
+  const ref = useRef<HTMLDivElement>(null)
+  useGSAP(
+    () => {
+      if (step < 1) return
+      const tl = gsap.timeline()
+      tl.fromTo('.blk', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%' }, { scale: 1, autoAlpha: 1, stagger: 0.12, duration: 0.5, ease: 'back.out(2)' })
+      tl.fromTo('.wire', { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.4, ease: 'power1.inOut' }, 0.3)
+      // pulso percorrendo o ciclo
+      const path = ref.current!.querySelector<SVGPathElement>('.cycle-path')!
+      const len = path.getTotalLength()
+      const dot = ref.current!.querySelector<SVGCircleElement>('.pulse')!
+      const o = { l: 0 }
+      tl.to(o, {
+        l: len, duration: 4, ease: 'none', repeat: -1,
+        onUpdate: () => {
+          const p = path.getPointAtLength(o.l)
+          dot.setAttribute('cx', String(p.x))
+          dot.setAttribute('cy', String(p.y))
+        },
+      }, 1.4)
+    },
+    { scope: ref, dependencies: [step] },
+  )
+
+  return (
+    <Slide step={step}>
+      <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className="kicker" data-in>O que é um agente de IA</div>
+        <h1 className="h1" data-split>Chatbot responde. Agente executa.</h1>
+        <p className="lead" data-in style={{ marginTop: 28, color: '#fff', maxWidth: 1600 }}>
+          Um modelo de IA que recebe um <b className="accent-t">objetivo</b>, planeja os passos, usa <b className="accent-t">ferramentas</b> e{' '}
+          <b className="accent-t">verifica</b> o próprio resultado, em ciclo, até entregar.
+        </p>
+        <div data-step="1" style={{ marginTop: 24 }}>
+          <svg viewBox="0 0 1660 520" width="1490" height="467" style={{ overflow: 'visible', display: 'block', margin: '0 auto' }}>
+            <path className="wire" d={LOOP} stroke="rgba(255,255,255,.7)" strokeWidth="5" fill="none" />
+            <path className="cycle-path" d="M 330 245 L 1350 245 L 1350 455 L 330 455 Z" fill="none" stroke="none" />
+            {B.map((b) => (
+              <g key={b.id} className="blk">
+                <rect x={b.x} y={b.y} width={b.w} height={H} rx="14" fill={b.id === 'check' ? '#58178B' : '#201E4B'} stroke="#CBB3FF" strokeWidth="3" />
+                <text x={b.x + b.w / 2} y={b.y + 52} textAnchor="middle" fill="#fff" fontSize="38" fontWeight="700" fontFamily="Poppins">{b.label}</text>
+                <text x={b.x + b.w / 2} y={b.y + 90} textAnchor="middle" fill="#CBB3FF" fontSize="26" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
+              </g>
+            ))}
+            <circle className="blk" cx="330" cy="245" r="22" fill="#120F2E" stroke="#fff" strokeWidth="4" />
+            <text x="330" y="256" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
+            <circle className="pulse" cx="330" cy="245" r="14" fill="#FFB547" style={{ filter: 'drop-shadow(0 0 12px #FFB547)' }} />
+          </svg>
+        </div>
+        <p className="lead" data-step="2" style={{ marginTop: 'auto', fontSize: 38 }}>
+          Para quem estudou controle: <b style={{ color: '#fff' }}>é uma malha fechada.</b> O erro só zera quando o resultado atende ao objetivo.
+        </p>
+      </div>
+    </Slide>
+  )
+}
+
+/* ---------------------------------------------------------------- Demo: agente seleciona uma bomba */
+
+type Line = { who: 'Você' | 'Agente' | 'Ferramenta' | 'Verifica' | 'Engenheiro'; text: string; step: number }
+
+// Números calculados (água a 20 °C, aço comercial ε = 0,045 mm, Colebrook, η bomba 70%).
+const LOG: Line[] = [
+  { who: 'Você', text: 'Selecione uma bomba: 30 m³/h, desnível de 18 m, 120 m de tubo DN 80.', step: 0 },
+  { who: 'Agente', text: 'Plano: propriedades → perda de carga → altura → potência → checagens.', step: 1 },
+  { who: 'Ferramenta', text: 'propriedades(água, 20 °C) → ρ = 998 kg/m³, ν = 1,0·10⁻⁶ m²/s', step: 2 },
+  { who: 'Ferramenta', text: 'python: v = 1,75 m/s · Re = 1,4·10⁵ · f = 0,020 · perdas = 6,0 m', step: 2 },
+  { who: 'Agente', text: 'Altura manométrica H ≈ 24 m · potência no eixo ≈ 2,8 kW → motor de 4 kW', step: 3 },
+  { who: 'Verifica', text: 'Velocidade na faixa usual de recalque ✓   Folga de potência do motor ✓', step: 3 },
+  { who: 'Verifica', text: '⚠ Parada brusca: golpe de aríete de até ~214 m (limite de Joukowsky).', step: 4 },
+  { who: 'Engenheiro', text: 'Válvula de fechamento lento? Volante de inércia? Análise de transiente? Essa decisão é sua.', step: 4 },
+]
+const COLOR: Record<Line['who'], string> = { Você: 'hm', Agente: 'ag', Ferramenta: 'tool', Verifica: 'ok', Engenheiro: 'hm' }
+
+export function AgenteDemo({ step }: SlideProps) {
+  return (
+    <Slide step={step}>
+      <div className="kicker" data-in>Demonstração · agente de engenharia</div>
+      <h1 className="h1" data-split style={{ fontSize: 68 }}>Dimensionar uma bomba em segundos</h1>
+      <div className="term" style={{ marginTop: 40 }} data-in>
+        {LOG.map((l, i) => (
+          <div key={i} className="ln" data-step={l.step}>
+            <span className={`who ${COLOR[l.who]}`}>{l.who}</span>
+            <span style={l.who === 'Engenheiro' ? { fontWeight: 700 } : undefined}>{l.text}</span>
+          </div>
+        ))}
+      </div>
+      <p className="lead" data-step="4" style={{ marginTop: 28, fontSize: 36 }}>
+        O agente fez a conta e apontou o risco. <b style={{ color: '#fff' }}>Quem decide continua sendo o engenheiro.</b>
+      </p>
+    </Slide>
+  )
+}

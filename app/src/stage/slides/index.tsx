@@ -1,10 +1,13 @@
 import Poll from '../../components/Poll'
 import { QUESTION_BY_ID } from '../../data/questions'
 import type { SlideDef } from '../types'
-import { Cadeiras, Capa, Secao } from './abertura'
-import { Casos, Demo, Rankine } from './engenharia'
-import { Escala, Licoes, Manchete, ManchetexFato } from './navier'
-import { Acoes, Carreiras, FabricaEscritorio, Gargalos, Obrigado } from './futuro'
+import { Capa, Secao } from './abertura'
+import { Carreira, Faculdade } from './trajetoria'
+import { Fotos3D, NovaEra, Passado } from './ia-engenharia'
+import { AgenteDef, AgenteDemo } from './agentes'
+import { Escala, Manchete, ManchetexFato, Mural } from './navier'
+import { Ano4, FabricaHistoria } from './analogia'
+import { Acoes, Carreiras, Gargalos, Obrigado } from './futuro'
 
 const poll = (id: string, qid: string, minutes: number, notes: string, kicker?: string): SlideDef => ({
   id,
@@ -17,93 +20,119 @@ const poll = (id: string, qid: string, minutes: number, notes: string, kicker?: 
   Component: ({ step }) => <Poll qid={qid} step={step} kicker={kicker} />,
 })
 
+const secao = (id: string, n: string, title: string, sub: string, notes?: string): SlideDef => ({
+  id, title: `Seção ${n}`, steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5, notes,
+  Component: ({ step }) => <Secao step={step} n={n} title={title} sub={sub} />,
+})
+
 export const SLIDES: SlideDef[] = [
   {
     id: 'capa', title: 'Capa', steps: 1, flow: 'laminar', minutes: 1,
-    notes: 'Deixe este slide no ar enquanto a plateia entra. O QR já leva ao app: quem entrar agora vota na primeira pergunta.',
+    notes: 'Deixe no ar enquanto a plateia entra. O QR leva ao app: quem entrar agora vota na primeira pergunta.\nSe a sala permitir, reduza a luz perto da tela: o fundo escuro ganha contraste.',
     Component: Capa,
   },
   poll('p-uso', 'uso-ia', 1.5,
-    'Quebra-gelo. Comente o resultado: "a maioria de vocês já usa. A pergunta é como usar sem terceirizar o raciocínio."\nClique para encerrar a votação.',
+    'Quebra-gelo. "A maioria já usa. A pergunta de hoje é o que muda quando a IA deixa de responder e passa a executar."',
     'Antes de começar'),
+
+  // ---------------------------------------------------------------- conexão pessoal (curta)
   {
-    id: 'cadeiras', title: 'Eu sentei nessas cadeiras', steps: 3, flow: 'laminar', minutes: 2,
-    notes: 'Abertura pessoal: engenheiro mecânico que virou Head of AI. Clique 1: trajetória. Clique 2: a pergunta da palestra.',
-    Component: Cadeiras,
+    id: 'faculdade', title: 'Trajetória: a graduação', steps: 3, flow: 'still', minutes: 2,
+    notes: 'Conexão, não currículo. Um clique por item.\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/public/fotos (ver LEIA-ME.txt).',
+    Component: Faculdade,
   },
   {
-    id: 's1', title: 'Seção 1', steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5,
-    Component: ({ step }) => <Secao step={step} n="01" title="A IA está mudando a engenharia" sub="O cálculo virou commodity. Formular, verificar e decidir, não." />,
+    id: 'carreira', title: 'Trajetória: CSN → TI → IA', steps: 3, flow: 'still', minutes: 3,
+    notes: 'Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Como se encontrou na IA.\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
+    Component: Carreira,
+  },
+
+  // ---------------------------------------------------------------- IA na engenharia: passado e nova era
+  secao('s1', '01', 'A IA já está na engenharia', 'O que mudou é o tipo de IA.'),
+  {
+    id: 'passado', title: 'IA na engenharia há décadas', steps: 2, flow: 'still', minutes: 3,
+    notes: 'Sendai 1987 (fuzzy, Hitachi) · redes neurais em diagnóstico por vibração (anos 1990) · NASA ST5 2006 (antena por algoritmo evolutivo, voou de 22/03 a 30/06/2006) · Airbus 2015 (partição biônica, 45% mais leve) · GM 2018 (suporte 40% mais leve, 20% mais resistente, 8 peças em 1, prova de conceito).\nClique: a mensagem.',
+    Component: Passado,
   },
   {
-    id: 'rankine', title: 'Ciclo Rankine: o problema', steps: 3, flow: 'laminar', minutes: 2,
-    notes: 'Problema clássico (Moran & Shapiro). Clique 1: domo de saturação. Clique 2: ciclo ideal 1-2-3-4. Não revele x ainda.',
-    Component: Rankine,
-  },
-  poll('p-eta', 'rankine-eta', 1.5,
-    'Chute da plateia antes da demo. Revele no clique: 37,1%. Destaque que 45% é Carnot (295 °C / 41,5 °C).'),
-  {
-    id: 'demo', title: 'Demo em três tempos', steps: 3, flow: 'still', minutes: 5,
-    notes: 'Tempo 1: foto da tabela de vapor.\nTempo 2: ALT+TAB para a demo ao vivo (prompt para a IA). Vídeo de backup se a rede cair.\nTempo 3: "o número está certo, mas é aceitável?" e siga para a votação.\nSe a IA já sinalizar a umidade sozinha: "então o que sobra para você?" A decisão de projeto.',
-    Component: Demo,
-  },
-  poll('p-x', 'rankine-x', 1.5,
-    'x = 0,675 → 32,5% de líquido na turbina: erosão das palhetas. Revele e conecte ao próximo slide (superaquecimento e reaquecimento).'),
-  {
-    id: 'casos', title: 'Casos A a E', steps: 4, flow: 'still', minutes: 2.5,
-    notes: 'Clique 1: superaquecimento e reaquecimento. Clique 2: casos reais (η 85%). Clique 3: a mensagem.\nTrade-off de pressão: 2 MPa η 34,3% x 0,888 · 8 MPa η 39,7% x 0,795 · 15 MPa η 41,7% x 0,744.',
-    Component: Casos,
+    id: 'fotos3d', title: 'Nova era: fotos viram 3D', steps: 3, flow: 'none', minutes: 3,
+    notes: 'A animação roda sozinha: fotos → nuvem de pontos → sólido. É uma ilustração do conceito.\nGaussian Splatting (SIGGRAPH 2023) reconstrói, não "gera". TRELLIS.2 (Microsoft, 12/2025, MIT) gera 3D a partir de uma imagem.\nHonestidade: precisão ainda não substitui metrologia.',
+    Component: Fotos3D,
   },
   {
-    id: 'manchete', title: 'Manchete Navier-Stokes', steps: 2, flow: 'turbulent', transition: 'wipe', minutes: 1,
+    id: 'novaera', title: 'Nova era: a IA propõe', steps: 4, flow: 'still', minutes: 4,
+    notes: 'Um clique por linha. Números são dos fabricantes (SimAI 10-100×, LEAP 71 5 kN).\nMensagem: antes a IA otimizava dentro das nossas regras; agora ela propõe geometria, escreve código e conversa.',
+    Component: NovaEra,
+  },
+
+  // ---------------------------------------------------------------- agentes
+  secao('s2', '02', 'Agentes de IA', 'Da resposta à execução.'),
+  {
+    id: 'agente-def', title: 'O que é um agente', steps: 3, flow: 'still', minutes: 2.5,
+    notes: 'Clique 1: o diagrama de malha fechada. Clique 2: a analogia com controle.\nObjetivo = setpoint · planejar = controlador · ferramentas = atuador · verificar = sensor.',
+    Component: AgenteDef,
+  },
+  {
+    id: 'agente-demo', title: 'Demo: agente dimensiona uma bomba', steps: 5, flow: 'still', minutes: 6,
+    notes: 'IDEAL: faça ao vivo (Claude ou outro assistente com execução de código) com o mesmo pedido. Este slide é o backup.\nNúmeros conferidos: água 20 °C, DN 80 (D = 77,9 mm), aço comercial ε = 0,045 mm, Colebrook, K acessórios = 8, η = 70%.\nv = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,8 m · hm = 1,25 m · H = 24,0 m · P eixo = 2,8 kW.\nJoukowsky com a ≈ 1200 m/s: ΔH ≈ 214 m (pior caso, fechamento instantâneo).\nGancho: "esse foi o tema da minha IC". A decisão de engenharia continua humana.',
+    Component: AgenteDemo,
+  },
+
+  // ---------------------------------------------------------------- manchetes
+  secao('s3', '03', 'As manchetes', 'E o que está por trás delas.'),
+  {
+    id: 'mural', title: 'Mural de manchetes', steps: 2, flow: 'laminar', minutes: 1.5,
+    notes: 'Passe rápido pelas manchetes. Clique: destaque para Navier-Stokes.',
+    Component: Mural,
+  },
+  {
+    id: 'manchete', title: 'Manchete Navier-Stokes', steps: 2, flow: 'turbulent', minutes: 1,
     notes: 'O fundo entra em regime turbulento de propósito. Pausa dramática.',
     Component: Manchete,
   },
-  poll('p-ns', 'ns-manchete', 1.5,
-    'Tom neutro entre empresas de IA. Revele: alegação em avaliação. RECHECAR o status antes do evento.'),
+  poll('p-ns', 'ns-manchete', 1.5, 'Tom neutro entre empresas de IA. Revele: alegação em avaliação. RECHECAR o status antes do evento.'),
   {
     id: 'fato', title: 'Manchete × fato', steps: 6, flow: 'still', minutes: 3,
-    notes: 'Um clique por linha. Status de 28/10/2026: rechecar antes de subir no palco.\nMencione a declaração dos medalhistas Fields (11/09) e a crítica de Terence Tao sobre expor só a rota vencedora.',
+    notes: 'Um clique por linha. Status de 28/10/2026: rechecar antes de subir no palco.',
     Component: ManchetexFato,
   },
   {
-    id: 'escala', title: 'Escala', steps: 3, flow: 'laminar', minutes: 1.5,
-    notes: 'Números da própria divulgação. Clique 1: Lean e custo. Clique 2: gargalos novos.',
+    id: 'escala', title: 'Escala: 10.000 agentes', steps: 3, flow: 'laminar', minutes: 1.5,
+    notes: 'Conecte com a seção de agentes: isto é um sistema com milhares de agentes trabalhando em paralelo.',
     Component: Escala,
   },
+
+  // ---------------------------------------------------------------- analogia da eletricidade
+  secao('s4', '04', 'Já vimos esse filme', 'A eletricidade levou décadas para mudar as fábricas.'),
+  poll('p-eletricidade', 'eletricidade', 1.5, 'Chute da plateia. Revele: ≈ 40 anos (Paul David, 1990).'),
   {
-    id: 'licoes', title: 'Três lições', steps: 3, flow: 'still', minutes: 1.5,
-    notes: 'Ponte entre as três camadas: engenharia → organizações → carreiras.',
-    Component: Licoes,
+    id: 'fabrica', title: 'A fábrica: do vapor à IA (3D)', steps: 6, flow: 'none', minutes: 6,
+    notes: '1880 vapor + eixo no teto + correias.\n1882→ motor elétrico no lugar do vapor, tudo igual (≈5% da força motriz em 1899).\n1900-1920 um motor por máquina: o layout segue o processo (≈50% em 1920).\n1913 linha de montagem, Ford Highland Park.\nAnos 1920: o salto, ~40 anos depois.\nHoje: plugar IA no processo antigo = motor elétrico no eixo.',
+    Component: FabricaHistoria,
   },
   {
-    id: 's2', title: 'Seção 2', steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5,
-    Component: ({ step }) => <Secao step={step} n="02" title="A IA está mudando as organizações" sub="Trabalho de conhecimento em escala industrial." />,
+    id: 'ano4', title: 'Estamos no ano 4', steps: 3, flow: 'laminar', minutes: 2,
+    notes: 'Eletricidade ≈ 40 anos; IA generativa popularizada em 11/2022 (ChatGPT) → ≈ 4 anos.\nPergunta: quem vai redesenhar a fábrica? Vocês.',
+    Component: Ano4,
   },
+
+  // ---------------------------------------------------------------- carreiras e fechamento
   {
-    id: 'fabrica', title: 'Fábrica e escritório', steps: 2, flow: 'laminar', minutes: 5,
-    notes: 'Ligue cada item a um eixo do evento (manufatura, CAE, manutenção, energia). Casos 4MATT sempre anonimizados. Exemplos de mercado só com fonte validada.',
-    Component: FabricaEscritorio,
-  },
-  {
-    id: 'gargalos', title: 'Três novos gargalos', steps: 3, flow: 'still', minutes: 4,
-    notes: 'Analogias mecânicas: tolerância, metrologia, FMEA.',
+    id: 'gargalos', title: 'O que a nova fábrica exige', steps: 3, flow: 'still', minutes: 3,
+    notes: 'Especificar (cota e tolerância), validar (ensaio e metrologia), governar (FMEA e normas).',
     Component: Gargalos,
   },
   poll('p-palavra', 'palavra', 2,
     'Nuvem de palavras. Leia 3 ou 4 em voz alta. Trate ansiedade com honestidade: tarefas de nível inicial são as mais expostas.'),
+  secao('s5', '05', 'Quem vai redesenhar a fábrica', 'Frentes de carreira para quem vem da mecânica.'),
   {
-    id: 's3', title: 'Seção 3', steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5,
-    Component: ({ step }) => <Secao step={step} n="03" title="A IA está abrindo carreiras" sub="Cada gargalo novo é uma função nova." />,
-  },
-  {
-    id: 'carreiras', title: 'Frentes de carreira', steps: 2, flow: 'laminar', minutes: 6,
+    id: 'carreiras', title: 'Frentes de carreira', steps: 2, flow: 'still', minutes: 4,
     notes: 'Clique 1: trilha de gestão. Use a sua trajetória como prova.',
     Component: Carreiras,
   },
   poll('p-trilha', 'trilha', 2, 'Comente a frente mais votada e conecte a uma ação concreta.'),
   {
-    id: 'acoes', title: 'Três ações', steps: 3, flow: 'laminar', minutes: 3,
+    id: 'acoes', title: 'Três ações', steps: 3, flow: 'still', minutes: 2,
     Component: Acoes,
   },
   {

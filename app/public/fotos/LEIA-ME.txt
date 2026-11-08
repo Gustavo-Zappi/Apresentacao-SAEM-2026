@@ -1,0 +1,11 @@
+Fotos da trajetória (opcionais). Coloque aqui, com estes nomes exatos, em JPG:
+
+  trem-ki-voa.jpg     equipe de AeroDesign (avião, competição, equipe)
+  monitoria.jpg       monitoria / sala de aula
+  ic.jpg              iniciação científica (bancada, artigo, apresentação)
+  csn.jpg             CSN / equipamentos de grande porte
+  ativos-ti.jpg       gestão de ativos de TI / 4MATT
+  ia.jpg              trabalho atual com IA
+
+Tamanho sugerido: 1200 px no lado maior, até 400 kB cada.
+Sem a foto, o slide mostra um ícone no lugar (não fica quebrado).
