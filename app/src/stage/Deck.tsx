@@ -7,6 +7,7 @@ import { live } from '../lib/live'
 import { SyncContext } from './sync'
 import { participantId } from '../lib/participant'
 import { projector } from '../lib/display'
+import Clock from '../components/Clock'
 
 type Pos = { i: number; s: number }
 
@@ -54,6 +55,12 @@ export default function Deck() {
   const [scale, setScale] = useState(1)
   const [help, setHelp] = useState(false)
   const [black, setBlack] = useState(false)
+  const [clock, setClock] = useState(() => {
+    try { return localStorage.getItem('saem-relogio') !== '0' } catch { return true }
+  })
+  useEffect(() => {
+    try { localStorage.setItem('saem-relogio', clock ? '1' : '0') } catch { /* ignora */ }
+  }, [clock])
   const [key, setKey] = useState(presenterKey)
   const [keyOk, setKeyOk] = useState<boolean | null>(null)
   const [syncErr, setSyncErr] = useState(false)
@@ -211,6 +218,7 @@ export default function Deck() {
       else if (k === 'End') go({ i: SLIDES.length - 1, s: 0 })
       else if (k === 'f') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()
       else if (k === 'b' || k === '.') setBlack((v) => !v)
+      else if (k === 't') setClock((v) => !v)
       else if (k === 'h' || k === '?') setHelp((v) => !v)
       else if (k === 'Escape') { setHelp(false); setBlack(false) }
       else if (k === 'o') window.open('/notas', 'saem-notas', 'width=1100,height=760')
@@ -265,6 +273,7 @@ export default function Deck() {
             <Comp key={shown.i} step={shown.s} />
           </SyncContext.Provider>
         </div>
+        {clock && <Clock />}
       </div>
       <div ref={wipeRef} className="wipe" />
       {black && <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 40 }} />}
@@ -281,6 +290,7 @@ export default function Deck() {
             <div><kbd>← / PgUp</kbd>voltar</div>
             <div><kbd>F</kbd>tela cheia</div>
             <div><kbd>B</kbd>tela preta</div>
+            <div><kbd>T</kbd>relógio (hora de Brasília): {clock ? 'visível' : 'oculto'}</div>
             <div><kbd>C</kbd>modo projetor (mais contraste): {proj ? 'ligado' : 'desligado'}</div>
             <div><kbd>O</kbd>abrir notas do apresentador</div>
             <div><kbd>K</kbd>informar chave do apresentador</div>

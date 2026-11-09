@@ -138,6 +138,44 @@ function buildCasing() {
   return geo
 }
 
+/** Diafragmas: palhetas fixas (bocais) entre os estágios, na metade inferior (presos à carcaça). */
+function buildDiaphragms() {
+  const parts: THREE.BufferGeometry[] = []
+  const m = new THREE.Matrix4()
+  for (let k = 0; k < STAGES; k++) {
+    const x = k === 0 ? -1.85 : stageX(k) - 0.2
+    const rd = discR(k) * 0.96
+    const L = bladeL(k) * 0.98
+    const rt = rd + L
+    // placa do diafragma (meia coroa) e anel externo
+    const plate = new THREE.RingGeometry(0.18, rd, 40, 1, Math.PI, Math.PI)
+    plate.rotateY(Math.PI / 2)
+    plate.translate(x, 0, 0)
+    const outer = new THREE.RingGeometry(rt, rt + 0.07, 48, 1, Math.PI, Math.PI)
+    outer.rotateY(Math.PI / 2)
+    outer.translate(x, 0, 0)
+    parts.push(plate.toNonIndexed(), outer.toNonIndexed())
+    plate.dispose()
+    outer.dispose()
+    // bocais: torção oposta à das palhetas móveis
+    const n = Math.round(44 - 2.4 * k)
+    const proto = blade(0.06 + 0.012 * k, L, 0.018, -0.3, -0.3 - 0.8 * (k / (STAGES - 1)))
+    for (let i = 0; i < n; i++) {
+      const phi = Math.PI / 2 + ((i + 0.5) / n) * Math.PI // metade inferior (y < 0)
+      const g = proto.clone()
+      m.makeRotationX(phi)
+      m.setPosition(x, Math.cos(phi) * (rd + L / 2), Math.sin(phi) * (rd + L / 2))
+      g.applyMatrix4(m)
+      parts.push(g.toNonIndexed())
+      g.dispose()
+    }
+    proto.dispose()
+  }
+  const geo = mergeGeometries(parts)!
+  parts.forEach((p) => p.dispose())
+  return geo
+}
+
 function buildBearings() {
   const parts: THREE.BufferGeometry[] = []
   for (const x of [-2.55, 2.32]) {
@@ -219,11 +257,15 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
     group.add(rotorPivot)
 
     const rotorGeo = buildRotor()
-    const casingGeo = buildCasing()
+    const casingShell = buildCasing()
+    const diaphragmGeo = buildDiaphragms()
+    const casingGeo = mergeGeometries([casingShell.toNonIndexed(), diaphragmGeo])!
+    casingShell.dispose()
+    diaphragmGeo.dispose()
     const bearingGeo = buildBearings()
 
     // amostragem da nuvem: tudo junto (o que as fotos "veem")
-    const sampleGeo = mergeGeometries([rotorGeo.toNonIndexed(), casingGeo.toNonIndexed(), bearingGeo])!
+    const sampleGeo = mergeGeometries([rotorGeo.toNonIndexed(), casingGeo.index ? casingGeo.toNonIndexed() : casingGeo, bearingGeo])!
     const sampler = new MeshSurfaceSampler(new THREE.Mesh(sampleGeo)).build()
 
     // cores por vértice do rotor (aço → campo de temperatura)
@@ -292,6 +334,46 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
     const pMat = new THREE.PointsMaterial({ color: 0xcbb3ff, size: 0.032, transparent: true, opacity: 0, depthWrite: false })
     group.add(new THREE.Points(pGeo, pMat))
 
+    // vapor: partículas em hélice da alta para a baixa pressão, coloridas pela temperatura
+    const NS = 1600
+    const sx = new Float32Array(NS)
+    const sa = new Float32Array(NS)
+    const sr = new Float32Array(NS)
+    const sPos = new Float32Array(NS * 3)
+    const sCol = new Float32Array(NS * 3)
+    const annulus = (x: number) => {
+      const k = Math.min(STAGES - 1, Math.max(0, ((x - X0) / (X1 - X0)) * (STAGES - 1)))
+      const k0 = Math.floor(k)
+      const f = k - k0
+      const k1 = Math.min(STAGES - 1, k0 + 1)
+      return [discR(k0) * (1 - f) + discR(k1) * f, tipR(k0) * (1 - f) + tipR(k1) * f]
+    }
+    const XS0 = X0 - 0.35
+    const XS1 = X1 + 0.45
+    for (let i = 0; i < NS; i++) {
+      sx[i] = XS0 + Math.random() * (XS1 - XS0)
+      sa[i] = Math.random() * Math.PI * 2
+      sr[i] = Math.random()
+    }
+    const steamGeo = new THREE.BufferGeometry()
+    steamGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3))
+    steamGeo.setAttribute('color', new THREE.BufferAttribute(sCol, 3))
+    const dot = document.createElement('canvas')
+    dot.width = dot.height = 64
+    const dctx = dot.getContext('2d')!
+    const grd = dctx.createRadialGradient(32, 32, 0, 32, 32, 32)
+    grd.addColorStop(0, 'rgba(255,255,255,1)')
+    grd.addColorStop(0.35, 'rgba(255,255,255,0.75)')
+    grd.addColorStop(1, 'rgba(255,255,255,0)')
+    dctx.fillStyle = grd
+    dctx.fillRect(0, 0, 64, 64)
+    const dotTex = new THREE.CanvasTexture(dot)
+    // camada de visualização sobre o sólido (como o pós-processamento de um CFD)
+    const steamMat = new THREE.PointsMaterial({ size: 0.075, map: dotTex, vertexColors: true, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending })
+    const steam = new THREE.Points(steamGeo, steamMat)
+    steam.renderOrder = 5
+    group.add(steam)
+
     const st = { t: 0, spin: 0, sweep: -1 }
     const tl = gsap.timeline({ delay: 0.6 })
     frames.forEach((f, i) => {
@@ -317,10 +399,13 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
         gsap.to([rotorMat, bearingMat], { opacity: 1, duration: 0.6 })
         gsap.to(casingMat, { opacity: 0.28, duration: 1 })
         gsap.to(st, { sweep: 3, duration: 2.2, ease: 'power1.inOut' })
+        gsap.to(steamMat, { opacity: 0.7, duration: 1.2, delay: 0.8 })
+        gsap.to(st, { spin: 1.1, duration: 1.5 })
       } else {
         setPhase((p) => (p === 3 ? 2 : p))
         gsap.to(casingMat, { opacity: rotorMat.opacity, duration: 0.6 })
         gsap.to(st, { sweep: -1, duration: 0.6 })
+        gsap.to(steamMat, { opacity: 0, duration: 0.5 })
       }
     }
 
@@ -335,6 +420,28 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
       const t = timer.getElapsed()
       group.rotation.y = -0.62 + Math.sin(t * 0.22) * 0.32
       rotorPivot.rotation.x += dt * st.spin
+      if (steamMat.opacity > 0.01) {
+        for (let i = 0; i < NS; i++) {
+          const prog = (sx[i] - XS0) / (XS1 - XS0)
+          sx[i] += dt * (0.35 + 1.4 * prog * prog) // o vapor acelera ao expandir
+          sa[i] += dt * (1.6 - 0.8 * prog)
+          if (sx[i] > XS1) { sx[i] = XS0; sa[i] = Math.random() * Math.PI * 2; sr[i] = Math.random() }
+          const [r0, r1] = annulus(sx[i])
+          const r = r0 + (r1 - r0) * (0.15 + 0.75 * sr[i])
+          const j = i * 3
+          sPos[j] = sx[i]
+          sPos[j + 1] = Math.cos(sa[i]) * r
+          sPos[j + 2] = Math.sin(sa[i]) * r
+          const ss = Math.min(1, Math.max(0, (sx[i] - (X0 - 0.15)) / (X1 + 0.15 - (X0 - 0.15))))
+          const T = T_OUT + (T_IN - T_OUT) * Math.pow(1 - ss, 1.5)
+          ramp(1 - (T - T_OUT) / (T_IN - T_OUT), tmp)
+          sCol[j] = tmp.r
+          sCol[j + 1] = tmp.g
+          sCol[j + 2] = tmp.b
+        }
+        steamGeo.attributes.position.needsUpdate = true
+        steamGeo.attributes.color.needsUpdate = true
+      }
       if (st.t > 0 && st.t < 1.001) {
         for (let i = 0; i < N; i++) {
           let k = (st.t * 1.6 - delay[i]) / 0.6
@@ -373,7 +480,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
       gsap.killTweensOf(renderer)
       timer.dispose()
       tl.kill()
-      gsap.killTweensOf([st, rotorMat, casingMat, bearingMat, pMat])
+      gsap.killTweensOf([st, rotorMat, casingMat, bearingMat, pMat, steamMat])
       scene.traverse((o) => {
         const m = o as THREE.Mesh
         m.geometry?.dispose()
@@ -382,6 +489,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
         else mm?.dispose()
       })
       envTex.dispose()
+      dotTex.dispose()
       pmrem.dispose()
       renderer.dispose()
       host.removeChild(renderer.domElement)
@@ -399,6 +507,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
         <div className="mono">TEMPERATURA DO VAPOR</div>
         <div className="bar" />
         <div className="ends mono"><span>{T_IN} °C entrada</span><span>{String(T_OUT).replace('.', ',')} °C escape</span></div>
+        <div className="note">O vapor expande e esfria a cada estágio: palhetas fixas orientam, as móveis extraem trabalho.</div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: -34 }}>
         {PHASES.map((p, i) => (

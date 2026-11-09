@@ -3,6 +3,7 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import CountUp from '../../components/CountUp'
+import Swarm from '../../components/Swarm'
 import ImageSlot from '../../components/ImageSlot'
 import { IcFlow } from '../../components/Icons'
 import type { ImgId } from '../../data/images'
@@ -154,7 +155,6 @@ function Row({ headline, fact, on }: { headline: string; fact: string; on: boole
 
 export function Escala({ step }: SlideProps) {
   const items = [
-    { to: 10000, label: 'agentes em paralelo', prefix: '~' },
     { to: 88, label: 'horas de execução', suffix: ' h' },
     { to: 2.7, label: 'milhões de mensagens', decimals: 1, suffix: ' mi' },
     { to: 130, label: 'bilhões de tokens', prefix: '~', suffix: ' bi' },
@@ -163,22 +163,32 @@ export function Escala({ step }: SlideProps) {
     <Slide step={step}>
       <div className="kicker" data-in>O que mudou de verdade</div>
       <h1 className="h1" data-split>Escala de trabalho intelectual industrial</h1>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginTop: 80 }}>
-        {items.map((it) => (
-          <div key={it.label} className="card" data-in>
-            <div className="num" style={{ fontSize: 96 }}>
-              <CountUp to={it.to} decimals={it.decimals ?? 0} prefix={it.prefix} suffix={it.suffix} duration={2.6} />
-            </div>
-            <p style={{ fontSize: 34 }}>{it.label}</p>
+      <div className="scale-grid">
+        <div className="scale-swarm" data-in>
+          <Swarm size={600} />
+          <div className="scale-legend mono">1 ponto = 1 agente</div>
+        </div>
+        <div className="scale-side">
+          <div className="scale-hero" data-in>
+            <div className="num"><CountUp to={10000} prefix="~" duration={2.6} /></div>
+            <p>agentes trabalhando em paralelo</p>
           </div>
-        ))}
+          <div className="scale-rows">
+            {items.map((it) => (
+              <div key={it.label} className="scale-row" data-in>
+                <div className="num"><CountUp to={it.to} decimals={it.decimals ?? 0} prefix={it.prefix} suffix={it.suffix} duration={2.6} /></div>
+                <p>{it.label}</p>
+              </div>
+            ))}
+          </div>
+          <p className="lead" data-step="1" style={{ marginTop: 30, fontSize: 32 }}>
+            Formalização em Lean em ~17 h por outro modelo. Custo estimado em vários milhões de dólares.
+          </p>
+          <p className="lead" data-step="2" style={{ marginTop: 18, color: '#fff', fontSize: 34 }}>
+            Escala cria gargalos novos: <span className="accent-t" style={{ fontWeight: 700 }}>validação, crédito e uso de dados.</span>
+          </p>
+        </div>
       </div>
-      <p className="lead" data-step="1" style={{ marginTop: 72 }}>
-        Formalização em Lean em ~17 h por outro modelo. Custo estimado em vários milhões de dólares.
-      </p>
-      <p className="lead" data-step="2" style={{ marginTop: 20, color: '#fff' }}>
-        Escala cria gargalos novos: <span className="accent" style={{ fontWeight: 600 }}>validação, crédito e uso de dados.</span>
-      </p>
     </Slide>
   )
 }

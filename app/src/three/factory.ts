@@ -126,7 +126,7 @@ const N_CHASSIS = 7
 
 const CAMS: { p: [number, number, number]; t: [number, number, number] }[] = [
   { p: [16.5, 7.4, 16.5], t: [10.2, 5.2, -3] },
-  { p: [15.8, 6, 13], t: [10.4, 3.4, -2] },
+  { p: [17.4, 5.4, 11.5], t: [12.4, 2.6, -0.8] },
   { p: [7, 7.8, 13], t: [-3, 1.8, -3.5] },
   { p: [9, 5.6, 11.5], t: [-1.5, 1.2, 0] },
   { p: [2, 8.6, 19], t: [-3, 1.4, -1] },
@@ -202,6 +202,12 @@ export class Factory {
   private aiMat = new THREE.MeshStandardMaterial({ color: 0x1a0f33, emissive: COLORS.purple, emissiveIntensity: 0, transparent: true, opacity: 0 })
   private aiLineMat = new THREE.MeshBasicMaterial({ color: 0xb48cff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })
   private motorGlow = new THREE.MeshStandardMaterial({ color: 0x1a0f33, emissive: COLORS.purple, emissiveIntensity: 0 })
+  private copper = new THREE.MeshStandardMaterial({ color: 0xc27a45, metalness: 0.85, roughness: 0.32 })
+  private alertMat = new THREE.MeshStandardMaterial({ color: 0x330a0a, emissive: 0xff4d4d, emissiveIntensity: 0, transparent: true, opacity: 0 })
+  private alertLineMat = new THREE.MeshBasicMaterial({ color: 0xff6b6b, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })
+  private alertRing!: THREE.Mesh
+  private alertPanel!: THREE.Sprite
+  private brushSpark!: THREE.Sprite
 
   // objetos
   private engine = new THREE.Group()
@@ -633,22 +639,72 @@ export class Factory {
   /** Grande motor elétrico (passo 1): toma o lugar do vapor, mantém eixo e correias. */
   private electricMotor() {
     const M = this.bigMotor
-    const body: PartDef[] = [
-      [box(1.9, 0.3, 1.8), COLORS.iron, T(13.2, 0.15)],
-      [cylX(0.85, 1.3, 40), 0x2b2f3a, T(13.25, 1.15)],
-      [cylX(0.7, 1.55, 40), 0x1f222b, T(13.25, 1.15)],
-      [box(1.3, 0.5, 1.5), 0x2b2f3a, T(13.25, 0.45)],
-      [cylX(0.1, 1.4, 12), COLORS.steel, T(12.6, 1.15)],
+    // Dínamo bipolar de 2 polos, estilo Edison (anos 1880): pernas de campo altas com bobinas de cobre,
+    // culatra no topo, sapatas polares abraçando a armadura e comutador com escovas.
+    const XA = 13.35 // centro da máquina
+    const YA = 1.0 // eixo da armadura
+    const iron: PartDef[] = [
+      [box(2.7, 0.24, 2.1), COLORS.iron, T(XA, 0.12)],
+      [box(2.5, 0.08, 1.9), 0x7c8a82, T(XA, 0.28)],
+      // sapatas polares (os dois lados da armadura)
+      [box(1.1, 0.58, 0.42), COLORS.ironDark, T(XA, YA, 0.6)],
+      [box(1.1, 0.58, 0.42), COLORS.ironDark, T(XA, YA, -0.6)],
+      // pernas de campo e culatra
+      [cyl(0.24, 1.85, 24), COLORS.ironDark, T(XA, YA + 1.2, 0.58)],
+      [cyl(0.24, 1.85, 24), COLORS.ironDark, T(XA, YA + 1.2, -0.58)],
+      [box(0.95, 0.34, 1.62), COLORS.ironDark, T(XA, YA + 2.25)],
+      // mancais (pedestais) e base das sapatas
+      [box(0.3, 0.72, 0.5), COLORS.iron, T(XA - 0.82, 0.62)],
+      [box(0.3, 0.72, 0.5), COLORS.iron, T(XA + 1.02, 0.62)],
+      [box(1.1, 0.42, 1.62), COLORS.iron, T(XA, 0.5)],
+      // porta-escovas
+      [box(0.08, 0.5, 0.08), COLORS.brass, T(XA + 0.9, YA + 0.34, 0.16)],
+      [box(0.08, 0.5, 0.08), COLORS.brass, T(XA + 0.9, YA - 0.34, -0.16)],
     ]
-    for (let i = 0; i < 10; i++) body.push([box(1.25, 0.06, 0.1), 0x3a3f4c, T(13.25, 1.15, 0, (i / 10) * Math.PI * 2).multiply(T(0, 0.86))])
-    M.add(new THREE.Mesh(bake(body), this.vc))
-    const glowRing = new THREE.Mesh(cylX(0.72, 0.12, 40), this.motorGlow)
-    glowRing.position.set(13.95, 1.15, 0)
+    M.add(new THREE.Mesh(bake(iron), this.vc))
+    // bobinas de campo: cobre + espiras escuras
+    const coils = new THREE.Group()
+    for (const z of [0.58, -0.58]) {
+      const c = new THREE.Mesh(cyl(0.4, 1.45, 36), this.copper)
+      c.position.set(XA, YA + 1.18, z)
+      coils.add(c)
+      const turns: PartDef[] = []
+      for (let k = 0; k < 15; k++) turns.push([new THREE.TorusGeometry(0.404, 0.008, 6, 40), 0x5a2c12, T(XA, YA + 0.5 + k * 0.097, z, Math.PI / 2)])
+      coils.add(new THREE.Mesh(bake(turns), this.vc))
+    }
+    M.add(coils)
+    // parte girante: armadura em tambor, comutador e polia (no eixo da armadura)
+    this.motorRotor.position.set(0, YA, 0)
+    const arm: PartDef[] = [
+      [cylX(0.36, 1.0, 32), 0x2c3038, T(XA)],
+      [cylX(0.055, 2.6, 12), COLORS.steel, T(XA - 0.25)],
+    ]
+    for (let k = 0; k < 6; k++) arm.push([cylX(0.365, 0.035, 32), 0xb06a35, T(XA - 0.42 + k * 0.17)])
+    for (let k = 0; k < 12; k++) arm.push([box(0.24, 0.03, 0.05), 0x7a4a24, T(XA + 0.9, 0, 0, (k / 12) * Math.PI * 2).multiply(T(0, 0.17))])
+    arm.push([cylX(0.16, 0.24, 24), 0xb87a45, T(XA + 0.9)])
+    this.motorRotor.add(new THREE.Mesh(bake(arm), this.vcMetal))
+    const pul = new THREE.Mesh(pulleyGeo(0.45, 0.32, 0x9a9ea8), this.vcMetal)
+    pul.position.x = DRIVE_X
+    this.motorRotor.add(pul)
+    const glowRing = new THREE.Mesh(cylX(0.2, 0.05, 32), this.motorGlow)
+    glowRing.position.x = XA + 1.04
     glowRing.userData.noShadow = true
-    M.add(glowRing)
-    this.motorRotor.add(new THREE.Mesh(pulleyGeo(0.45, 0.32, 0x9a9ea8), this.vcMetal))
-    this.motorRotor.position.set(DRIVE_X, 1.15, 0)
+    this.motorRotor.add(glowRing)
     M.add(this.motorRotor)
+    // faísca nas escovas (pisca quando a máquina gira)
+    const sparkTex = canvasTex(64, 64, (c) => {
+      const g = c.createRadialGradient(32, 32, 0, 32, 32, 32)
+      g.addColorStop(0, 'rgba(255,255,255,1)')
+      g.addColorStop(0.25, 'rgba(200,180,255,0.9)')
+      g.addColorStop(1, 'rgba(145,86,241,0)')
+      c.fillStyle = g
+      c.fillRect(0, 0, 64, 64)
+    })
+    this.textures.push(sparkTex)
+    this.brushSpark = new THREE.Sprite(new THREE.SpriteMaterial({ map: sparkTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 }))
+    this.brushSpark.position.set(XA + 0.9, YA + 0.15, 0.1)
+    this.brushSpark.scale.setScalar(0.5)
+    M.add(this.brushSpark)
     // quadro elétrico (mármore e chaves de faca) + cabo
     const panel: PartDef[] = [[box(1.6, 2.3, 0.12), 0x2b2b2f, T(0, 1.65)], [box(1.7, 0.1, 0.4), 0x1a1a1a, T(0, 0.05)]]
     for (let i = 0; i < 3; i++) {
@@ -656,15 +712,15 @@ export class Factory {
       panel.push([cylZ(0.14, 0.06, 20), 0xe8e2d0, T(-0.5 + i * 0.5, 1.3, 0.1)])
     }
     const pm = new THREE.Mesh(bake(panel), this.vcMetal)
-    pm.position.set(15.6, 0, 2.6)
-    pm.rotation.y = -Math.PI / 2
+    pm.position.set(15.0, 0, -2.5)
+    pm.rotation.y = -0.45
     M.add(pm)
     const cable = new THREE.Mesh(
-      new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(15.5, 0.4, 2.6), new THREE.Vector3(15, 0.05, 2), new THREE.Vector3(14.2, 0.05, 0.9), new THREE.Vector3(13.6, 0.6, 0.7)]), 24, 0.05, 8),
+      new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(15.0, 0.4, -2.4), new THREE.Vector3(14.9, 0.05, -1.9), new THREE.Vector3(14.6, 0.05, -1.2), new THREE.Vector3(14.3, 0.3, -0.75)]), 24, 0.05, 8),
       new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.6 }),
     )
     M.add(cable)
-    this.addBelt(this.motorBelt, DRIVE_X, { y: 1.15, z: 0, r: 0.45 }, { y: SHAFT_Y, z: 0, r: 0.75 }, 0.3)
+    this.addBelt(this.motorBelt, DRIVE_X, { y: 1.0, z: 0, r: 0.45 }, { y: SHAFT_Y, z: 0, r: 0.75 }, 0.3)
     M.add(this.motorBelt)
     M.visible = false
     this.scene.add(M)
@@ -756,6 +812,7 @@ export class Factory {
       const sp: PartDef[] = [[cyl(0.04, 0.5, 10), COLORS.steel, T(0, -0.05)], [cyl(0.07, 0.12, 12), 0x55585f, T(0, -0.28)], [cyl(0.015, 0.2, 6), 0xd8dbe4, T(0, -0.42)]]
       spin.add(new THREE.Mesh(bake(sp), this.vcMetal))
       spin.position.set(0, 1.55, 0.12)
+      spin.userData.baseY = 1.55
       spin.userData.axis = 'y'
       g.add(spin)
       const pul = new THREE.Mesh(pulleyGeo(0.26, 0.16), this.vcMetal)
@@ -1029,6 +1086,44 @@ export class Factory {
       })
       this.aiLinks.push({ curve, pulses })
     })
+    // manutenção preditiva: o torno da posição 3 dá sinal de falha de rolamento
+    const al = LINE[2]
+    const ax = al.x - 0.2
+    this.aiLinks[2].pulses.forEach((p) => (p.material = this.alertMat))
+    const ring = new THREE.Mesh(new THREE.RingGeometry(1.35, 1.55, 64), new THREE.MeshBasicMaterial({ color: 0xff4d4d, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }))
+    ring.rotation.x = -Math.PI / 2
+    ring.position.set(ax, 0.04, al.z)
+    this.alertRing = ring
+    A.add(ring)
+    const alertTube = new THREE.Mesh(new THREE.TubeGeometry(this.aiLinks[2].curve, 30, 0.026, 6), this.alertLineMat)
+    A.add(alertTube)
+    const panelTex = canvasTex(640, 300, (c) => {
+      const rr = (x: number, y: number, w: number, h: number, r: number) => {
+        c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath()
+      }
+      c.fillStyle = 'rgba(14,10,36,0.92)'; rr(4, 4, 632, 292, 22); c.fill()
+      c.strokeStyle = '#ff6b6b'; c.lineWidth = 5; rr(4, 4, 632, 292, 22); c.stroke()
+      c.fillStyle = '#ffffff'; c.font = '700 34px Poppins, Arial'; c.fillText('Vibração · torno 3', 30, 58)
+      c.fillStyle = '#ff8f8f'; c.font = '700 26px JetBrains Mono, monospace'; c.fillText('▲ tendência de alta', 30, 96)
+      // gráfico: linha estável e depois subindo para a zona de alerta
+      c.fillStyle = 'rgba(255,77,77,0.16)'; c.fillRect(30, 118, 580, 46)
+      c.strokeStyle = 'rgba(255,255,255,0.25)'; c.lineWidth = 2; c.beginPath(); c.moveTo(30, 230); c.lineTo(610, 230); c.stroke()
+      c.strokeStyle = '#9fe7ff'; c.lineWidth = 5; c.beginPath()
+      for (let i = 0; i <= 58; i++) {
+        const x = 30 + i * 10
+        const base = 210 - Math.max(0, i - 34) ** 1.7 * 0.62
+        const y = base + Math.sin(i * 1.7) * 6
+        if (i === 0) c.moveTo(x, y); else c.lineTo(x, y)
+      }
+      c.stroke()
+      c.fillStyle = '#ff6b6b'; c.font = '800 27px Poppins, Arial'; c.fillText('Inspecionar rolamento antes da falha', 30, 276)
+    })
+    this.textures.push(panelTex)
+    this.alertPanel = new THREE.Sprite(new THREE.SpriteMaterial({ map: panelTex, transparent: true, opacity: 0, depthTest: false }))
+    this.alertPanel.scale.set(5.0, 2.34, 1)
+    this.alertPanel.position.set(ax, 4.9, al.z + 0.4)
+    this.alertPanel.renderOrder = 10
+    A.add(this.alertPanel)
     A.traverse((o) => (o.userData.noShadow = true))
     A.visible = false
     this.scene.add(A)
@@ -1155,9 +1250,19 @@ export class Factory {
     // máquinas: giram com o eixo (passos 0-1) ou com o próprio motor (2+)
     const machW = Math.min(1, st.engine + st.motor + st.unit) * 9
     this.spinners.forEach((s) => {
-      if (s.userData.axis === 'y') s.rotation.y += machW * dt
-      else s.rotation.x -= machW * dt
+      if (s.userData.axis === 'y') {
+        s.rotation.y += machW * dt
+        // avanço da broca: desce, fura, recua
+        const f = 0.5 + 0.5 * Math.sin(t * 1.1 + s.id)
+        s.position.y = s.userData.baseY - f * f * 0.14 * Math.min(1, machW)
+      } else s.rotation.x -= machW * dt
     })
+    // faísca nas escovas do dínamo
+    if (this.brushSpark) {
+      const m = this.brushSpark.material as THREE.SpriteMaterial
+      m.opacity = st.motor * (0.35 + 0.65 * Math.random())
+      this.brushSpark.scale.setScalar(0.35 + Math.random() * 0.35)
+    }
     this.carriages.forEach((c, i) => (c.position.x = 0.1 + Math.sin(t * 0.4 + i) * 0.45 * Math.min(1, machW)))
 
     // fumaça da chaminé e baforadas no escape do cilindro
@@ -1221,6 +1326,16 @@ export class Factory {
     this.aiMat.opacity = ai
     this.aiMat.emissiveIntensity = ai * (2.2 + Math.sin(t * 3) * 0.4)
     this.aiLineMat.opacity = ai * 0.55
+    // alerta: aparece depois que a rede de dados acende
+    const al = Math.max(0, Math.min(1, (ai - 0.6) / 0.4))
+    const blink = 0.55 + 0.45 * Math.sin(t * 5)
+    this.alertMat.opacity = al
+    this.alertMat.emissiveIntensity = al * (2 + blink)
+    this.alertLineMat.opacity = al * 0.8 * blink
+    ;(this.alertRing.material as THREE.MeshBasicMaterial).opacity = al * 0.85 * blink
+    this.alertRing.scale.setScalar(1 + 0.08 * Math.sin(t * 5))
+    ;(this.alertPanel.material as THREE.SpriteMaterial).opacity = al
+    this.alertPanel.position.y = 4.9 + Math.sin(t * 1.2) * 0.08
     ;(this.grid.material as THREE.Material).opacity = st.grid * 0.22
     ;((this.aiCore.children[1] as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = ai * 0.5
     this.aiCore.rotation.y += dt * 0.5
@@ -1245,9 +1360,15 @@ export class Factory {
     this.renderer.toneMappingExposure = 1.05 + 0.12 * b
     this.scene.environmentIntensity = 0.38 + 0.1 * b
 
+    const dx = Math.sin(t * 0.13) * 0.22
+    const dy = Math.sin(t * 0.19) * 0.1
+    this.camera.position.x += dx
+    this.camera.position.y += dy
     this.camera.lookAt(this.camTarget)
     if (this.composer) this.composer.render()
     else this.renderer.render(this.scene, this.camera)
+    this.camera.position.x -= dx
+    this.camera.position.y -= dy
     this.raf = requestAnimationFrame(this.loop)
   }
 

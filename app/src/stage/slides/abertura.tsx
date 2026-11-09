@@ -3,6 +3,7 @@ import QR from '../../components/QR'
 import { audienceUrl, audienceUrlLabel } from '../../config'
 import { SPEAKER, TITULO } from '../speaker'
 import ImageSlot from '../../components/ImageSlot'
+import SectionArt from '../../components/SectionArt'
 import type { ImgId } from '../../data/images'
 import type { SlideProps } from '../types'
 
@@ -19,11 +20,13 @@ export function Capa({ step }: SlideProps) {
       <p className="lead" data-in style={{ marginTop: 40, maxWidth: 1100, fontSize: 34 }}>
         Do vapor aos agentes de IA: o que a história da engenharia ensina sobre o que vem agora
       </p>
-      <div data-in style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 28 }}>
+      <div data-in style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 36 }}>
         <div>
           <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
           <div className="muted" style={{ fontSize: 32, marginTop: 8 }}>{SPEAKER.role}</div>
         </div>
+        <i style={{ width: 2, height: 76, background: 'rgba(255,255,255,.28)', display: 'block' }} />
+        <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 52, display: 'block' }} />
       </div>
       <div data-in style={{ position: 'absolute', right: 128, bottom: 96, width: 380, textAlign: 'center' }}>
         <div className="qr-card" style={{ padding: 22, borderRadius: 22 }}>
@@ -41,11 +44,12 @@ export function Capa({ step }: SlideProps) {
 export function Secao({ step, n, title, sub, img }: SlideProps & { n: string; title: string; sub: string; img?: ImgId }) {
   return (
     <Slide step={step}>
+      <SectionArt n={n} />
       {img && <ImageSlot id={img} height="100%" width="58%" optional className="secao-bg" radius={0} />}
       <div style={{ marginTop: 'auto', marginBottom: 'auto', position: 'relative' }}>
         <div className="mono accent-t" data-in style={{ fontSize: 260, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.05em', opacity: 0.9 }}>{n}</div>
-        <h1 className="h-display" data-split style={{ maxWidth: 1500, marginTop: 24 }}>{title}</h1>
-        <p className="lead" data-in style={{ marginTop: 32 }}>{sub}</p>
+        <h1 className="h-display" data-split style={{ maxWidth: 960, marginTop: 24 }}>{title}</h1>
+        <p className="lead" data-in style={{ marginTop: 32, maxWidth: 940 }}>{sub}</p>
       </div>
     </Slide>
   )

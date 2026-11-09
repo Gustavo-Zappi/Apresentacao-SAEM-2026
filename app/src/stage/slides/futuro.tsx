@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import Slide from '../../components/Slide'
 import ImageSlot from '../../components/ImageSlot'
-import { IcGauge, IcRuler, IcShield } from '../../components/Icons'
+import { IcBoard, IcCube, IcFactory, IcFlow, IcGauge, IcRocket, IcRuler, IcShield, IcSpark, IcWave } from '../../components/Icons'
 import type { ImgId } from '../../data/images'
 import QR from '../../components/QR'
 import { audienceUrl } from '../../config'
@@ -31,28 +31,34 @@ export function Gargalos({ step }: SlideProps) {
   )
 }
 
-const TEC = [
-  ['IA na manufatura e Indústria 4.0', 'processos, automação, qualidade'],
-  ['Simulação acelerada e gêmeo digital', 'CAE, FEA, CFD, termociências'],
-  ['Confiabilidade e manutenção preditiva', 'vibrações, manutenção'],
-  ['Engenharia de soluções e agentes', 'pensamento sistêmico, controle'],
-  ['Verificação e validação de IA', 'metrologia, ensaios, normas'],
+const TEC: [string, string, ReactNode][] = [
+  ['IA na manufatura e Indústria 4.0', 'processos, automação, qualidade', <IcFactory />],
+  ['Simulação acelerada e gêmeo digital', 'CAE, FEA, CFD, termociências', <IcFlow />],
+  ['Confiabilidade e manutenção preditiva', 'vibrações, manutenção', <IcWave />],
+  ['Engenharia de soluções e agentes', 'pensamento sistêmico, controle', <IcSpark />],
+  ['Verificação e validação de IA', 'metrologia, ensaios, normas', <IcGauge />],
 ]
-const GES = [
-  ['Transformação e consultoria com IA', 'processos, gestão de projetos'],
-  ['Product management de IA', 'projeto de produto, requisitos'],
-  ['Governança, risco e compliance', 'FMEA, segurança, normas'],
-  ['Liderança de IA', 'a sua trajetória'],
+const GES: [string, string, ReactNode][] = [
+  ['Transformação e consultoria com IA', 'processos, gestão de projetos', <IcBoard />],
+  ['Product management de IA', 'projeto de produto, requisitos', <IcCube />],
+  ['Governança, risco e compliance', 'FMEA, segurança, normas', <IcShield />],
+  ['Liderança de IA', 'a sua trajetória', <IcRocket />],
 ]
 
 export function Carreiras({ step }: SlideProps) {
-  const col = (title: string, rows: string[][], s: number) => (
+  const col = (title: string, rows: [string, string, ReactNode][], s: number, tone: 'tec' | 'ges') => (
     <div data-step={s}>
-      <div className="mono accent-t" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 20 }}>{title}</div>
-      {rows.map(([f, p]) => (
-        <div key={f} style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-          <div style={{ fontSize: 34, fontWeight: 700 }}>{f}</div>
-          <div className="muted" style={{ fontSize: 27, marginTop: 4 }}>ponte: {p}</div>
+      <div className="mono accent-t" style={{ fontSize: 28, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 14 }}>{title}</div>
+      {rows.map(([f, p, icon]) => (
+        <div key={f} className={`car-row ${tone}`}>
+          <div className="car-ic">{icon}</div>
+          <div>
+            <div className="car-t">{f}</div>
+            <div className="car-chips">
+              <span className="car-from mono">da mecânica</span>
+              {p.split(', ').map((c) => <span key={c} className="car-chip">{c}</span>)}
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -61,9 +67,9 @@ export function Carreiras({ step }: SlideProps) {
     <Slide step={step}>
       <div className="kicker" data-in>Quem vai redesenhar a fábrica</div>
       <h1 className="h1" data-split>Cada gargalo vira uma função</h1>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 48 }}>
-        {col('TECNOLOGIA', TEC, 0)}
-        {col('GESTÃO', GES, 1)}
+      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 72, marginTop: 36 }}>
+        {col('TECNOLOGIA', TEC, 0, 'tec')}
+        {col('GESTÃO', GES, 1, 'ges')}
       </div>
     </Slide>
   )

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SLIDES } from './slides'
 import { DECK_CHANNEL } from './Deck'
+import { brasiliaTime } from '../components/Clock'
 
 /** Janela de notas (abra no notebook com a tecla O; o palco fica no projetor). */
 export default function Notes() {
@@ -37,6 +38,7 @@ export default function Notes() {
       <div className="timer" onClick={() => setStart(start ? null : Date.now())} title="clique para iniciar/zerar">
         {start ? mm(elapsed) : '▶ iniciar'}
         {start && <div style={{ fontSize: 16, color: drift > 60 ? '#FFB547' : '#3DDC97' }}>{drift >= 0 ? '+' : '−'}{mm(Math.abs(drift))} vs. roteiro</div>}
+        <div style={{ fontSize: 16, color: 'rgba(255,255,255,.6)' }}>Brasília {(() => { const b = brasiliaTime(new Date(now)); return `${b.h}:${b.m}` })()}</div>
       </div>
       <h1>#{pos.i}.{pos.s} · {def.title}</h1>
       <div className="meta">passo {pos.s + 1}/{def.steps} · previsto {def.minutes ?? 0} min{def.question ? ` · pergunta: ${def.question}` : ''}</div>

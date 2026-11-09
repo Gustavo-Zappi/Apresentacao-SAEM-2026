@@ -26,6 +26,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | F | Tela cheia |
 | B ou . | Tela preta |
 | C | Modo projetor (mais contraste) liga/desliga. Vem **ligado**; fica salvo no navegador |
+| T | Relógio digital (hora de Brasília) no canto inferior direito: mostra/oculta |
 | O | Abrir janela de notas e cronômetro |
 | K | Informar a chave do apresentador (fica salva neste navegador) |
 | R | Zerar respostas da pergunta atual |

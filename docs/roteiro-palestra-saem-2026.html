@@ -310,11 +310,11 @@
       <li>Animação automática: câmeras disparam fotos de uma turbina a vapor, a nuvem de pontos se forma e vira o sólido (rotor de 9 estágios, mancais, meia carcaça).</li>
       <li>Passo 0: 2023 · 3D Gaussian Splatting.</li>
       <li>Passo 1: 12/2025 · TRELLIS.2 (Microsoft).</li>
-      <li>Passo 2: "Da peça física à simulação": o rotor recebe o campo de temperatura do vapor, 480 °C → 41,5 °C.</li></ul></div>
+      <li>Passo 2: "Da peça física à simulação": o rotor recebe o campo de temperatura do vapor, 480 °C → 41,5 °C, e o vapor aparece escoando pelos estágios. As fileiras escuras presas à carcaça são as palhetas fixas (diafragmas).</li></ul></div>
     <div class="blk fala"><h4>Fala</h4>
       <p><span class="clk">0</span>"Isto é uma ilustração do conceito. Fotos de vários ângulos viram uma nuvem de pontos, e a nuvem vira um modelo 3D. Desde 2023, uma técnica chamada Gaussian Splatting reconstrói cenas inteiras em 3D a partir de fotos, em tempo real. Ainda não é IA generativa: ela reconstrói o que foi fotografado."</p>
       <p><span class="clk">1</span>"Em dezembro de 2025, a Microsoft abriu o TRELLIS.2: uma única imagem gera um modelo 3D. Aqui, sim, a IA está inventando a parte que a foto não mostra."</p>
-      <p><span class="clk">2</span>"E daí? Da peça física para a simulação. Escanear palhetas de turbina para reparo e engenharia reversa já é prática de manutenção. O que muda é a velocidade com que a peça vira modelo e o modelo vira simulação. Esse gradiente é a temperatura do vapor caindo de 480 °C na entrada para 41 °C no condensador, o ciclo Rankine que vocês estudam. Mas atenção: metrologia ainda manda. Modelo bonito não é modelo medido."</p>
+      <p><span class="clk">2</span>"E daí? Da peça física para a simulação. Escanear palhetas de turbina para reparo e engenharia reversa já é prática de manutenção. O que muda é a velocidade com que a peça vira modelo e o modelo vira simulação. Esse gradiente é a temperatura do vapor caindo de 480 °C na entrada para 41 °C no condensador, o ciclo Rankine que vocês estudam. Reparem nas fileiras presas à carcaça: são as palhetas fixas, que orientam o vapor; as móveis extraem o trabalho. Mas atenção: metrologia ainda manda. Modelo bonito não é modelo medido."</p>
     </div>
   </div>
   <div class="blk teoria"><h4>Teoria para dominar</h4>
@@ -374,7 +374,7 @@ v(8 MPa, 480 °C) ≈ 0,040 m³/kg      v(8 kPa, título ≈ 0,8) ≈ 14 m³/kg 
   <div class="cols">
     <div class="blk"><h4>Na tela</h4><ul>
       <li>Passo 0: definição de agente.</li>
-      <li>Passo 1: malha fechada com cores: Objetivo (setpoint), Planejar (controlador), Ferramentas (atuador), Resultado (planta), Verificar (sensor).</li>
+      <li>Passo 1: malha fechada com cores e ícones: Objetivo (setpoint), Planejar (controlador), Ferramentas (atuador), Resultado (planta), Verificar (sensor). Um contador mostra o erro caindo a cada volta (iteração 1, 2, 3...) até "entregue".</li>
       <li>Passo 2: a mesma malha num sistema de bombeamento real: SP 30 m³/h, controlador FIC, inversor + bomba, medidor de vazão FT.</li></ul></div>
     <div class="blk fala"><h4>Fala</h4>
       <p><span class="clk">0</span>"Um chatbot responde. Um agente recebe um objetivo, planeja os passos, usa ferramentas e verifica o próprio resultado, em ciclo, até entregar."</p>
@@ -515,9 +515,9 @@ Período da tubulação: 2L/a = 240/1200 = 0,2 s</div>
 <section class="slide" id="s16">
   <header><span class="num">#16</span><h3 class="title">Escala de trabalho intelectual industrial</h3><span class="meta">1,5 min · 3 passos</span></header>
   <div class="cols">
-    <div class="blk"><h4>Na tela</h4><ul><li>~10.000 agentes · 88 h · 2,7 milhões de mensagens · ~130 bilhões de tokens.</li><li>Passo 1: formalização em Lean em ~17 h; custo de vários milhões de dólares.</li><li>Passo 2: "Escala cria gargalos novos: validação, crédito e uso de dados."</li></ul></div>
+    <div class="blk"><h4>Na tela</h4><ul><li>Uma grade de 10.000 pontos (1 ponto = 1 agente) acende enquanto o número conta; os traços laranja são mensagens entre agentes.</li><li>~10.000 agentes · 88 h · 2,7 milhões de mensagens · ~130 bilhões de tokens.</li><li>Passo 1: formalização em Lean em ~17 h; custo de vários milhões de dólares.</li><li>Passo 2: "Escala cria gargalos novos: validação, crédito e uso de dados."</li></ul></div>
     <div class="blk fala"><h4>Fala</h4>
-      <p><span class="clk">0</span>"O que mudou de verdade não é a manchete, é a escala. Dez mil agentes, aquela malha fechada que vimos, trabalhando em paralelo por quase quatro dias."</p>
+      <p><span class="clk">0</span>"O que mudou de verdade não é a manchete, é a escala. Cada ponto aqui é um agente: dez mil cópias daquela malha fechada que vimos, trabalhando em paralelo por quase quatro dias e trocando mensagens entre si."</p>
       <p><span class="clk">2</span>"E escala cria gargalos novos: quem valida? De quem é o crédito? Que dados podem entrar numa ferramenta de IA? As empresas vivem exatamente isso hoje."</p>
     </div>
   </div>
@@ -549,18 +549,18 @@ Período da tubulação: 2L/a = 240/1200 = 0,2 s</div>
   <div class="cols">
     <div class="blk"><h4>Na tela</h4><ol start="0">
       <li>1880 · máquina a vapor, eixo no teto, correias para todas as máquinas.</li>
-      <li>1882 → · o motor elétrico toma o lugar do vapor; eixo e correias continuam.</li>
+      <li>1882 → · um dínamo bipolar da época de Edison (bobinas de cobre) toma o lugar do vapor; eixo e correias continuam.</li>
       <li>1900-1920 · um motor por máquina; a fábrica é redesenhada na ordem do processo.</li>
       <li>1913 · linha de montagem da Ford.</li>
       <li>Anos 1920 · o salto de produtividade.</li>
-      <li>Hoje · sensores, rede de dados e agentes.</li></ol></div>
+      <li>Hoje · sensores, rede de dados e agentes; um torno acusa vibração subindo e o sistema pede inspeção do rolamento (manutenção preditiva).</li></ol></div>
     <div class="blk fala"><h4>Fala</h4>
       <p><span class="clk">0</span>"1880. Uma máquina a vapor, um eixo no teto e correias levando força para todas as máquinas. Notem: o layout obedecia ao eixo, não ao processo. A máquina que mais consumia força ficava perto do motor, não perto da próxima etapa."</p>
-      <p><span class="clk">1</span>"Chega a eletricidade. E o que as fábricas fazem? Trocam a máquina a vapor por um motor elétrico grande. E deixam todo o resto igual. Em 1899, o motor elétrico era só uns 5% da força motriz das fábricas americanas."</p>
+      <p><span class="clk">1</span>"Chega a eletricidade. E o que as fábricas fazem? Trocam a máquina a vapor por um motor elétrico grande, uma máquina da época de Edison, com bobinas de cobre. E deixam todo o resto igual: o mesmo eixo, as mesmas correias. Em 1899, o motor elétrico era só uns 5% da força motriz das fábricas americanas."</p>
       <p><span class="clk">2</span>"A virada é quando cada máquina ganha o seu motor. Sem eixo e sem correia, a fábrica pode ser redesenhada na ordem do processo. E vem luz elétrica, galpão mais claro, mais seguro."</p>
       <p><span class="clk">3</span>"1913, Ford, Highland Park: a peça vai até o operário. A montagem do chassi cai de mais de 12 horas para cerca de uma hora e meia. O ganho veio do processo novo, não do motor."</p>
       <p><span class="clk">4</span>"E só nos anos 1920, cerca de 40 anos depois de Edison, a produtividade industrial dispara."</p>
-      <p><span class="clk">5</span>"E a IA? Colocar IA no processo antigo é trocar o vapor pelo motor elétrico e deixar o eixo no teto."</p>
+      <p><span class="clk">5</span>"E a IA? Reparem no torno 3: a vibração está subindo, e o sistema pede para inspecionar o rolamento antes da falha. Isso é manutenção preditiva, uma das frentes de carreira que vamos ver. Mas atenção: colocar IA no processo antigo é trocar o vapor pelo motor elétrico e deixar o eixo no teto."</p>
       <p class="anchor">"O ganho não vem do motor novo, vem da fábrica redesenhada."</p>
     </div>
   </div>
@@ -580,8 +580,8 @@ Período da tubulação: 2L/a = 240/1200 = 0,2 s</div>
 <section class="slide" id="s20">
   <header><span class="num">#20</span><h3 class="title">Estamos no começo</h3><span class="meta">2 min · 3 passos</span></header>
   <div class="blk fala"><h4>Fala</h4>
-    <p><span class="clk">0</span>"Eletricidade: de 1882 aos anos 1920, cerca de 40 anos."</p>
-    <p><span class="clk">1</span>"IA generativa: popularizada em novembro de 2022, com o ChatGPT. Cerca de 4 anos."</p>
+    <p><span class="clk">0</span>"Eletricidade: de 1882 aos anos 1920, cerca de 40 anos. A usina de Edison, os 5% de 1899, a linha de montagem de 1913, metade da força motriz por volta de 1920."</p>
+    <p><span class="clk">1</span>"IA generativa, na mesma régua: popularizada em novembro de 2022, com o ChatGPT. Cerca de 4 anos. Na história da eletricidade, hoje seria 1886."</p>
     <p><span class="clk">2</span>"Estamos no ano 4 de uma história que, na eletricidade, levou 40. A pergunta não é se a fábrica vai ser redesenhada. É quem vai redesenhar."</p>
   </div>
   <div class="blk teoria"><h4>Teoria para dominar</h4>
@@ -695,7 +695,7 @@ Período da tubulação: 2L/a = 240/1200 = 0,2 s</div>
   <li>No notebook do projetor, abra <code>/status</code>: tudo deve estar ✓. Se a chave do apresentador estiver ✗, abra <code>/palco</code> e tecle <b>K</b>.</li>
   <li>Confira o indicador <b>◐ projetor</b> no canto. Passe pelos slides #6, #10 e #19 com o modo ligado e desligado (tecla <b>C</b>) e fique com o mais legível do fundo da sala.</li>
   <li>Se a fábrica 3D travar, use <code>/palco?q=baixa</code>.</li>
-  <li>Abra as notas com a tecla <b>O</b> no notebook (cronômetro e próximo slide).</li>
+  <li>Abra as notas com a tecla <b>O</b> no notebook (cronômetro, hora de Brasília e próximo slide). O relógio do palco fica no canto inferior direito; a tecla <b>T</b> oculta.</li>
   <li>Vote no #1 com o seu celular: o voto deve aparecer no telão em até 3 s. Se votou em ensaio, tecle <b>R</b> em cada votação para zerar.</li>
   <li>Projetor no modo "Apresentação" ou "Brilhante"; luz apagada perto da tela.</li>
   <li>Vídeo ou ensaio de backup da demo do #10, caso a internet do anfiteatro falhe.</li>

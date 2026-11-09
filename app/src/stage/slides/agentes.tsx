@@ -18,6 +18,22 @@ const B = [
 const H = 110
 const LOOP = 'M 250 245 L 400 245 M 700 245 L 800 245 M 1100 245 L 1200 245 M 1350 300 L 1350 455 L 1100 455 M 800 455 L 330 455 L 330 245'
 
+// Ícones de traço (caixa 40×40, centro em 0,0)
+const ICON: Record<string, string> = {
+  obj: 'M 0 -17 A 17 17 0 1 1 -0.1 -17 M 0 -9 A 9 9 0 1 1 -0.1 -9 M 0 -2 A 2 2 0 1 1 -0.1 -2 M 6 -6 L 18 -18 M 13 -18 H 18 V -13',
+  plan: 'M -16 -14 H -10 M -4 -14 H 16 M -16 0 H -10 M -4 0 H 12 M -16 14 H -10 M -4 14 H 16',
+  tool: 'M 10 -16 A 8 8 0 1 0 16 -10 L 10 -4 L 4 -10 Z M 6 -6 L -14 14 A 3 3 0 0 1 -18 10 L 2 -10',
+  world: 'M -18 16 H 18 M -12 16 V 4 M -2 16 V -6 M 8 16 V -14 M -16 -2 L -4 -12 L 4 -6 L 16 -18',
+  check: 'M -16 10 A 18 18 0 1 1 16 10 M 0 4 L 9 -9 M -8 14 L 0 6 L 4 10',
+}
+const WIRE_LABEL = [
+  { x: 370, y: 208, t: 'erro' },
+  { x: 750, y: 232, t: 'plano' },
+  { x: 1150, y: 232, t: 'ação' },
+  { x: 1222, y: 442, t: 'medição' },
+]
+const ERR = [42, 17, 6, 1.2]
+
 export function AgenteDef({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
   useGSAP(
@@ -37,19 +53,37 @@ export function AgenteDef({ step }: SlideProps) {
       const tl = gsap.timeline()
       tl.fromTo('.blk', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%' }, { scale: 1, autoAlpha: 1, stagger: 0.12, duration: 0.5, ease: 'back.out(2)' })
       tl.fromTo('.wire', { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.4, ease: 'power1.inOut' }, 0.3)
-      // pulso percorrendo o ciclo
+      tl.fromTo('.wlbl', { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, stagger: 0.08, duration: 0.4 }, 1.2)
+      // pacotes percorrendo o ciclo (o primeiro é o "sinal"; os outros, um rastro)
       const path = ref.current!.querySelector<SVGPathElement>('.cycle-path')!
       const len = path.getTotalLength()
-      const dot = ref.current!.querySelector<SVGCircleElement>('.pulse')!
-      const o = { l: 0 }
+      const dots = gsap.utils.toArray<SVGCircleElement>('.pulse', ref.current!)
+      const readout = ref.current!.querySelector<SVGTextElement>('.iter')!
+      const bar = ref.current!.querySelector<SVGRectElement>('.iter-bar')!
+      const o = { l: 0, k: 0 }
+      const show = (k: number) => {
+        const i = k % (ERR.length + 1)
+        if (i === ERR.length) {
+          readout.textContent = '✓ entregue: erro dentro da tolerância'
+          bar.setAttribute('width', '0')
+        } else {
+          readout.textContent = `iteração ${i + 1} · erro ${String(ERR[i]).replace('.', ',')}%`
+          bar.setAttribute('width', String((ERR[i] / ERR[0]) * 260))
+        }
+      }
+      show(0)
       tl.to(o, {
-        l: len, duration: 4, ease: 'none', repeat: -1,
+        l: len, duration: 3.2, ease: 'none', repeat: -1,
+        onRepeat: () => show(++o.k),
         onUpdate: () => {
-          const p = path.getPointAtLength(o.l)
-          dot.setAttribute('cx', String(p.x))
-          dot.setAttribute('cy', String(p.y))
+          dots.forEach((d, j) => {
+            const p = path.getPointAtLength((o.l - j * 26 + len) % len)
+            d.setAttribute('cx', String(p.x))
+            d.setAttribute('cy', String(p.y))
+          })
         },
       }, 1.4)
+      tl.fromTo('.iter-g', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5 }, 1.4)
     },
     { scope: ref, dependencies: [step] },
   )
@@ -71,18 +105,51 @@ export function AgenteDef({ step }: SlideProps) {
             <PumpSystem mode="loop" width={1600} />
           </div>
           <svg className="abs-loop" viewBox="0 0 1660 520" width="1490" height="467" style={{ overflow: 'visible', display: 'block', margin: '0 auto' }}>
-            <path className="wire" d={LOOP} stroke="rgba(255,255,255,.7)" strokeWidth="5" fill="none" />
+            <defs>
+              {B.map((b) => (
+                <linearGradient key={b.id} id={`g-${b.id}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor={b.c} stopOpacity="0.28" />
+                  <stop offset="1" stopColor="#14112f" stopOpacity="0.95" />
+                </linearGradient>
+              ))}
+              <marker id="ag-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(255,255,255,.85)" />
+              </marker>
+            </defs>
+            <path className="wire" d={LOOP} stroke="rgba(255,255,255,.75)" strokeWidth="5" fill="none" strokeLinejoin="round" />
+            {[[392, 245, 0], [792, 245, 0], [1192, 245, 0], [1108, 455, 180], [330, 274, -90]].map(([x, y, r], i) => (
+              <path key={i} className="wire" d="M -14 -9 L 0 0 L -14 9" transform={`translate(${x} ${y}) rotate(${r})`} stroke="rgba(255,255,255,.85)" strokeWidth="5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            ))}
             <path className="cycle-path" d="M 330 245 L 1350 245 L 1350 455 L 330 455 Z" fill="none" stroke="none" />
+            {WIRE_LABEL.map((w) => (
+              <text key={w.t} className="wlbl" x={w.x} y={w.y} textAnchor="middle" fill="rgba(255,255,255,.7)" fontSize="22" fontWeight="600" fontFamily="JetBrains Mono">{w.t}</text>
+            ))}
             {B.map((b) => (
               <g key={b.id} className="blk">
-                <rect x={b.x} y={b.y} width={b.w} height={H} rx="14" fill="#201E4B" stroke={b.c} strokeWidth="4" />
-                <text x={b.x + b.w / 2} y={b.y + 52} textAnchor="middle" fill="#fff" fontSize="38" fontWeight="700" fontFamily="Poppins">{b.label}</text>
-                <text x={b.x + b.w / 2} y={b.y + 90} textAnchor="middle" fill={b.c} fontSize="26" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
+                <rect x={b.x} y={b.y} width={b.w} height={H} rx="16" fill={`url(#g-${b.id})`} stroke={b.c} strokeWidth="3.5" />
+                <rect x={b.x + 6} y={b.y + 6} width={b.w - 12} height={3} rx="1.5" fill={b.c} opacity={0.35} />
+                <g transform={`translate(${b.x + 44} ${b.y + H / 2})`}>
+                  <circle r="27" fill={b.c} opacity={0.14} />
+                  <path d={ICON[b.id]} stroke={b.c} strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" transform="scale(0.95)" />
+                </g>
+                <text x={b.x + 82} y={b.y + 51} fill="#fff" fontSize="31" fontWeight="700" fontFamily="Poppins">{b.label}</text>
+                <text x={b.x + 82} y={b.y + 86} fill={b.c} fontSize="23" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
               </g>
             ))}
-            <circle className="blk" cx="330" cy="245" r="22" fill="#120F2E" stroke="#fff" strokeWidth="4" />
-            <text x="330" y="256" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
-            <circle className="pulse" cx="330" cy="245" r="14" fill="#FFB547" style={{ filter: 'drop-shadow(0 0 12px #FFB547)' }} />
+            <g className="blk">
+              <circle cx="330" cy="245" r="24" fill="#120F2E" stroke="#fff" strokeWidth="4" />
+              <text x="330" y="256" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
+              <text x="296" y="230" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="700" fontFamily="JetBrains Mono">+</text>
+              <text x="350" y="292" textAnchor="middle" fill="#fff" fontSize="24" fontWeight="700" fontFamily="JetBrains Mono">−</text>
+            </g>
+            {[0, 1, 2, 3].map((j) => (
+              <circle key={j} className="pulse" cx="330" cy="245" r={14 - j * 3} fill="#FFB547" opacity={1 - j * 0.25} style={j === 0 ? { filter: 'drop-shadow(0 0 12px #FFB547)' } : undefined} />
+            ))}
+            <g className="iter-g" style={{ visibility: 'hidden' }}>
+              <rect x="1180" y="468" width="300" height="10" rx="5" fill="rgba(255,255,255,.12)" />
+              <rect className="iter-bar" x="1180" y="468" width="260" height="10" rx="5" fill="#3DDC97" />
+              <text className="iter" x="1180" y="512" fill="#fff" fontSize="22" fontWeight="600" fontFamily="JetBrains Mono">iteração 1</text>
+            </g>
           </svg>
         </div>
         <p className="lead" data-step="2" style={{ marginTop: 'auto', fontSize: 36 }}>
