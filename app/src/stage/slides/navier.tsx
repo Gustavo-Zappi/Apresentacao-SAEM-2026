@@ -3,14 +3,17 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import CountUp from '../../components/CountUp'
+import ImageSlot from '../../components/ImageSlot'
+import { IcFlow } from '../../components/Icons'
+import type { ImgId } from '../../data/images'
 import type { SlideProps } from '../types'
 
-const MURAL = [
-  { d: '09/01/2024', t: 'Ansys lança SimAI: simulação com IA generativa', s: 'Ansys', r: -3, x: 0, y: 0 },
-  { d: '06/2024', t: 'Motor de foguete projetado por IA passa no primeiro teste a quente', s: 'LEAP 71 · Metal AM', r: 2, x: 560, y: 30 },
-  { d: 'AU 2025', t: 'Autodesk anuncia neural CAD: IA que gera geometria CAD editável', s: 'Autodesk', r: -1.5, x: 1120, y: -10 },
-  { d: '12/2025', t: 'TRELLIS.2: uma imagem vira um modelo 3D, em código aberto', s: 'Microsoft', r: 2.5, x: 120, y: 360 },
-  { d: '08/09/2026', t: 'IA teria resolvido um Problema do Milênio: Navier-Stokes', s: 'Quanta Magazine', r: -2, x: 760, y: 340, hot: true },
+const MURAL: { d: string; t: string; s: string; r: number; x: number; y: number; img: ImgId; hot?: boolean }[] = [
+  { d: '09/01/2024', t: 'Ansys lança SimAI: simulação com IA generativa', s: 'Ansys', r: -3, x: 0, y: 0, img: 'simai' },
+  { d: '06/2024', t: 'Motor de foguete projetado por IA passa no primeiro teste a quente', s: 'LEAP 71 · Metal AM', r: 2, x: 560, y: 30, img: 'leap71' },
+  { d: 'AU 2025', t: 'Autodesk anuncia neural CAD: IA que gera geometria CAD editável', s: 'Autodesk', r: -1.5, x: 1120, y: -10, img: 'neuralcad' },
+  { d: '12/2025', t: 'TRELLIS.2: uma imagem vira um modelo 3D, em código aberto', s: 'Microsoft', r: 2.5, x: 120, y: 330, img: 'trellis' },
+  { d: '08/09/2026', t: 'IA teria resolvido um Problema do Milênio: Navier-Stokes', s: 'Quanta Magazine', r: -2, x: 760, y: 300, img: 'turbulencia', hot: true },
 ]
 
 export function Mural({ step }: SlideProps) {
@@ -50,7 +53,8 @@ export function Mural({ step }: SlideProps) {
               }}
             >
               <div style={{ fontFamily: 'Georgia, serif', fontSize: 24, letterSpacing: '0.12em', borderBottom: '2px solid #111', paddingBottom: 8 }}>{m.d}</div>
-              <div style={{ fontFamily: 'Georgia, serif', fontWeight: 900, fontSize: 38, lineHeight: 1.12, marginTop: 14 }}>{m.t}</div>
+              <ImageSlot id={m.img} height={128} radius={2} className="news-photo" style={{ marginTop: 12 }} />
+              <div style={{ fontFamily: 'Georgia, serif', fontWeight: 900, fontSize: 36, lineHeight: 1.1, marginTop: 12 }}>{m.t}</div>
               <div style={{ fontFamily: 'Georgia, serif', fontSize: 24, marginTop: 12, color: '#333' }}>{m.s}</div>
             </div>
           ))}
@@ -84,6 +88,7 @@ export function Manchete({ step }: SlideProps) {
           <div style={{ fontFamily: 'Georgia, serif', fontSize: 34, marginTop: 28, color: '#444' }}>
             Problema do Milênio de US$ 1 milhão estaria resolvido
           </div>
+          <ImageSlot id="turbulencia" icon={<IcFlow />} height={230} radius={2} className="news-photo" style={{ marginTop: 28 }} />
         </div>
         <p className="lead" data-step="1" style={{ marginTop: 64 }}>
           Quem não conhece a equação lê a manchete errado.

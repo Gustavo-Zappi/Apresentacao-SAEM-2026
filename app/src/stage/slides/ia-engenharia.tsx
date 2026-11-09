@@ -1,18 +1,21 @@
-import { useRef } from 'react'
+import { useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
-import PartCloud from '../../components/PartCloud'
+import TurbineCloud from '../../components/TurbineCloud'
+import ImageSlot from '../../components/ImageSlot'
+import type { ImgId } from '../../data/images'
+import { IcAntenna, IcBracket, IcChat, IcCube, IcLattice, IcRocket, IcTrain, IcWave, IcFlow } from '../../components/Icons'
 import type { SlideProps } from '../types'
 
 /* ---------------------------------------------------------------- Passado */
 
-const PASSADO = [
-  { y: '1987', t: 'Metrô de Sendai', d: 'Lógica fuzzy (Hitachi) controla partidas e frenagens.', s: 'primeira linha de metrô com fuzzy' },
-  { y: 'Anos 90', t: 'Redes neurais na manutenção', d: 'Diagnóstico de falhas em máquinas pela vibração.', s: '' },
-  { y: '2006', t: 'NASA ST5', d: 'Antena projetada por algoritmo evolutivo voa no espaço.', s: 'primeiro hardware "evoluído" em órbita' },
-  { y: '2015', t: 'Airbus', d: 'Partição "biônica" por design generativo: 45% mais leve.', s: 'com Autodesk, impressão 3D' },
-  { y: '2018', t: 'GM + Autodesk', d: 'Suporte 40% mais leve e 20% mais resistente: 8 peças viram 1.', s: 'prova de conceito' },
+const PASSADO: { y: string; t: string; d: string; s: string; img: ImgId; icon: ReactNode }[] = [
+  { y: '1987', t: 'Metrô de Sendai', d: 'Lógica fuzzy (Hitachi) controla partidas e frenagens.', s: 'primeira linha de metrô com fuzzy', img: 'passado-sendai', icon: <IcTrain /> },
+  { y: 'Anos 90', t: 'Redes neurais na manutenção', d: 'Diagnóstico de falhas em máquinas pela vibração.', s: '', img: 'passado-vibracao', icon: <IcWave /> },
+  { y: '2006', t: 'NASA ST5', d: 'Antena projetada por algoritmo evolutivo voa no espaço.', s: 'primeiro hardware "evoluído" em órbita', img: 'passado-st5', icon: <IcAntenna /> },
+  { y: '2015', t: 'Airbus', d: 'Partição "biônica" por design generativo: 45% mais leve.', s: 'com Autodesk, impressão 3D', img: 'passado-airbus', icon: <IcLattice /> },
+  { y: '2018', t: 'GM + Autodesk', d: 'Suporte 40% mais leve e 20% mais resistente: 8 peças viram 1.', s: 'prova de conceito', img: 'passado-gm', icon: <IcBracket /> },
 ]
 
 export function Passado({ step }: SlideProps) {
@@ -28,10 +31,11 @@ export function Passado({ step }: SlideProps) {
       <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="kicker" data-in>Não é de hoje</div>
         <h1 className="h1" data-split>A IA está na engenharia há décadas</h1>
-        <div className="tl">
+        <div className="tl tl-img">
           <div className="tl-line" />
           {PASSADO.map((p) => (
             <div key={p.y} className="tl-item" data-in>
+              <ImageSlot id={p.img} icon={p.icon} height={210} />
               <div className="tl-dot" />
               <div className="tl-year">{p.y}</div>
               <div className="tl-title">{p.t}</div>
@@ -40,7 +44,7 @@ export function Passado({ step }: SlideProps) {
             </div>
           ))}
         </div>
-        <p className="lead" data-step="1" style={{ marginTop: 'auto', color: '#fff', fontWeight: 600 }}>
+        <p className="lead" data-step="1" style={{ marginTop: 'auto', color: '#fff', fontWeight: 600, fontSize: 36 }}>
           Por décadas, IA na engenharia foi <span className="accent-t">controlar e otimizar</span> dentro de regras que nós escrevíamos.
         </p>
       </div>
@@ -55,7 +59,7 @@ export function Fotos3D({ step }: SlideProps) {
     <Slide step={step}>
       <div style={{ display: 'grid', gridTemplateColumns: '860px 1fr', gap: 72, height: '100%', alignItems: 'center' }}>
         <div data-in>
-          <PartCloud size={860} />
+          <TurbineCloud size={860} sim={step >= 2} />
         </div>
         <div>
           <div className="kicker" data-in>Uma nova era</div>
@@ -78,8 +82,8 @@ export function Fotos3D({ step }: SlideProps) {
             <div className="era-row" data-step="2" style={{ gridTemplateColumns: '180px 1fr' }}>
               <div className="k">E daí?</div>
               <div>
-                <div className="t">Engenharia reversa</div>
-                <div className="d">Gêmeo digital com o celular. Metrologia ainda manda.</div>
+                <div className="t">Da peça física à simulação</div>
+                <div className="d">Engenharia reversa e base para o gêmeo digital. Metrologia ainda manda.</div>
               </div>
             </div>
           </div>
@@ -91,11 +95,11 @@ export function Fotos3D({ step }: SlideProps) {
 
 /* ---------------------------------------------------------------- Nova era: a IA passa a propor */
 
-const NOVA = [
-  { k: 'TEXTO → CAD', t: 'Peça editável a partir de uma frase', d: 'Zoo Text-to-CAD gera sólidos B-rep (STEP). Autodesk neural CAD (AU 2025) gera a geometria e o histórico de comandos.' },
-  { k: 'SIMULAÇÃO', t: 'Resultado de CFD/FEA em segundos', d: 'Ansys SimAI (01/2024) aprende com simulações anteriores. A Ansys fala em 10 a 100× mais rápido.' },
-  { k: 'PROJETO', t: 'Motor de foguete sem desenhista', d: 'LEAP 71 (2024): projetado por modelo computacional, impresso em cobre, testado a quente com 5 kN.' },
-  { k: 'COPILOTO', t: 'Conversar com o CAD', d: 'SOLIDWORKS 2026 (AURA), PTC Creo 13 e Siemens NX já têm assistentes dentro do software.' },
+const NOVA: { k: string; t: string; d: string; img: ImgId; icon: ReactNode }[] = [
+  { img: 'neuralcad', icon: <IcCube />, k: 'TEXTO → CAD', t: 'Peça editável a partir de uma frase', d: 'Zoo Text-to-CAD gera sólidos B-rep (STEP). Autodesk neural CAD (AU 2025) gera a geometria e o histórico de comandos.' },
+  { img: 'simai', icon: <IcFlow />, k: 'SIMULAÇÃO', t: 'Resultado de CFD/FEA em segundos', d: 'Ansys SimAI (01/2024) aprende com simulações anteriores. A Ansys fala em 10 a 100× mais rápido.' },
+  { img: 'leap71', icon: <IcRocket />, k: 'PROJETO', t: 'Motor de foguete sem desenhista', d: 'LEAP 71 (2024): projetado por modelo computacional, impresso em cobre, testado a quente com 5 kN.' },
+  { img: 'copiloto', icon: <IcChat />, k: 'COPILOTO', t: 'Conversar com o CAD', d: 'SOLIDWORKS 2026 (AURA), PTC Creo 13 e Siemens NX já têm assistentes dentro do software.' },
 ]
 
 export function NovaEra({ step }: SlideProps) {
@@ -105,8 +109,11 @@ export function NovaEra({ step }: SlideProps) {
       <h1 className="h1" data-split>Agora a IA propõe</h1>
       <div style={{ marginTop: 40 }}>
         {NOVA.map((n, i) => (
-          <div key={n.k} className="era-row" data-step={i}>
-            <div className="k">{n.k}</div>
+          <div key={n.k} className="era-row era-img" data-step={i}>
+            <div className="era-thumb">
+              <ImageSlot id={n.img} icon={n.icon} height={138} />
+              <span className="era-tag">{n.k}</span>
+            </div>
             <div>
               <div className="t">{n.t}</div>
               <div className="d">{n.d}</div>

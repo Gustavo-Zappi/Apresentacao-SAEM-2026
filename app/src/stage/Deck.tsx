@@ -258,7 +258,7 @@ export default function Deck() {
       <div className="progress" style={{ width: `${((shown.i + 1) / total) * 100}%` }} />
       <div className={`hud ${alert ? 'alert' : ''}`} onClick={(e) => { e.stopPropagation(); if (live.mode === 'supabase' && !keyOk) askKey() }}>
         <span><i className={`dot ${alert ? 'warn' : keyOk ? 'on' : ''}`} />{mode}</span>
-        <span>{shown.i + 1}/{total}</span>
+        <span title="número usado no link (#slide.passo)">#{shown.i}.{shown.s} · {shown.i + 1}/{total}</span>
       </div>
       {help && (
         <div className="help" onClick={() => setHelp(false)}>

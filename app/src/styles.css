@@ -263,3 +263,77 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .cap p { font-size: 32px; line-height: 1.4; margin-top: 18px; color: var(--c-mist); }
 .cap .stat { margin-top: 24px; font: 700 30px/1.3 var(--f-mono); color: #FFB547; }
 .slide.no-pad { padding: 0; }
+
+/* ================================================================ ESPAÇOS DE IMAGEM */
+.islot { position: relative; overflow: hidden; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.16); flex: none; }
+.islot img { width: 100%; height: 100%; display: block; }
+.islot-empty { display: grid; place-items: center; background: radial-gradient(circle at 50% 38%, rgba(145,86,241,0.32), rgba(88,23,139,0.12) 70%); }
+.islot-empty.dev { border: 2px dashed rgba(203,179,255,0.55); }
+.islot-icon { color: var(--c-purple-text); width: 34%; max-width: 120px; aspect-ratio: 1; opacity: 0.9; }
+.islot-icon svg { width: 100%; height: 100%; }
+.islot-hint { position: absolute; left: 10px; right: 10px; bottom: 8px; font: 500 14px/1.3 var(--f-mono); color: rgba(255,255,255,0.75); text-align: left; }
+.islot-hint b { display: block; color: #FFB547; font-weight: 600; }
+.islot-credit { position: absolute; right: 0; bottom: 0; padding: 4px 10px; font: 500 15px/1.2 var(--f-mono); color: rgba(255,255,255,0.85); background: rgba(10,8,30,0.65); border-top-left-radius: 8px; }
+
+/* fundo opcional das aberturas de seção */
+.secao-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 58%; border: 0; border-radius: 0; background: none; }
+.secao-bg img { filter: saturate(0.85) brightness(0.8); }
+.secao-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--c-ink-deep) 0%, rgba(18,15,46,0.75) 30%, rgba(18,15,46,0.15) 70%, rgba(18,15,46,0.35) 100%); pointer-events: none; }
+.secao-bg.islot-empty::after { display: none; }
+.traj4 .tcard h3 { font-size: 36px; margin: 20px 0 8px; line-height: 1.15; }
+.traj4 .tcard p { font-size: 28px; }
+.tag-year { font-size: 30px; padding: 5px 14px; background: #FFB547; }
+.tl.tl-img { margin-top: 44px; gap: 26px; }
+.tl.tl-img .tl-line { top: 238px; }
+.tl.tl-img .tl-item { padding-top: 0; }
+.tl.tl-img .tl-dot { top: 224px; }
+.tl.tl-img .tl-year { margin-top: 78px; font-size: 50px; }
+.tl.tl-img .tl-title { font-size: 32px; margin-top: 12px; }
+.tl.tl-img .tl-text { font-size: 28px; margin-top: 8px; }
+.tl.tl-img .src { font-size: 22px; margin-top: 8px; }
+.era-row.era-img { grid-template-columns: 250px 1fr; align-items: center; padding: 18px 0; }
+.era-thumb { position: relative; }
+.era-tag { position: absolute; left: 8px; bottom: 8px; font: 700 20px/1 var(--f-mono); letter-spacing: 0.06em; color: var(--c-ink-deep); background: var(--c-purple-text); padding: 6px 9px; border-radius: 5px; }
+.news-photo { border: 0; background: #d9d4c7; }
+.news-photo img { filter: grayscale(1) contrast(1.1); }
+.news-photo.islot-empty { background: repeating-linear-gradient(45deg, #ddd8cb 0 10px, #d3cdbf 10px 20px); }
+.news-photo .islot-icon { color: #6b6658; }
+.islot-empty.dev .islot-icon { transform: translateY(-22%); width: 26%; }
+.cap .islot { border-color: rgba(255,255,255,0.12); }
+.sim-legend { position: absolute; left: 40px; top: 24px; width: 440px; transition: opacity .6s; pointer-events: none; }
+.sim-legend > .mono { font-size: 20px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.85); }
+.sim-legend .bar { height: 16px; border-radius: 8px; margin-top: 10px; background: linear-gradient(90deg, #ffe9a8, #ffb547 18%, #ff6a3d 42%, #c23ea8 66%, #7a4cf0 85%, #3b6fe0); }
+.sim-legend .ends { display: flex; justify-content: space-between; font-size: 20px; margin-top: 8px; color: #fff; }
+
+/* ================================================================ SISTEMA DE BOMBEAMENTO */
+.ps .ps-part { transition: opacity .6s, filter .6s; }
+.ps .ps-part.dim { opacity: 0.28; }
+.ps .ps-part.hi { filter: drop-shadow(0 0 10px rgba(255,181,71,.9)) drop-shadow(0 0 2px #FFB547); }
+.ps .ps-lbl { font: 600 22px var(--f-mono); fill: rgba(255,255,255,.82); letter-spacing: .02em; }
+.ps .ps-lbl.sm { font-size: 19px; }
+.ps .ps-lbl.big { font-size: 30px; font-weight: 700; fill: #fff; }
+.ps .ps-inst { font: 700 26px var(--f-mono); }
+.ps-flow { stroke-dasharray: 14 22; animation: psflow 1s linear infinite; transition: opacity .4s; }
+@keyframes psflow { to { stroke-dashoffset: -36; } }
+.ps-sig { animation: psflow 1.4s linear infinite; }
+.ps-imp.spin { animation: psspin .7s linear infinite; }
+@keyframes psspin { to { transform: rotate(360deg); } }
+.ps-wave { stroke-dasharray: 110 3000; animation: pswave 1.5s ease-in-out infinite alternate; filter: drop-shadow(0 0 12px #ff4d4d); }
+@keyframes pswave { from { stroke-dashoffset: 40; } to { stroke-dashoffset: -1290; } }
+.ps-ring { transform-box: fill-box; transform-origin: center; animation: psring 1s ease-out infinite; }
+@keyframes psring { from { transform: scale(.6); opacity: 1; } to { transform: scale(1.8); opacity: 0; } }
+.ps-badge { transition: opacity .5s, transform .5s cubic-bezier(.3,1.6,.5,1); }
+.ps-call { display: inline-flex; flex-direction: column; gap: 4px; padding: 14px 20px; border-radius: 12px; background: rgba(11,9,32,.94); border: 2px solid #FFB547; font: 500 25px/1.3 var(--f-mono); white-space: nowrap; color: #fff; box-shadow: 0 18px 50px rgba(0,0,0,.45); animation: pscall .5s cubic-bezier(.2,.9,.3,1.2); }
+.ps-call b { font: 700 26px/1.25 var(--f-display); color: #FFB547; }
+.ps-call.red { border-color: #ff4d4d; }
+.ps-call.red b { color: #ff7a7a; }
+.ps-call.dim { border-color: rgba(255,255,255,.25); padding: 6px 14px; font-size: 24px; color: rgba(255,255,255,.85); box-shadow: none; }
+@keyframes pscall { from { transform: translateY(14px) scale(.96); opacity: 0; } }
+.ps-tag { display: inline-flex; flex-direction: column; padding: 8px 14px; border-left: 5px solid; background: rgba(11,9,32,.88); border-radius: 0 10px 10px 0; }
+.ps-tag b { font: 700 21px/1.2 var(--f-mono); letter-spacing: .04em; }
+.ps-tag span { font: 500 24px/1.3 var(--f-display); color: #fff; }
+.term.term-log { height: 190px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px 30px; font-size: 27px; }
+.term-log .ln { animation: lnIn .5s cubic-bezier(.2,.8,.2,1); }
+.term-log .ln.old { opacity: 0.55; }
+.term-log .ln.gone { display: none; }
+@keyframes lnIn { from { opacity: 0; transform: translateY(16px); } }

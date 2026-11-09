@@ -38,7 +38,7 @@ export default function Notes() {
         {start ? mm(elapsed) : '▶ iniciar'}
         {start && <div style={{ fontSize: 16, color: drift > 60 ? '#FFB547' : '#3DDC97' }}>{drift >= 0 ? '+' : '−'}{mm(Math.abs(drift))} vs. roteiro</div>}
       </div>
-      <h1>{pos.i + 1}. {def.title}</h1>
+      <h1>#{pos.i}.{pos.s} · {def.title}</h1>
       <div className="meta">passo {pos.s + 1}/{def.steps} · previsto {def.minutes ?? 0} min{def.question ? ` · pergunta: ${def.question}` : ''}</div>
       <div className="body">{def.notes || 'Sem notas.'}</div>
       <div className="next">próximo: {nextDef ? nextDef.title : 'fim'}</div>
@@ -46,7 +46,7 @@ export default function Notes() {
         <button onClick={() => ch.current?.postMessage({ cmd: 'prev' })}>← voltar</button>
         <button onClick={() => ch.current?.postMessage({ cmd: 'next' })}>avançar →</button>
         <select onChange={(e) => ch.current?.postMessage({ cmd: 'goto', i: +e.target.value })} value={pos.i} style={{ padding: 12, borderRadius: 10, background: '#222', color: '#fff' }}>
-          {SLIDES.map((s, i) => <option key={s.id} value={i}>{i + 1}. {s.title}</option>)}
+          {SLIDES.map((s, i) => <option key={s.id} value={i}>#{i} · {s.title}</option>)}
         </select>
       </div>
     </div>

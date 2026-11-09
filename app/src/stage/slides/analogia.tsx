@@ -2,18 +2,21 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
+import ImageSlot from '../../components/ImageSlot'
+import { IcFactory } from '../../components/Icons'
+import type { ImgId } from '../../data/images'
 import { Factory } from '../../three/factory'
 import type { SlideProps } from '../types'
 
 // Fontes: Paul A. David, "The Dynamo and the Computer", AER Papers & Proceedings (1990);
 // Ford Highland Park (1913). Edison, Pearl Street Station (1882).
-export const CAPTIONS = [
-  { yr: '1880', h: 'A fábrica a vapor', p: 'Uma máquina a vapor, um eixo no teto e correias para todas as máquinas. O layout obedecia ao eixo, não ao processo.', stat: '' },
-  { yr: '1882 →', h: 'Chega a eletricidade', p: 'As fábricas trocam a máquina a vapor por um grande motor elétrico. Eixo, correias e layout continuam iguais.', stat: '1899: motor elétrico ≈ 5% da força motriz das fábricas (EUA)' },
-  { yr: '1900–1920', h: 'Um motor por máquina', p: 'Sem eixo e sem correias, a fábrica pode ser redesenhada na ordem do processo.', stat: '≈ 1920: metade da força motriz já é elétrica' },
-  { yr: '1913', h: 'A linha de montagem', p: 'Ford, Highland Park: a peça vai até o operário. O ganho vem do processo novo, não do motor.', stat: 'Montagem do chassi: de mais de 12 h para cerca de 1h30' },
-  { yr: 'Anos 1920', h: 'Enfim, o salto', p: 'A produtividade industrial dispara cerca de 40 anos depois da primeira usina de Edison (1882).', stat: 'Paul David, "The Dynamo and the Computer" (1990)' },
-  { yr: 'Hoje', h: 'E a IA?', p: 'Colocar IA no processo antigo é trocar o vapor pelo motor elétrico. O ganho vem de redesenhar a fábrica.', stat: '' },
+export const CAPTIONS: { yr: string; h: string; p: string; stat: string; img: ImgId }[] = [
+  { img: 'hist-1880', yr: '1880', h: 'A fábrica a vapor', p: 'Uma máquina a vapor, um eixo no teto e correias para todas as máquinas. O layout obedecia ao eixo, não ao processo.', stat: '' },
+  { img: 'hist-1882', yr: '1882 →', h: 'Chega a eletricidade', p: 'As fábricas trocam a máquina a vapor por um grande motor elétrico. Eixo, correias e layout continuam iguais.', stat: '1899: motor elétrico ≈ 5% da força motriz das fábricas (EUA)' },
+  { img: 'hist-1900', yr: '1900–1920', h: 'Um motor por máquina', p: 'Sem eixo e sem correias, a fábrica pode ser redesenhada na ordem do processo.', stat: '≈ 1920: metade da força motriz já é elétrica' },
+  { img: 'hist-1913', yr: '1913', h: 'A linha de montagem', p: 'Ford, Highland Park: a peça vai até o operário. O ganho vem do processo novo, não do motor.', stat: 'Montagem do chassi: de mais de 12 h para cerca de 1h30' },
+  { img: 'hist-1920', yr: 'Anos 1920', h: 'Enfim, o salto', p: 'A produtividade industrial dispara cerca de 40 anos depois da primeira usina de Edison (1882).', stat: 'Paul David, "The Dynamo and the Computer" (1990)' },
+  { img: 'hist-hoje', yr: 'Hoje', h: 'E a IA?', p: 'Colocar IA no processo antigo é trocar o vapor pelo motor elétrico. O ganho vem de redesenhar a fábrica.', stat: '' },
 ]
 
 export function FabricaHistoria({ step }: SlideProps) {
@@ -24,6 +27,7 @@ export function FabricaHistoria({ step }: SlideProps) {
   useEffect(() => {
     const f = new Factory(host.current!, 1920, 1080, 380)
     fac.current = f
+    if (import.meta.env.DEV) (window as unknown as { __factory?: Factory }).__factory = f
     return () => {
       f.dispose()
       fac.current = null
@@ -46,6 +50,7 @@ export function FabricaHistoria({ step }: SlideProps) {
     <Slide step={step} className="no-pad">
       <div ref={host} className="scene3d" />
       <div className="cap" ref={capRef} key={step}>
+        <ImageSlot id={c.img} icon={<IcFactory />} height={250} style={{ marginBottom: 26 }} />
         <div className="yr">{c.yr}</div>
         <h2>{c.h}</h2>
         <p>{c.p}</p>

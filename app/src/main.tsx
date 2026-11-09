@@ -17,6 +17,9 @@ import './styles.css'
 
 gsap.registerPlugin(useGSAP, SplitText, DrawSVGPlugin)
 
+// Ensaio/testes: acesso ao GSAP pelo console (só em `npm run dev`).
+if (import.meta.env.DEV) (window as unknown as { gsap: typeof gsap }).gsap = gsap
+
 // Rotas: "/" plateia (celular) · "/palco" apresentação · "/notas" notas · "/status" diagnóstico
 const Audience = lazy(() => import('./audience/Audience'))
 const Deck = lazy(() => import('./stage/Deck'))

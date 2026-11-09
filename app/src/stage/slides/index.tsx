@@ -1,6 +1,7 @@
 import Poll from '../../components/Poll'
 import { QUESTION_BY_ID } from '../../data/questions'
 import type { SlideDef } from '../types'
+import type { ImgId } from '../../data/images'
 import { Capa, Secao } from './abertura'
 import { Carreira, Faculdade } from './trajetoria'
 import { Fotos3D, NovaEra, Passado } from './ia-engenharia'
@@ -20,9 +21,9 @@ const poll = (id: string, qid: string, minutes: number, notes: string, kicker?: 
   Component: ({ step }) => <Poll qid={qid} step={step} kicker={kicker} />,
 })
 
-const secao = (id: string, n: string, title: string, sub: string, notes?: string): SlideDef => ({
+const secao = (id: string, n: string, title: string, sub: string, img?: ImgId, notes?: string): SlideDef => ({
   id, title: `Seção ${n}`, steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5, notes,
-  Component: ({ step }) => <Secao step={step} n={n} title={title} sub={sub} />,
+  Component: ({ step }) => <Secao step={step} n={n} title={title} sub={sub} img={img} />,
 })
 
 export const SLIDES: SlideDef[] = [
@@ -37,8 +38,8 @@ export const SLIDES: SlideDef[] = [
 
   // ---------------------------------------------------------------- conexão pessoal (curta)
   {
-    id: 'faculdade', title: 'Trajetória: a graduação', steps: 3, flow: 'still', minutes: 2,
-    notes: 'Conexão, não currículo. Um clique por item.\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/public/fotos (ver LEIA-ME.txt).',
+    id: 'faculdade', title: 'Trajetória: a graduação', steps: 4, flow: 'still', minutes: 2.5,
+    notes: 'Conexão, não currículo. Um clique por item.\n0. 2016, Engenharia Mecânica na UFSJ: "eu estava exatamente onde vocês estão".\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/public/fotos (ver LEIA-ME.txt).',
     Component: Faculdade,
   },
   {
@@ -48,7 +49,7 @@ export const SLIDES: SlideDef[] = [
   },
 
   // ---------------------------------------------------------------- IA na engenharia: passado e nova era
-  secao('s1', '01', 'A IA já está na engenharia', 'O que mudou é o tipo de IA.'),
+  secao('s1', '01', 'A IA já está na engenharia', 'O que mudou é o tipo de IA.', 'secao-01'),
   {
     id: 'passado', title: 'IA na engenharia há décadas', steps: 2, flow: 'still', minutes: 3,
     notes: 'Sendai 1987 (fuzzy, Hitachi) · redes neurais em diagnóstico por vibração (anos 1990) · NASA ST5 2006 (antena por algoritmo evolutivo, voou de 22/03 a 30/06/2006) · Airbus 2015 (partição biônica, 45% mais leve) · GM 2018 (suporte 40% mais leve, 20% mais resistente, 8 peças em 1, prova de conceito).\nClique: a mensagem.',
@@ -56,7 +57,7 @@ export const SLIDES: SlideDef[] = [
   },
   {
     id: 'fotos3d', title: 'Nova era: fotos viram 3D', steps: 3, flow: 'none', minutes: 3,
-    notes: 'A animação roda sozinha: fotos → nuvem de pontos → sólido. É uma ilustração do conceito.\nGaussian Splatting (SIGGRAPH 2023) reconstrói, não "gera". TRELLIS.2 (Microsoft, 12/2025, MIT) gera 3D a partir de uma imagem.\nHonestidade: precisão ainda não substitui metrologia.',
+    notes: 'A animação roda sozinha: fotos → nuvem de pontos → turbina a vapor (rotor de 9 estágios, mancais e meia carcaça). É uma ilustração do conceito.\nClique 2: o modelo vira simulação: campo de temperatura do vapor de 480 °C (alta pressão) a 41,5 °C (condensador a 8 kPa), o mesmo ciclo Rankine do exemplo clássico. Gancho: escanear palhetas para reparo e engenharia reversa já é prática de manutenção.\nGaussian Splatting (SIGGRAPH 2023) reconstrói, não "gera". TRELLIS.2 (Microsoft, 12/2025, MIT) gera 3D a partir de uma imagem.\nHonestidade: precisão ainda não substitui metrologia.',
     Component: Fotos3D,
   },
   {
@@ -66,20 +67,20 @@ export const SLIDES: SlideDef[] = [
   },
 
   // ---------------------------------------------------------------- agentes
-  secao('s2', '02', 'Agentes de IA', 'Da resposta à execução.'),
+  secao('s2', '02', 'Agentes de IA', 'Da resposta à execução.', 'secao-02'),
   {
-    id: 'agente-def', title: 'O que é um agente', steps: 3, flow: 'still', minutes: 2.5,
-    notes: 'Clique 1: o diagrama de malha fechada. Clique 2: a analogia com controle.\nObjetivo = setpoint · planejar = controlador · ferramentas = atuador · verificar = sensor.',
+    id: 'agente-def', title: 'O que é um agente', steps: 3, flow: 'still', minutes: 3,
+    notes: 'Clique 1: o diagrama de malha fechada (cada bloco tem uma cor).\nClique 2: o mesmo ciclo num sistema que vocês conhecem: malha de vazão de um bombeamento. Mesmas cores:\nObjetivo = setpoint 30 m³/h · Planejar = controlador (FIC/PID) · Ferramentas = inversor + bomba · Resultado = vazão na planta · Verificar = medidor de vazão (FT).\nDiferença: no agente, o controlador entende linguagem e as ferramentas são software (Python, tabelas, catálogo). Gancho: no próximo slide o agente dimensiona exatamente esse sistema.',
     Component: AgenteDef,
   },
   {
-    id: 'agente-demo', title: 'Demo: agente dimensiona uma bomba', steps: 5, flow: 'still', minutes: 6,
-    notes: 'IDEAL: faça ao vivo (Claude ou outro assistente com execução de código) com o mesmo pedido. Este slide é o backup.\nNúmeros conferidos: água 20 °C, DN 80 (D = 77,9 mm), aço comercial ε = 0,045 mm, Colebrook, K acessórios = 8, η = 70%.\nv = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,8 m · hm = 1,25 m · H = 24,0 m · P eixo = 2,8 kW.\nJoukowsky com a ≈ 1200 m/s: ΔH ≈ 214 m (pior caso, fechamento instantâneo).\nGancho: "esse foi o tema da minha IC". A decisão de engenharia continua humana.',
+    id: 'agente-demo', title: 'Demo: agente dimensiona o sistema de bombeamento', steps: 9, flow: 'still', minutes: 6,
+    notes: 'Um clique por item do sistema (o desenho destaca a peça e mostra a conta):\n0 pedido · 1 plano (números 1 a 5 no desenho) · 2 fluido · 3 tubulação · 4 acessórios · 5 altura manométrica · 6 bomba e motor · 7 golpe de aríete (onda vermelha) · 8 a decisão é do engenheiro.\nIDEAL: faça ao vivo (Claude ou outro assistente com execução de código) com o mesmo pedido. Este slide é o backup.\nNúmeros conferidos: água 20 °C, DN 80 (D = 77,9 mm), aço comercial ε = 0,045 mm, Colebrook, K acessórios = 8, η = 70%.\nv = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,8 m · hm = 1,25 m · H = 24,0 m · P eixo = 2,8 kW.\nJoukowsky com a ≈ 1200 m/s: ΔH ≈ 214 m (pior caso, fechamento instantâneo).\nGancho: "esse foi o tema da minha IC". A decisão de engenharia continua humana.',
     Component: AgenteDemo,
   },
 
   // ---------------------------------------------------------------- manchetes
-  secao('s3', '03', 'As manchetes', 'E o que está por trás delas.'),
+  secao('s3', '03', 'As manchetes', 'E o que está por trás delas.', 'secao-03'),
   {
     id: 'mural', title: 'Mural de manchetes', steps: 2, flow: 'laminar', minutes: 1.5,
     notes: 'Passe rápido pelas manchetes. Clique: destaque para Navier-Stokes.',
@@ -103,7 +104,7 @@ export const SLIDES: SlideDef[] = [
   },
 
   // ---------------------------------------------------------------- analogia da eletricidade
-  secao('s4', '04', 'Já vimos esse filme', 'A eletricidade levou décadas para mudar as fábricas.'),
+  secao('s4', '04', 'Já vimos esse filme', 'A eletricidade levou décadas para mudar as fábricas.', 'secao-04'),
   poll('p-eletricidade', 'eletricidade', 1.5, 'Chute da plateia. Revele: ≈ 40 anos (Paul David, 1990).'),
   {
     id: 'fabrica', title: 'A fábrica: do vapor à IA (3D)', steps: 6, flow: 'none', minutes: 6,
@@ -124,7 +125,7 @@ export const SLIDES: SlideDef[] = [
   },
   poll('p-palavra', 'palavra', 2,
     'Nuvem de palavras. Leia 3 ou 4 em voz alta. Trate ansiedade com honestidade: tarefas de nível inicial são as mais expostas.'),
-  secao('s5', '05', 'Quem vai redesenhar a fábrica', 'Frentes de carreira para quem vem da mecânica.'),
+  secao('s5', '05', 'Quem vai redesenhar a fábrica', 'Frentes de carreira para quem vem da mecânica.', 'secao-05'),
   {
     id: 'carreiras', title: 'Frentes de carreira', steps: 2, flow: 'still', minutes: 4,
     notes: 'Clique 1: trilha de gestão. Use a sua trajetória como prova.',

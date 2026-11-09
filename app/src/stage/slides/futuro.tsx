@@ -1,24 +1,28 @@
+import type { ReactNode } from 'react'
 import Slide from '../../components/Slide'
+import ImageSlot from '../../components/ImageSlot'
+import { IcGauge, IcRuler, IcShield } from '../../components/Icons'
+import type { ImgId } from '../../data/images'
 import QR from '../../components/QR'
 import { audienceUrl } from '../../config'
 import { SPEAKER } from '../speaker'
 import type { SlideProps } from '../types'
 
 export function Gargalos({ step }: SlideProps) {
-  const G = [
-    ['Especificar', 'Como a cota e a tolerância no desenho: quem especifica bem comanda a ferramenta.'],
-    ['Validar', 'Como ensaio e metrologia: resultado sem verificação é só uma opinião rápida.'],
-    ['Governar', 'Como FMEA e normas: dados, riscos e o que pode entrar numa ferramenta de IA.'],
+  const G: [string, string, ImgId, ReactNode][] = [
+    ['Especificar', 'Como a cota e a tolerância no desenho: quem especifica bem comanda a ferramenta.', 'gargalo-especificar', <IcRuler />],
+    ['Validar', 'Como ensaio e metrologia: resultado sem verificação é só uma opinião rápida.', 'gargalo-validar', <IcGauge />],
+    ['Governar', 'Como FMEA e normas: dados, riscos e o que pode entrar numa ferramenta de IA.', 'gargalo-governar', <IcShield />],
   ]
   return (
     <Slide step={step}>
       <div className="kicker" data-in>O gargalo mudou de lugar</div>
       <h1 className="h1" data-split>Três novos gargalos</h1>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: 72 }}>
-        {G.map(([t, d], i) => (
-          <div key={t} className="card" data-step={i}>
-            <div className="num">{i + 1}</div>
-            <h3 style={{ fontSize: 44 }}>{t}</h3>
+      <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: 56 }}>
+        {G.map(([t, d, img, icon], i) => (
+          <div key={t} className="card" data-step={i} style={{ paddingTop: 28 }}>
+            <ImageSlot id={img} icon={icon} height={200} style={{ marginBottom: 26 }} />
+            <h3 style={{ fontSize: 44 }}><span className="accent-t mono" style={{ marginRight: 18 }}>{i + 1}</span>{t}</h3>
             <p>{d}</p>
           </div>
         ))}

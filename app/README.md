@@ -31,6 +31,11 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | S | Simular votos (só modo local) |
 | H | Ajuda |
 
+## Numeração e desempenho
+
+- O canto inferior direito mostra `#slide.passo` (o mesmo número do link, começando em 0) e a posição `n/total`.
+- Notebook fraco no projetor: abra `/palco?q=baixa`. A fábrica 3D desliga sombras e bloom e reduz a resolução interna.
+
 ## Banco e publicação (VPS)
 
 - Banco: projeto Supabase **Banco de Apps**, ref `fupmaoucveabjvjlrmog`. Frontend usa somente a chave pública `anon`; a migration `supabase/migrations/20261108000000_saem_live.sql` cria apenas recursos próprios da palestra.
@@ -55,7 +60,11 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | Ordem dos slides, notas e tempos | `src/stage/slides/index.tsx` |
 | Nome, cargo e universidade | `src/stage/speaker.ts` |
 | Fotos da trajetória | `public/fotos/` (ver `LEIA-ME.txt`) |
-| Cena 3D da fábrica | `src/three/factory.ts` |
+| Imagens ilustrativas dos slides (nome, sugestão de busca, crédito) | `public/imagens/` (ver `LEIA-ME.md`) e `src/data/images.ts` |
+| Título e resumo oficiais | `src/stage/speaker.ts` |
+| Cena 3D da fábrica (vapor → elétrica → linha → IA) | `src/three/factory.ts` |
+| Turbina do slide #6 (fotos → nuvem → modelo → simulação) | `src/components/TurbineCloud.tsx` |
+| Sistema de bombeamento dos slides #9 e #10 | `src/components/PumpSystem.tsx` |
 | Cores e tipografia (4MATT) | `src/styles.css` |
 
 ## Depois da palestra

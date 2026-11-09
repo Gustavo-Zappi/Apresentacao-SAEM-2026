@@ -1,5 +1,6 @@
 Fotos da trajetória (opcionais). Coloque aqui, com estes nomes exatos, em JPG:
 
+  ufsj.jpg            2016, Engenharia Mecânica na UFSJ (campus, turma, sala de aula)
   trem-ki-voa.jpg     equipe de AeroDesign (avião, competição, equipe)
   monitoria.jpg       monitoria / sala de aula
   ic.jpg              iniciação científica (bancada, artigo, apresentação)
@@ -9,3 +10,4 @@ Fotos da trajetória (opcionais). Coloque aqui, com estes nomes exatos, em JPG:
 
 Tamanho sugerido: 1200 px no lado maior, até 400 kB cada.
 Sem a foto, o slide mostra um ícone no lugar (não fica quebrado).
+As imagens ilustrativas dos demais slides ficam em ../imagens (ver LEIA-ME.md lá).
