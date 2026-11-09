@@ -6,6 +6,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import { projector } from '../lib/display'
 
 /**
  * Fábrica 3D da analogia da eletrificação (Paul David, 1990), com acabamento realista:
@@ -133,13 +134,13 @@ const CAMS: { p: [number, number, number]; t: [number, number, number] }[] = [
 ]
 
 const COLORS = {
-  iron: 0x4a5a52, // verde de máquina
-  ironDark: 0x262b2b,
+  iron: 0x5e7468, // verde de máquina (claro o bastante para não sumir no projetor)
+  ironDark: 0x3a4042,
   steel: 0xb4b8c4,
   brass: 0xb88b3f,
   leather: 0x4a2c18,
   paint: 0x14141a,
-  rubber: 0x161616,
+  rubber: 0x1f1f22,
   wood: 0x6b4a2b,
   purple: 0x9156f1,
   purpleDeep: 0x3a1764,
@@ -174,7 +175,11 @@ export class Factory {
     line: 0,
     ai: 0,
     grid: 0,
+    hemi: 0.95, // intensidade base da luz ambiente (por passo)
+    fog: 0.016, // densidade base da névoa (por passo)
+    boost: projector.on ? 1 : 0, // modo projetor
   }
+  private offProjector: () => void = () => {}
   private theta = 0
   private shaftAngle = 0
 
@@ -182,6 +187,9 @@ export class Factory {
   private hemi = new THREE.HemisphereLight(0xffe7c9, 0x3a2a1e, 0.7)
   private sun = new THREE.DirectionalLight(0xffe2b8, 3.2)
   private fireLight = new THREE.PointLight(0xff7a2a, 6, 9, 2)
+  // preenchimento preso à câmera (levanta as sombras) e contraluz (separa silhuetas do fundo)
+  private fill = new THREE.DirectionalLight(0xe6e8ff, 0.8)
+  private rim = new THREE.DirectionalLight(0xb9c6ff, 1.1)
   private lampLights: THREE.PointLight[] = []
 
   // materiais compartilhados
@@ -269,6 +277,7 @@ export class Factory {
     }
 
     this.timer.connect(document)
+    this.offProjector = projector.subscribe((v) => gsap.to(this.st, { boost: v ? 1 : 0, duration: 0.8 }))
     this.build()
     this.loop()
   }
@@ -297,6 +306,13 @@ export class Factory {
 
   private lights() {
     this.scene.add(this.hemi)
+    this.scene.add(this.camera)
+    this.fill.position.set(0, 3, 0)
+    this.fill.target.position.set(0, -2, -10)
+    this.camera.add(this.fill, this.fill.target)
+    this.rim.position.set(2, 16, -26)
+    this.rim.target.position.set(0, 1, 2)
+    this.scene.add(this.rim, this.rim.target)
     this.sun.position.set(-9, 22, -24)
     this.sun.target.position.set(-1, 0, 0)
     this.sun.castShadow = true
@@ -328,7 +344,7 @@ export class Factory {
           const y = row * 32
           const k = rr()
           if (bump) c.fillStyle = `rgb(${200 + k * 40},${200 + k * 40},${200 + k * 40})`
-          else c.fillStyle = `hsl(${8 + k * 14}, ${38 + rr() * 22}%, ${24 + rr() * 14}%)`
+          else c.fillStyle = `hsl(${8 + k * 14}, ${38 + rr() * 22}%, ${28 + rr() * 14}%)`
           c.fillRect(x + 3, y + 3, 58, 26)
           for (let s = 0; s < 18; s++) {
             c.fillStyle = bump ? `rgba(0,0,0,${rr() * 0.25})` : `rgba(${rr() > 0.5 ? 255 : 0},${rr() > 0.5 ? 220 : 0},${rr() > 0.5 ? 200 : 0},${rr() * 0.08})`
@@ -347,7 +363,7 @@ export class Factory {
         let y = -rr() * 200
         while (y < 512) {
           const len = 140 + rr() * 220
-          const l = 22 + rr() * 12
+          const l = 27 + rr() * 12
           c.fillStyle = `hsl(${24 + rr() * 8}, ${32 + rr() * 14}%, ${l}%)`
           c.fillRect(col * 64, y, 64, len)
           c.strokeStyle = 'rgba(20,10,5,0.35)'
@@ -371,7 +387,7 @@ export class Factory {
     this.textures.push(brick, brickBump, plank)
 
     // ---- piso
-    this.floorMat = new THREE.MeshStandardMaterial({ map: plank, roughness: 0.82, metalness: 0.02, color: 0xc8b8a8 })
+    this.floorMat = new THREE.MeshStandardMaterial({ map: plank, roughness: 0.82, metalness: 0.02, color: 0xe6d6c4 })
     const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 20), this.floorMat)
     floor.rotation.x = -Math.PI / 2
     floor.position.set(-1, 0, 0)
@@ -427,7 +443,7 @@ export class Factory {
 
     // ---- tesouras do telhado, terças e colunas de ferro fundido
     const steelParts: PartDef[] = []
-    const trussC = 0x2c2a2a
+    const trussC = 0x353332
     for (let x = -18; x <= 16; x += 4) {
       steelParts.push([box(0.16, 0.22, 16.6), trussC, T(x, 8.4)])
       const hyp = Math.hypot(8.3, 2.3)
@@ -445,9 +461,9 @@ export class Factory {
     }
     for (const x of [-14, -6, 2, 10])
       for (const z of [-6.3, 6.3]) {
-        steelParts.push([cyl(0.14, 8.2, 18, 0.12), 0x2a2d2e, T(x, 4.1, z)])
-        steelParts.push([box(0.5, 0.25, 0.5), 0x2a2d2e, T(x, 0.12, z)])
-        steelParts.push([box(0.42, 0.18, 0.42), 0x2a2d2e, T(x, 8.25, z)])
+        steelParts.push([cyl(0.14, 8.2, 18, 0.12), 0x3d4143, T(x, 4.1, z)])
+        steelParts.push([box(0.5, 0.25, 0.5), 0x3d4143, T(x, 0.12, z)])
+        steelParts.push([box(0.42, 0.18, 0.42), 0x3d4143, T(x, 8.25, z)])
       }
     this.scene.add(new THREE.Mesh(bake(steelParts), this.vc))
 
@@ -891,7 +907,7 @@ export class Factory {
       g.add(m)
       parts.push({ o: m, at })
     }
-    const black = 0x0e0e12
+    const black = 0x23262e // preto de verniz, levemente erguido para aparecer no projetor
     // quadro
     add([[box(3.0, 0.12, 0.09), black, T(0, 0.62, -0.36)], [box(3.0, 0.12, 0.09), black, T(0, 0.62, 0.36)], [box(0.09, 0.1, 0.8), black, T(-1.3, 0.62)], [box(0.09, 0.1, 0.8), black, T(0, 0.62)], [box(0.09, 0.1, 0.8), black, T(1.3, 0.62)]], -99)
     // eixos e rodas
@@ -926,7 +942,7 @@ export class Factory {
 
   private makeWorker(r: () => number) {
     const g = new THREE.Group()
-    const cloth = [0x2c3a55, 0x3a3328, 0x2b2f2a, 0x4a3b2c][Math.floor(r() * 4)]
+    const cloth = [0x3d5078, 0x5a4c3b, 0x46503f, 0x6b5440][Math.floor(r() * 4)]
     const skin = [0xc99a7a, 0xa8775a, 0x8a5c42, 0xe0b49a][Math.floor(r() * 4)]
     const cap = [0x2a2622, 0x4a4036, 0x1e2a3a][Math.floor(r() * 3)]
     g.add(
@@ -1086,16 +1102,15 @@ export class Factory {
       overwrite: true,
     })
     gsap.to(this.motorGlow, { emissiveIntensity: step >= 1 ? 1.6 : 0, duration: 1 })
-    const hemiI = [0.75, 0.8, 1.1, 1.15, 1.25, 1.3][step] ?? 1
-    gsap.to(this.hemi, { intensity: hemiI, duration: 1.5 })
+    const hemiI = [0.85, 0.9, 1.15, 1.2, 1.3, 1.35][step] ?? 1.1
     const sky = new THREE.Color(step >= 5 ? 0xd9d4ff : step >= 2 ? 0xfff1dd : 0xffe1bf)
     gsap.to(this.hemi.color, { r: sky.r, g: sky.g, b: sky.b, duration: 1.5 })
     gsap.to(this.sun, { intensity: step >= 5 ? 2.2 : step >= 2 ? 2.8 : 3.4, duration: 1.5 })
     const fog = this.scene.fog as THREE.FogExp2
     const fc = new THREE.Color(step >= 5 ? 0x1c1438 : step >= 2 ? 0x241d2c : 0x2e2228)
-    gsap.to(fog, { density: [0.026, 0.022, 0.012, 0.011, 0.008, 0.009][step] ?? 0.01, duration: 1.5 })
+    gsap.to(this.st, { hemi: hemiI, fog: [0.016, 0.014, 0.008, 0.0075, 0.0055, 0.006][step] ?? 0.007, duration: 1.5 })
     gsap.to(fog.color, { r: fc.r, g: fc.g, b: fc.b, duration: 1.5 })
-    const floorC = new THREE.Color(step >= 5 ? 0x8f86b8 : 0xc8b8a8)
+    const floorC = new THREE.Color(step >= 5 ? 0xa59cd0 : 0xe6d6c4)
     gsap.to(this.floorMat.color, { r: floorC.r, g: floorC.g, b: floorC.b, duration: 1.5 })
   }
 
@@ -1176,7 +1191,7 @@ export class Factory {
     }
     dp.needsUpdate = true
     ;(this.dust.material as THREE.PointsMaterial).opacity = 0.55 * st.dust
-    this.beams.forEach((b) => ((b.material as THREE.MeshBasicMaterial).opacity = 0.16 * st.beams))
+    this.beams.forEach((m) => ((m.material as THREE.MeshBasicMaterial).opacity = 0.16 * st.beams * (1 + 0.35 * st.boost)))
 
     // luz elétrica
     this.bulbMat.emissiveIntensity = st.lamps * 3.2
@@ -1221,6 +1236,15 @@ export class Factory {
       )
     }
 
+    // luz e névoa: base do passo × reforço do modo projetor
+    const b = st.boost
+    this.hemi.intensity = st.hemi * (1 + 0.12 * b)
+    ;(this.scene.fog as THREE.FogExp2).density = st.fog * (1 - 0.3 * b)
+    this.fill.intensity = 0.55 + 0.45 * b
+    this.rim.intensity = 1.0 + 0.4 * b
+    this.renderer.toneMappingExposure = 1.05 + 0.12 * b
+    this.scene.environmentIntensity = 0.38 + 0.1 * b
+
     this.camera.lookAt(this.camTarget)
     if (this.composer) this.composer.render()
     else this.renderer.render(this.scene, this.camera)
@@ -1236,6 +1260,7 @@ export class Factory {
 
   dispose() {
     cancelAnimationFrame(this.raf)
+    this.offProjector()
     this.timer.dispose()
     gsap.killTweensOf([this.camera.position, this.camTarget, this.st, this.hemi, this.hemi.color, this.sun, this.motorGlow, this.floorMat.color, this.scene.fog!])
     this.machines.forEach((m) => gsap.killTweensOf([m.position, m.rotation]))

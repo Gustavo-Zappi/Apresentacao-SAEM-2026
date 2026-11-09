@@ -18,7 +18,7 @@ export const ROLE = {
 
 export type Part = 'agua' | 'tubo' | 'acess' | 'dz' | 'bomba' | 'golpe'
 
-const WATER = '#4d9bff'
+const WATER = '#62b4ff'
 const PIPE = '#9aa0bd'
 const LINE = '#c9cce0'
 
@@ -105,8 +105,8 @@ export default function PumpSystem({
     <svg viewBox="0 0 1660 560" width={width} height={(width * 560) / 1660} className="ps" style={{ overflow: 'visible', display: 'block' }}>
       <defs>
         <linearGradient id="ps-water" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#6fb2ff" stopOpacity="0.9" />
-          <stop offset="1" stopColor="#2a5bb8" stopOpacity="0.85" />
+          <stop offset="0" stopColor="#7cc0ff" stopOpacity="0.95" />
+          <stop offset="1" stopColor="#3f7fe0" stopOpacity="0.9" />
         </linearGradient>
         <marker id="ps-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M 0 0 L 10 5 L 0 10 z" fill={ROLE.plan} />

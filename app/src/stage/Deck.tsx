@@ -6,6 +6,7 @@ import { QUESTION_BY_ID } from '../data/questions'
 import { live } from '../lib/live'
 import { SyncContext } from './sync'
 import { participantId } from '../lib/participant'
+import { projector } from '../lib/display'
 
 type Pos = { i: number; s: number }
 
@@ -56,6 +57,17 @@ export default function Deck() {
   const [key, setKey] = useState(presenterKey)
   const [keyOk, setKeyOk] = useState<boolean | null>(null)
   const [syncErr, setSyncErr] = useState(false)
+  const [proj, setProj] = useState(projector.on)
+
+  /* modo projetor: classe no <html> enquanto o palco estiver aberto */
+  useEffect(() => {
+    projector.apply()
+    const off = projector.subscribe(setProj)
+    return () => {
+      off()
+      document.documentElement.classList.remove('projetor')
+    }
+  }, [])
   const lastPush = useRef('')
 
   const askKey = useCallback(() => {
@@ -203,6 +215,7 @@ export default function Deck() {
       else if (k === 'Escape') { setHelp(false); setBlack(false) }
       else if (k === 'o') window.open('/notas', 'saem-notas', 'width=1100,height=760')
       else if (k === 'k') askKey()
+      else if (k === 'c') projector.toggle()
       else if (k === 'r') {
         const qid = SLIDES[shownRef.current.i].question
         if (qid && confirm(`Apagar todas as respostas de "${qid}"?`)) live.resetQuestion(key, qid)
@@ -258,6 +271,7 @@ export default function Deck() {
       <div className="progress" style={{ width: `${((shown.i + 1) / total) * 100}%` }} />
       <div className={`hud ${alert ? 'alert' : ''}`} onClick={(e) => { e.stopPropagation(); if (live.mode === 'supabase' && !keyOk) askKey() }}>
         <span><i className={`dot ${alert ? 'warn' : keyOk ? 'on' : ''}`} />{mode}</span>
+        {proj && <span title="modo projetor ligado (tecla C)">◐ projetor</span>}
         <span title="número usado no link (#slide.passo)">#{shown.i}.{shown.s} · {shown.i + 1}/{total}</span>
       </div>
       {help && (
@@ -267,6 +281,7 @@ export default function Deck() {
             <div><kbd>← / PgUp</kbd>voltar</div>
             <div><kbd>F</kbd>tela cheia</div>
             <div><kbd>B</kbd>tela preta</div>
+            <div><kbd>C</kbd>modo projetor (mais contraste): {proj ? 'ligado' : 'desligado'}</div>
             <div><kbd>O</kbd>abrir notas do apresentador</div>
             <div><kbd>K</kbd>informar chave do apresentador</div>
             <div><kbd>R</kbd>zerar respostas da pergunta atual</div>

@@ -302,12 +302,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .cap .islot { border-color: rgba(255,255,255,0.12); }
 .sim-legend { position: absolute; left: 40px; top: 24px; width: 440px; transition: opacity .6s; pointer-events: none; }
 .sim-legend > .mono { font-size: 20px; font-weight: 700; letter-spacing: 0.1em; color: rgba(255,255,255,0.85); }
-.sim-legend .bar { height: 16px; border-radius: 8px; margin-top: 10px; background: linear-gradient(90deg, #ffe9a8, #ffb547 18%, #ff6a3d 42%, #c23ea8 66%, #7a4cf0 85%, #3b6fe0); }
+.sim-legend .bar { height: 16px; border-radius: 8px; margin-top: 10px; background: linear-gradient(90deg, #ffe9a8, #ffb547 18%, #ff6a3d 42%, #d6409f 65%, #8457f5 84%, #3f7ef0); }
 .sim-legend .ends { display: flex; justify-content: space-between; font-size: 20px; margin-top: 8px; color: #fff; }
 
 /* ================================================================ SISTEMA DE BOMBEAMENTO */
 .ps .ps-part { transition: opacity .6s, filter .6s; }
-.ps .ps-part.dim { opacity: 0.28; }
+.ps .ps-part.dim { opacity: 0.36; }
 .ps .ps-part.hi { filter: drop-shadow(0 0 10px rgba(255,181,71,.9)) drop-shadow(0 0 2px #FFB547); }
 .ps .ps-lbl { font: 600 22px var(--f-mono); fill: rgba(255,255,255,.82); letter-spacing: .02em; }
 .ps .ps-lbl.sm { font-size: 19px; }
@@ -337,3 +337,26 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .term-log .ln.old { opacity: 0.55; }
 .term-log .ln.gone { display: none; }
 @keyframes lnIn { from { opacity: 0; transform: translateY(16px); } }
+
+/* ================================================================ MODO PROJETOR (tecla C, ligado por padrão)
+   Projetor achata o contraste: o preto vira cinza e tons médios se misturam.
+   Aqui o texto secundário vai a branco pleno, as bordas ganham definição e o fundo perde ruído. */
+html.projetor { --c-mist: #ffffff; }
+html.projetor .viewport { background: radial-gradient(120% 90% at 20% 0%, #1a1442 0%, #100c2a 50%, #0a0820 100%); }
+html.projetor .flow-canvas { opacity: 0.55; transition: opacity 0.6s; }
+html.projetor .card,
+html.projetor .islot,
+html.projetor .photo,
+html.projetor .term,
+html.projetor .cap { border-color: rgba(255, 255, 255, 0.34); }
+html.projetor .era-row { border-top-color: rgba(255, 255, 255, 0.3); }
+html.projetor .cap { background: rgba(8, 6, 24, 0.93); }
+html.projetor .src { color: #fff; }
+html.projetor .term-log .ln.old { opacity: 0.75; }
+html.projetor .ps .ps-part.dim { opacity: 0.48; }
+html.projetor .ps .ps-lbl { fill: #fff; }
+html.projetor .ps .ps-lbl.sm { font-weight: 700; }
+html.projetor .ps-call.dim { color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+html.projetor .ps-tag { background: rgba(8, 6, 24, 0.95); }
+html.projetor .tl-line { background: rgba(255, 255, 255, 0.4); }
+html.projetor .islot-credit { background: rgba(8, 6, 24, 0.85); color: #fff; }

@@ -4,6 +4,7 @@ import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.j
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import gsap from 'gsap'
+import { projector } from '../lib/display'
 
 /**
  * "De fotos a modelo 3D" com uma turbina a vapor: câmeras ao redor disparam, a nuvem de pontos
@@ -161,9 +162,9 @@ const RAMP = [
   { t: 0, c: new THREE.Color('#ffe9a8') },
   { t: 0.18, c: new THREE.Color('#ffb547') },
   { t: 0.42, c: new THREE.Color('#ff6a3d') },
-  { t: 0.66, c: new THREE.Color('#c23ea8') },
-  { t: 0.85, c: new THREE.Color('#7a4cf0') },
-  { t: 1, c: new THREE.Color('#3b6fe0') },
+  { t: 0.65, c: new THREE.Color('#d6409f') },
+  { t: 0.84, c: new THREE.Color('#8457f5') },
+  { t: 1, c: new THREE.Color('#3f7ef0') },
 ]
 function ramp(t: number, out: THREE.Color) {
   for (let i = 1; i < RAMP.length; i++) {
@@ -180,6 +181,9 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
   const ref = useRef<HTMLDivElement>(null)
   const [phase, setPhase] = useState(0)
   const simRef = useRef<(on: boolean) => void>(() => {})
+  const simOn = useRef(false)
+  // a fase "Simulação" prevalece sobre a animação de entrada, mesmo se o clique vier cedo
+  const phaseAtLeast = (n: number) => setPhase((p) => (simOn.current ? 3 : Math.max(p, n)))
 
   useEffect(() => {
     const host = ref.current!
@@ -187,7 +191,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
     renderer.setSize(size, size)
     renderer.toneMapping = THREE.ACESFilmicToneMapping
-    renderer.toneMappingExposure = 1.05
+    renderer.toneMappingExposure = projector.on ? 1.18 : 1.05
     host.appendChild(renderer.domElement)
 
     const scene = new THREE.Scene()
@@ -242,8 +246,8 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
     rotorGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
 
     const rotorMat = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 0.75, roughness: 0.3, transparent: true, opacity: 0 })
-    const casingMat = new THREE.MeshStandardMaterial({ color: 0x5b5f7a, metalness: 0.55, roughness: 0.5, side: THREE.DoubleSide, transparent: true, opacity: 0 })
-    const bearingMat = new THREE.MeshStandardMaterial({ color: 0x3c3f58, metalness: 0.5, roughness: 0.55, transparent: true, opacity: 0 })
+    const casingMat = new THREE.MeshStandardMaterial({ color: 0x7a809e, metalness: 0.55, roughness: 0.5, side: THREE.DoubleSide, transparent: true, opacity: 0 })
+    const bearingMat = new THREE.MeshStandardMaterial({ color: 0x5a5e7c, metalness: 0.5, roughness: 0.55, transparent: true, opacity: 0 })
     const rotor = new THREE.Mesh(rotorGeo, rotorMat)
     rotorPivot.add(rotor)
     group.add(new THREE.Mesh(casingGeo, casingMat), new THREE.Mesh(bearingGeo, bearingMat))
@@ -294,10 +298,10 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
       tl.to(f.material, { opacity: 1, duration: 0.08 }, i * 0.12)
       tl.to(f.material, { opacity: 0.35, duration: 0.5 }, i * 0.12 + 0.1)
     })
-    tl.call(() => setPhase(1), [], 1.2)
+    tl.call(() => phaseAtLeast(1), [], 1.2)
     tl.to(pMat, { opacity: 0.95, duration: 0.4 }, 1.1)
     tl.to(st, { t: 1, duration: 2.8, ease: 'power2.inOut' }, 1.2)
-    tl.call(() => setPhase((p) => Math.max(p, 2)), [], 4.1)
+    tl.call(() => phaseAtLeast(2), [], 4.1)
     tl.to([rotorMat, casingMat, bearingMat], { opacity: 1, duration: 1.2, ease: 'power2.out' }, 4.1)
     tl.to(pMat, { opacity: 0, duration: 1.4 }, 4.6)
     tl.to(st, { spin: 0.45, duration: 2.5, ease: 'power1.in' }, 5)
@@ -305,6 +309,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
 
     // campo de temperatura: varre do estágio de alta para o de baixa pressão
     simRef.current = (on: boolean) => {
+      simOn.current = on
       gsap.killTweensOf(st, 'sweep')
       if (on) {
         setPhase(3)
@@ -319,6 +324,7 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
       }
     }
 
+    const offProj = projector.subscribe((v) => gsap.to(renderer, { toneMappingExposure: v ? 1.18 : 1.05, duration: 0.8 }))
     let lastSweep = -99
     let raf = 0
     const timer = new THREE.Timer()
@@ -363,6 +369,8 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
 
     return () => {
       cancelAnimationFrame(raf)
+      offProj()
+      gsap.killTweensOf(renderer)
       timer.dispose()
       tl.kill()
       gsap.killTweensOf([st, rotorMat, casingMat, bearingMat, pMat])

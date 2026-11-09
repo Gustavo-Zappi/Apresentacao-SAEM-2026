@@ -25,6 +25,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | ← PgUp | Voltar |
 | F | Tela cheia |
 | B ou . | Tela preta |
+| C | Modo projetor (mais contraste) liga/desliga. Vem **ligado**; fica salvo no navegador |
 | O | Abrir janela de notas e cronômetro |
 | K | Informar a chave do apresentador (fica salva neste navegador) |
 | R | Zerar respostas da pergunta atual |
@@ -35,6 +36,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 
 - O canto inferior direito mostra `#slide.passo` (o mesmo número do link, começando em 0) e a posição `n/total`.
 - Notebook fraco no projetor: abra `/palco?q=baixa`. A fábrica 3D desliga sombras e bloom e reduz a resolução interna.
+- **Modo projetor** (indicador `◐ projetor` no canto): levanta sombras e exposição das cenas 3D, deixa o texto secundário em branco pleno e reduz as partículas do fundo. Se no anfiteatro a imagem ficar estourada, tecle **C** para desligar (ou abra `/palco?projetor=0`).
 
 ## Banco e publicação (VPS)
 
