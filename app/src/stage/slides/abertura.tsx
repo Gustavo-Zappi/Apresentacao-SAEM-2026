@@ -41,7 +41,7 @@ export function Capa({ step }: SlideProps) {
 export function Secao({ step, n, title, sub, img }: SlideProps & { n: string; title: string; sub: string; img?: ImgId }) {
   return (
     <Slide step={step}>
-      {img && <ImageSlot id={img} height="100%" optional className="secao-bg" radius={0} />}
+      {img && <ImageSlot id={img} height="100%" width="58%" optional className="secao-bg" radius={0} />}
       <div style={{ marginTop: 'auto', marginBottom: 'auto', position: 'relative' }}>
         <div className="mono accent-t" data-in style={{ fontSize: 260, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.05em', opacity: 0.9 }}>{n}</div>
         <h1 className="h-display" data-split style={{ maxWidth: 1500, marginTop: 24 }}>{title}</h1>

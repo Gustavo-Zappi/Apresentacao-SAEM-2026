@@ -47,6 +47,6 @@ v = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,78 m · hm = 1,25 m · 
 ## A confirmar pelo palestrante
 
 1. **Universidade:** a busca pública associa a Trem Ki Voa e a IC (Pellegrini, Zappi e Vilalta, ERMAC-RS 2020) à **UFSJ**. O slide diz "Engenharia Mecânica · UFSJ" (`app/src/stage/speaker.ts`).
-2. **Título:** trocado para "Do vapor aos agentes de IA" porque o Rankine saiu.
+2. **Título:** em 09/11/2026 a capa passou a usar o título oficial, "Inteligência Artificial: transformando organizações e criando novas carreiras". "Do vapor aos agentes de IA" ficou como subtítulo. Propostas da v3: [`analise-v3-pensadores.md`](analise-v3-pensadores.md).
 3. **Motivos da migração para TI e da chegada à IA:** estão nas notas como roteiro de fala, não no slide.
 4. **Fotos:** `app/public/fotos/` (nomes em `LEIA-ME.txt`).
