@@ -10,7 +10,7 @@ export default function Photo({ src, alt, icon, height = 300 }: { src: string; a
       ) : (
         <div className="photo-icon" aria-label={alt}>
           {icon}
-          {import.meta.env.DEV && <div className="islot-hint"><b>{src.replace(/^\//, '')}</b></div>}
+          {import.meta.env.DEV && <div className="islot-hint"><b>{src.startsWith('/fotos/') ? `src/images/${src.slice(7)}` : src.replace(/^\//, '')}</b></div>}
         </div>
       )}
     </div>

@@ -61,7 +61,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | Perguntas e respostas certas | `src/data/questions.ts` |
 | Ordem dos slides, notas e tempos | `src/stage/slides/index.tsx` |
 | Nome, cargo e universidade | `src/stage/speaker.ts` |
-| Fotos da trajetória | `public/fotos/` (ver `LEIA-ME.txt`) |
+| Fotos da trajetória (#2 e #3) | `src/images/` com o nome do espaço (ex.: `usp.jpg`) ou mapeadas em `src/data/fotos.ts`; o formato antigo `public/fotos/` continua valendo |
 | Imagens ilustrativas dos slides (nome, sugestão de busca, crédito) | `public/imagens/` (ver `LEIA-ME.md`) e `src/data/images.ts` |
 | Título e resumo oficiais | `src/stage/speaker.ts` |
 | Cena 3D da fábrica (vapor → elétrica → linha → IA) | `src/three/factory.ts` |

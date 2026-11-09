@@ -18,7 +18,7 @@
 | Tecnologias por trás (#5 a #11) | Bem coberto, agora com imagem e exemplo de engenharia | Feito nesta versão |
 | Como as empresas adotam IA na prática | **Lacuna.** Aparece só por analogia (#19, #20) e nos gargalos (#21) | Proposta de um slide na seção 5 deste documento |
 | Carreiras (#22 a #26) | Lista correta, pouco memorável | Proposta de ancorar em uma frase e em um projeto (seção 4) |
-| Tempo | 70,5 min previstos (60,5 de conteúdo + 10 de perguntas) | Se o slot total for 60 min, cortar cerca de 10 min (seção 6) |
+| Tempo | 71 min previstos (61 de conteúdo + 10 de perguntas) | Se o slot total for 60 min, cortar cerca de 10 min (seção 6) |
 | Visual | Antes: "cara de código". Agora: imagens reservadas, turbina, sistema de bombeamento e fábrica realista | Falta só você colocar as imagens (`app/public/imagens/LEIA-ME.md`) |
 
 ## 2. A lente dos pensadores
@@ -91,14 +91,14 @@ Hoje a palestra mostra a tecnologia (#5 a #16) e a história (#17 a #20), mas n�
 
 | Bloco | Slides | Previsto |
 |---|---|---|
-| Abertura e trajetória | #0 a #3 | 8,0 min |
+| Abertura e trajetória | #0 a #3 | 8,5 min |
 | 01 · IA na engenharia | #4 a #7 | 10,5 min |
 | 02 · Agentes | #8 a #10 | 9,5 min |
 | 03 · Manchetes | #11 a #16 | 9,0 min |
 | 04 · Já vimos esse filme | #17 a #20 | 10,0 min |
 | 05 · Carreiras e fechamento | #21 a #26 | 13,5 min |
 | Perguntas | #27 | 10,0 min |
-| **Total** | | **70,5 min** |
+| **Total** | | **71,0 min** |
 
 A duração do slot ainda está em aberto no conceito. Se forem 60 min com perguntas, cortes sugeridos em ordem de menor perda: votação de Navier-Stokes #14 (1,5 min), escala #16 (1,5 min, vira uma frase em #15), nuvem de palavras #22 (2 min), votação de trilha #25 (2 min) e trajetória #3 de 3 para 1,5 min. Total: 8,5 min. Mais 1 min reduzindo o mural (#12) para 30 s.
 

@@ -43,8 +43,8 @@ export const SLIDES: SlideDef[] = [
     Component: Faculdade,
   },
   {
-    id: 'carreira', title: 'Trajetória: CSN → TI → IA', steps: 3, flow: 'still', minutes: 3,
-    notes: 'Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Como se encontrou na IA.\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
+    id: 'carreira', title: 'Trajetória: CSN → TI → gestão → IA', steps: 4, flow: 'still', minutes: 3.5,
+    notes: 'Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Pós-graduação em Gestão de Negócios pela USP: a ponte da engenharia para a gestão (antecipa as duas trilhas do slide de carreiras: tecnologia e gestão).\n4. Como se encontrou na IA.\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
     Component: Carreira,
   },
 

@@ -1,4 +1,5 @@
-Fotos da trajetória (opcionais). Coloque aqui, com estes nomes exatos, em JPG:
+Fotos da trajetória (opcionais). Prefira a pasta app/src/images (ver src/data/fotos.ts).
+Aqui também funciona, com estes nomes exatos, em JPG:
 
   ufsj.jpg            2016, Engenharia Mecânica na UFSJ (campus, turma, sala de aula)
   trem-ki-voa.jpg     equipe de AeroDesign (avião, competição, equipe)
@@ -6,6 +7,7 @@ Fotos da trajetória (opcionais). Coloque aqui, com estes nomes exatos, em JPG:
   ic.jpg              iniciação científica (bancada, artigo, apresentação)
   csn.jpg             CSN / equipamentos de grande porte
   ativos-ti.jpg       gestão de ativos de TI / 4MATT
+  usp.jpg             pós-graduação em Gestão de Negócios pela USP
   ia.jpg              trabalho atual com IA
 
 Tamanho sugerido: 1200 px no lado maior, até 400 kB cada.
