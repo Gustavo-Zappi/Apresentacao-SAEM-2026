@@ -22,10 +22,9 @@ const Audience = lazy(() => import('./audience/Audience'))
 const Deck = lazy(() => import('./stage/Deck'))
 const Notes = lazy(() => import('./stage/Notes'))
 const Status = lazy(() => import('./status/Status'))
-const Resources = lazy(() => import('./resources/Resources'))
 
 const path = location.pathname.replace(/\/+$/, '') || '/'
-const Page = path === '/palco' ? Deck : path === '/notas' ? Notes : path === '/status' ? Status : path === '/material' ? Resources : Audience
+const Page = path === '/palco' ? Deck : path === '/notas' ? Notes : path === '/status' ? Status : Audience
 
 document.body.dataset.route = path
 

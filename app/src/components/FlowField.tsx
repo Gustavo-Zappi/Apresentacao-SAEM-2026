@@ -9,14 +9,14 @@ import gsap from 'gsap'
 export type FlowMode = 'laminar' | 'turbulent' | 'still' | 'surge' | 'none'
 
 const PRESETS: Record<FlowMode, { speed: number; freq: number; swirl: number; alpha: number; drift: number }> = {
-  still: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0.025, drift: 1 },
-  laminar: { speed: 1.1, freq: 0.0018, swirl: 0.9, alpha: 0.12, drift: 1 },
+  still: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0.1, drift: 1 },
+  laminar: { speed: 1.1, freq: 0.0018, swirl: 0.9, alpha: 0.24, drift: 1 },
   turbulent: { speed: 2.4, freq: 0.0058, swirl: 3.2, alpha: 0.5, drift: 0.25 },
   none: { speed: 0.35, freq: 0.0016, swirl: 0.6, alpha: 0, drift: 1 },
   surge: { speed: 4.2, freq: 0.0024, swirl: 1.2, alpha: 0.6, drift: 1.6 },
 }
 
-const params = { ...PRESETS.still }
+const params = { ...PRESETS.laminar }
 
 export function setFlow(mode: FlowMode, duration = 1.8) {
   gsap.to(params, { ...PRESETS[mode], duration, ease: 'power2.inOut', overwrite: true })

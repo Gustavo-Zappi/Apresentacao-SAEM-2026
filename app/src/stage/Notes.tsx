@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { SLIDES, PLANNED_MINUTES } from './slides'
-import { TALK } from '../data/event'
+import { SLIDES } from './slides'
 import { DECK_CHANNEL } from './Deck'
 
 /** Janela de notas (abra no notebook com a tecla O; o palco fica no projetor). */
@@ -26,7 +25,7 @@ export default function Notes() {
     return () => { c.close(); clearInterval(t); window.removeEventListener('keydown', onKey) }
   }, [])
 
-  const def = SLIDES[pos.i] || SLIDES[0]
+  const def = SLIDES[pos.i]
   const nextDef = SLIDES[pos.i + 1]
   const planned = SLIDES.slice(0, pos.i).reduce((a, s) => a + (s.minutes ?? 0), 0)
   const elapsed = start ? Math.floor((now - start) / 1000) : 0
@@ -41,7 +40,6 @@ export default function Notes() {
       </div>
       <h1>{pos.i + 1}. {def.title}</h1>
       <div className="meta">passo {pos.s + 1}/{def.steps} · previsto {def.minutes ?? 0} min{def.question ? ` · pergunta: ${def.question}` : ''}</div>
-      <div className="session-plan">Conteúdo: {PLANNED_MINUTES - 10} min · Perguntas: 10 min · Margem: {TALK.bufferMinutes} min · Total: {PLANNED_MINUTES + TALK.bufferMinutes} min</div>
       <div className="body">{def.notes || 'Sem notas.'}</div>
       <div className="next">próximo: {nextDef ? nextDef.title : 'fim'}</div>
       <div className="nav">

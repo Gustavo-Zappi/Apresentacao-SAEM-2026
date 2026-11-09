@@ -44,7 +44,6 @@ export default function Audience() {
         {screenKey === 'idle' && <Waiting title="Olhe para o palco." sub="A próxima pergunta aparece aqui sozinha. Deixe esta página aberta." />}
         {q && state && state.phase !== 'idle' && <QuestionScreen key={screenKey} q={q} phase={state.phase} />}
       </div>
-      <a className="aud-material" href="/material" target="_blank" rel="noreferrer">Material e projetos para começar</a>
       <div className="aud-foot">
         <img src="/logo-4matt-branco.png" alt="4MATT" />
         Respostas anônimas. Usadas só nesta palestra.

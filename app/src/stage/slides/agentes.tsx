@@ -1,61 +1,113 @@
+import { useRef } from 'react'
+import gsap from 'gsap'
+import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
-import { calculatePump, pt } from '../../data/pump'
 import type { SlideProps } from '../types'
-import { Heading, PumpSystem, Source } from './shared'
+
+/* ---------------------------------------------------------------- Definição: malha fechada */
+
+// Blocos do diagrama (coordenadas do SVG 1660×520)
+const B = [
+  { id: 'obj', x: 0, y: 190, w: 250, label: 'Objetivo', sub: 'setpoint' },
+  { id: 'plan', x: 400, y: 190, w: 300, label: 'Planejar', sub: 'controlador' },
+  { id: 'tool', x: 800, y: 190, w: 300, label: 'Ferramentas', sub: 'atuador' },
+  { id: 'world', x: 1200, y: 190, w: 300, label: 'Resultado', sub: 'planta' },
+  { id: 'check', x: 800, y: 400, w: 300, label: 'Verificar', sub: 'sensor' },
+]
+const H = 110
+const LOOP = 'M 250 245 L 400 245 M 700 245 L 800 245 M 1100 245 L 1200 245 M 1350 300 L 1350 455 L 1100 455 M 800 455 L 330 455 L 330 245'
 
 export function AgenteDef({ step }: SlideProps) {
-  return <Slide step={step}>
-    <Heading kicker="Ferramentas, autonomia e limites">Como funciona um sistema agente</Heading>
-    <p className="lead" data-in style={{ marginTop: 32 }}>Recebe um objetivo, planeja ações e usa ferramentas para trabalhar.</p>
-    <div className="agent-loop" data-step="1">
-      <svg viewBox="0 0 1600 390" role="img" aria-label="Planejar, usar ferramentas, observar e avaliar, com retorno para planejar">
-        <path d="M300 125 H430 M730 125 H860 M1160 125 H1290 M1440 195 V310 H150 V195" fill="none" stroke="#CBB3FF" strokeWidth="5" />
-        {[150,580,1010,1440].map((x,i) => <g key={x}><rect x={x-150} y="55" width="300" height="140" rx="20" fill="#201E4B" stroke="#CBB3FF" strokeWidth="3" /><text x={x} y="138" textAnchor="middle" fill="#FFFFFF" fontSize="38">{['Planejar','Ferramentas','Observar','Avaliar'][i]}</text></g>)}
-        <path d="M395 110 L425 125 L395 140 M825 110 L855 125 L825 140 M1255 110 L1285 125 L1255 140 M135 225 L150 199 L165 225" fill="none" stroke="#FFFFFF" strokeWidth="5" />
-        <text x="800" y="365" textAnchor="middle" fill="#CBB3FF" fontSize="32">Permissões · critérios de aceitação · orçamento de execução</text>
-      </svg>
-    </div>
-    <p className="takeaway" data-step="2">Pode corrigir, parar ou pedir ajuda. A avaliação precisa de evidências além da própria resposta.</p>
-  </Slide>
-}
-export function AgentePedido({ step }: SlideProps) {
-  return <Slide step={step}>
-    <Heading kicker="Demonstração · entradas e hipóteses">Um dimensionamento preliminar</Heading>
-    <div className="split-layout" style={{ marginTop: 32 }}>
-      <div data-in><PumpSystem active /><div className="prompt-box">“Calcule a altura e a potência. Registre hipóteses e aponte o que falta para selecionar a bomba.”</div></div>
-      <div className="input-list" data-step="1">
-        <div><b>Água</b><span>20 °C · 998 kg/m³</span></div>
-        <div><b>Tubo</b><span>D interno 77,9 mm · 120 m</span></div>
-        <div><b>Rugosidade</b><span>0,045 mm · aço comercial</span></div>
-        <div><b>Hipóteses</b><span>K = 8 · rendimento 70%</span></div>
-        <div><b>Método</b><span>Darcy–Weisbach e Colebrook</span></div>
+  const ref = useRef<HTMLDivElement>(null)
+  useGSAP(
+    () => {
+      if (step < 1) return
+      const tl = gsap.timeline()
+      tl.fromTo('.blk', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%' }, { scale: 1, autoAlpha: 1, stagger: 0.12, duration: 0.5, ease: 'back.out(2)' })
+      tl.fromTo('.wire', { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.4, ease: 'power1.inOut' }, 0.3)
+      // pulso percorrendo o ciclo
+      const path = ref.current!.querySelector<SVGPathElement>('.cycle-path')!
+      const len = path.getTotalLength()
+      const dot = ref.current!.querySelector<SVGCircleElement>('.pulse')!
+      const o = { l: 0 }
+      tl.to(o, {
+        l: len, duration: 4, ease: 'none', repeat: -1,
+        onUpdate: () => {
+          const p = path.getPointAtLength(o.l)
+          dot.setAttribute('cx', String(p.x))
+          dot.setAttribute('cy', String(p.y))
+        },
+      }, 1.4)
+    },
+    { scope: ref, dependencies: [step] },
+  )
+
+  return (
+    <Slide step={step}>
+      <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <div className="kicker" data-in>O que é um agente de IA</div>
+        <h1 className="h1" data-split>Chatbot responde. Agente executa.</h1>
+        <p className="lead" data-in style={{ marginTop: 28, color: '#fff', maxWidth: 1600 }}>
+          Um modelo de IA que recebe um <b className="accent-t">objetivo</b>, planeja os passos, usa <b className="accent-t">ferramentas</b> e{' '}
+          <b className="accent-t">verifica</b> o próprio resultado, em ciclo, até entregar.
+        </p>
+        <div data-step="1" style={{ marginTop: 24 }}>
+          <svg viewBox="0 0 1660 520" width="1490" height="467" style={{ overflow: 'visible', display: 'block', margin: '0 auto' }}>
+            <path className="wire" d={LOOP} stroke="rgba(255,255,255,.7)" strokeWidth="5" fill="none" />
+            <path className="cycle-path" d="M 330 245 L 1350 245 L 1350 455 L 330 455 Z" fill="none" stroke="none" />
+            {B.map((b) => (
+              <g key={b.id} className="blk">
+                <rect x={b.x} y={b.y} width={b.w} height={H} rx="14" fill={b.id === 'check' ? '#58178B' : '#201E4B'} stroke="#CBB3FF" strokeWidth="3" />
+                <text x={b.x + b.w / 2} y={b.y + 52} textAnchor="middle" fill="#fff" fontSize="38" fontWeight="700" fontFamily="Poppins">{b.label}</text>
+                <text x={b.x + b.w / 2} y={b.y + 90} textAnchor="middle" fill="#CBB3FF" fontSize="26" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
+              </g>
+            ))}
+            <circle className="blk" cx="330" cy="245" r="22" fill="#120F2E" stroke="#fff" strokeWidth="4" />
+            <text x="330" y="256" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
+            <circle className="pulse" cx="330" cy="245" r="14" fill="#FFB547" style={{ filter: 'drop-shadow(0 0 12px #FFB547)' }} />
+          </svg>
+        </div>
+        <p className="lead" data-step="2" style={{ marginTop: 'auto', fontSize: 38 }}>
+          Para quem estudou controle: <b style={{ color: '#fff' }}>é uma malha fechada.</b> O erro só zera quando o resultado atende ao objetivo.
+        </p>
       </div>
-    </div>
-    <p className="takeaway" data-step="1">Vazão de 30 m³/h e desnível de 18 m. Entradas explícitas permitem reproduzir a conta.</p>
-  </Slide>
+    </Slide>
+  )
 }
-export function AgenteExec({ step }: SlideProps) {
-  const r = calculatePump()
-  return <Slide step={step}>
-    <Heading kicker="Demonstração · cálculo local de referência">Uma resposta que podemos reproduzir</Heading>
-    <div className="calculation-steps" style={{ marginTop: 42 }}>
-      <div data-in><span className="small-label">ESCOAMENTO</span><p>v = {pt(r.velocity,2)} m/s<br />Re ≈ 1,36 × 10⁵</p></div>
-      <div data-step="1"><span className="small-label">PERDAS</span><p>f = {pt(r.darcy,4)}<br />h = {pt(r.frictionHead+r.localHead,2)} m</p></div>
-      <div data-step="2"><span className="small-label">RESULTADO</span><p>H = 18 m + perdas<br />P = ρ g Q H / η</p></div>
-    </div>
-    <div className="result-pair" data-step="2"><div><b>{pt(r.totalHead)}<small> m</small></b><p>altura manométrica</p></div><div><b>{pt(r.shaftPowerKw)}<small> kW</small></b><p>potência no eixo</p></div></div>
-    <p className="takeaway" data-step="2">O slide executa o cálculo de referência. A demonstração do agente usa as mesmas entradas.</p>
-  </Slide>
-}
-export function AgenteLimites({ step }: SlideProps) {
-  const r = calculatePump()
-  return <Slide step={step}>
-    <Heading kicker="Demonstração · condições para decidir">O que ainda falta verificar?</Heading>
-    <div className="grid evidence-pair" style={{ marginTop: 56 }}>
-      <div className="card" data-in><h3>Seleção da bomba</h3><p>Curva do fabricante e ponto de operação.</p><p>Condições de sucção, NPSH e faixa de trabalho.</p></div>
-      <div className="card" data-step="1"><h3>Comportamento transiente</h3><div className="surge-number">≈ {pt(r.surgeHead,0)} m</div><p>Joukowsky, com a = 1.200 m/s e perda rápida de toda a velocidade.</p></div>
-    </div>
-    <p className="takeaway" data-step="2">Esses dados sustentam uma análise preliminar. A ação exige contexto, evidências e autorização.</p>
-    <Source ids={['pump','operating']} note="O valor de transiente depende das hipóteses" />
-  </Slide>
+
+/* ---------------------------------------------------------------- Demo: agente seleciona uma bomba */
+
+type Line = { who: 'Você' | 'Agente' | 'Ferramenta' | 'Verifica' | 'Engenheiro'; text: string; step: number }
+
+// Números calculados (água a 20 °C, aço comercial ε = 0,045 mm, Colebrook, η bomba 70%).
+const LOG: Line[] = [
+  { who: 'Você', text: 'Selecione uma bomba: 30 m³/h, desnível de 18 m, 120 m de tubo DN 80.', step: 0 },
+  { who: 'Agente', text: 'Plano: propriedades → perda de carga → altura → potência → checagens.', step: 1 },
+  { who: 'Ferramenta', text: 'propriedades(água, 20 °C) → ρ = 998 kg/m³, ν = 1,0·10⁻⁶ m²/s', step: 2 },
+  { who: 'Ferramenta', text: 'python: v = 1,75 m/s · Re = 1,4·10⁵ · f = 0,020 · perdas = 6,0 m', step: 2 },
+  { who: 'Agente', text: 'Altura manométrica H ≈ 24 m · potência no eixo ≈ 2,8 kW → motor de 4 kW', step: 3 },
+  { who: 'Verifica', text: 'Velocidade na faixa usual de recalque ✓   Folga de potência do motor ✓', step: 3 },
+  { who: 'Verifica', text: '⚠ Parada brusca: golpe de aríete de até ~214 m (limite de Joukowsky).', step: 4 },
+  { who: 'Engenheiro', text: 'Válvula de fechamento lento? Volante de inércia? Análise de transiente? Essa decisão é sua.', step: 4 },
+]
+const COLOR: Record<Line['who'], string> = { Você: 'hm', Agente: 'ag', Ferramenta: 'tool', Verifica: 'ok', Engenheiro: 'hm' }
+
+export function AgenteDemo({ step }: SlideProps) {
+  return (
+    <Slide step={step}>
+      <div className="kicker" data-in>Demonstração · agente de engenharia</div>
+      <h1 className="h1" data-split style={{ fontSize: 68 }}>Dimensionar uma bomba em segundos</h1>
+      <div className="term" style={{ marginTop: 40 }} data-in>
+        {LOG.map((l, i) => (
+          <div key={i} className="ln" data-step={l.step}>
+            <span className={`who ${COLOR[l.who]}`}>{l.who}</span>
+            <span style={l.who === 'Engenheiro' ? { fontWeight: 700 } : undefined}>{l.text}</span>
+          </div>
+        ))}
+      </div>
+      <p className="lead" data-step="4" style={{ marginTop: 28, fontSize: 36 }}>
+        O agente fez a conta e apontou o risco. <b style={{ color: '#fff' }}>Quem decide continua sendo o engenheiro.</b>
+      </p>
+    </Slide>
+  )
 }

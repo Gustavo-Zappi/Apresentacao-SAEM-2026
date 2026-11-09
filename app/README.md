@@ -1,9 +1,5 @@
 # SAEM 2026: app de palco interativo
 
-**Inteligência Artificial: transformando organizações e criando novas carreiras.**
-
-Versão editorial v3: 25 slides, 47 min de conteúdo + 3 min de margem + 10 min de perguntas. Roteiro em ../docs/roteiro-v3.md. Material da plateia em /material, com guia para baixar e vídeo de apoio do cálculo de referência.
-
 Apresentação web animada (GSAP) com votação da plateia por QR code gravada no Supabase.
 Decisões e arquitetura: [`docs/app-palco-arquitetura.md`](../docs/app-palco-arquitetura.md).
 
@@ -58,8 +54,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | Perguntas e respostas certas | `src/data/questions.ts` |
 | Ordem dos slides, notas e tempos | `src/stage/slides/index.tsx` |
 | Nome, cargo e universidade | `src/stage/speaker.ts` |
-| Carreiras e projetos | `src/data/careers.ts` e `src/resources/Resources.tsx` |
-| Título, resumo e referências | `src/data/event.ts` e `src/data/sources.ts` |
+| Fotos da trajetória | `public/fotos/` (ver `LEIA-ME.txt`) |
 | Cena 3D da fábrica | `src/three/factory.ts` |
 | Cores e tipografia (4MATT) | `src/styles.css` |
 

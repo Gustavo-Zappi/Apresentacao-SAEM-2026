@@ -10,7 +10,7 @@ import { participantId } from '../lib/participant'
 type Pos = { i: number; s: number }
 
 export const KEY_STORE = 'saem-presenter-key'
-const POS_STORE = 'saem-deck-pos-v3'
+const POS_STORE = 'saem-deck-pos'
 export const DECK_CHANNEL = 'saem-deck'
 
 function clamp(p: Pos): Pos {
@@ -244,7 +244,7 @@ export default function Deck() {
   const alert = live.mode === 'local' || keyOk === false || syncErr
 
   return (
-    <div className="viewport" onClick={(e) => { if (!(e.target as HTMLElement).closest('a,button,input,select,video') && e.detail === 1 && e.clientX > window.innerWidth * 0.85) next() }}>
+    <div className="viewport" onClick={(e) => { if (e.detail === 1 && e.clientX > window.innerWidth * 0.85) next() }}>
       <FlowField />
       <div className="stage" style={{ transform: `scale(${scale}) translate(-960px, -540px)` }}>
         <div ref={innerRef} style={{ position: 'absolute', inset: 0 }}>
