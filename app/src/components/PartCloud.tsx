@@ -166,13 +166,13 @@ export default function PartCloud({ size = 860 }: { size?: number }) {
   return (
     <div style={{ width: size }}>
       <div ref={ref} style={{ width: size, height: size }} />
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginTop: -30 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginTop: -30 }}>
         {PHASES.map((p, i) => (
           <span
             key={p}
             className="mono"
             style={{
-              fontSize: 26, fontWeight: 700, padding: '10px 18px', borderRadius: 8,
+              fontSize: 22, fontWeight: 700, padding: '10px 14px', borderRadius: 8, whiteSpace: 'nowrap',
               background: i === phase ? 'var(--c-purple)' : 'rgba(255,255,255,.08)',
               color: '#fff', transition: 'background .4s',
             }}

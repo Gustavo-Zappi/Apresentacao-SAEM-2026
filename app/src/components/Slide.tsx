@@ -29,7 +29,7 @@ export default function Slide({
       const tl = gsap.timeline({ defaults: { ease: 'power4.out' } })
       splits.forEach((el, i) => {
         const s = SplitText.create(el, { type: 'words,chars', mask: 'words' })
-        tl.from(s.chars, { yPercent: 115, duration: 1.1, stagger: 0.022 }, i * 0.15)
+        tl.from(s.chars, { yPercent: 115, duration: 0.7, stagger: 0.008 }, i * 0.15)
       })
       const ins = gsap.utils.toArray<HTMLElement>('[data-in]', root)
       if (ins.length) tl.from(ins, { y: 36, autoAlpha: 0, duration: 0.9, stagger: 0.09, ease: 'power3.out' }, splits.length ? 0.35 : 0)

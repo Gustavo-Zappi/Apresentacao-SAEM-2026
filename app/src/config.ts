@@ -18,3 +18,6 @@ export function audienceUrlLabel(): string {
 
 /** Intervalo de polling do celular (ms). Polling evita o limite de conexões realtime do plano Free. */
 export const AUDIENCE_POLL_MS = 2000
+
+export function resourcesUrl(): string { return audienceUrl() + "material" }
+export function resourcesUrlLabel(): string { return audienceUrlLabel() + "/material" }

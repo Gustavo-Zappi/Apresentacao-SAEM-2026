@@ -1,110 +1,38 @@
 import Slide from '../../components/Slide'
 import QR from '../../components/QR'
-import { audienceUrl } from '../../config'
+import { resourcesUrl, resourcesUrlLabel } from '../../config'
+import { CAREERS } from '../../data/careers'
 import { SPEAKER } from '../speaker'
 import type { SlideProps } from '../types'
+import { Heading, Source } from './shared'
 
-export function Gargalos({ step }: SlideProps) {
-  const G = [
-    ['Especificar', 'Como a cota e a tolerância no desenho: quem especifica bem comanda a ferramenta.'],
-    ['Validar', 'Como ensaio e metrologia: resultado sem verificação é só uma opinião rápida.'],
-    ['Governar', 'Como FMEA e normas: dados, riscos e o que pode entrar numa ferramenta de IA.'],
-  ]
-  return (
-    <Slide step={step}>
-      <div className="kicker" data-in>O gargalo mudou de lugar</div>
-      <h1 className="h1" data-split>Três novos gargalos</h1>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: 72 }}>
-        {G.map(([t, d], i) => (
-          <div key={t} className="card" data-step={i}>
-            <div className="num">{i + 1}</div>
-            <h3 style={{ fontSize: 44 }}>{t}</h3>
-            <p>{d}</p>
-          </div>
-        ))}
-      </div>
-    </Slide>
-  )
-}
-
-const TEC = [
-  ['IA na manufatura e Indústria 4.0', 'processos, automação, qualidade'],
-  ['Simulação acelerada e gêmeo digital', 'CAE, FEA, CFD, termociências'],
-  ['Confiabilidade e manutenção preditiva', 'vibrações, manutenção'],
-  ['Engenharia de soluções e agentes', 'pensamento sistêmico, controle'],
-  ['Verificação e validação de IA', 'metrologia, ensaios, normas'],
-]
-const GES = [
-  ['Transformação e consultoria com IA', 'processos, gestão de projetos'],
-  ['Product management de IA', 'projeto de produto, requisitos'],
-  ['Governança, risco e compliance', 'FMEA, segurança, normas'],
-  ['Liderança de IA', 'a sua trajetória'],
-]
-
-export function Carreiras({ step }: SlideProps) {
-  const col = (title: string, rows: string[][], s: number) => (
-    <div data-step={s}>
-      <div className="mono accent-t" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 20 }}>{title}</div>
-      {rows.map(([f, p]) => (
-        <div key={f} style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-          <div style={{ fontSize: 34, fontWeight: 700 }}>{f}</div>
-          <div className="muted" style={{ fontSize: 27, marginTop: 4 }}>ponte: {p}</div>
-        </div>
-      ))}
+function CareerSlide({ step, track }: SlideProps & { track: 'tecnologia' | 'gestao' }) {
+  return <Slide step={step}>
+    <Heading kicker="Frentes de atuação para quem vem da engenharia">{track === 'tecnologia' ? 'Carreiras em tecnologia' : 'Carreiras em gestão'}</Heading>
+    <div className="career-grid" style={{ marginTop: 48 }}>
+      {CAREERS.filter(c=>c.track===track).map((c,i)=><div className="career-card" key={c.title} data-step={i}><h2>{c.title}</h2><p className="career-deliver">{c.deliver}</p><div className="career-bridge"><span>Você traz</span><p>{c.base}</p><span>Você acrescenta</span><p>{c.add}</p></div></div>)}
     </div>
-  )
-  return (
-    <Slide step={step}>
-      <div className="kicker" data-in>Quem vai redesenhar a fábrica</div>
-      <h1 className="h1" data-split>Cada gargalo vira uma função</h1>
-      <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 80, marginTop: 48 }}>
-        {col('TECNOLOGIA', TEC, 0)}
-        {col('GESTÃO', GES, 1)}
-      </div>
-    </Slide>
-  )
+    <p className="takeaway" data-step="2">Competências que podem integrar funções existentes ou novas especializações.</p>
+    <Source ids={['autor']} note="Projetos de entrada e detalhes no material de apoio" />
+  </Slide>
 }
+export function CarreirasTecnologia(p: SlideProps) { return <CareerSlide {...p} track="tecnologia" /> }
+export function CarreirasGestao(p: SlideProps) { return <CareerSlide {...p} track="gestao" /> }
 
-export function Acoes({ step }: SlideProps) {
-  const A = [
-    ['Use IA como colega de estudo', 'e verifique a resposta como verificaria uma conta.'],
-    ['Faça um projeto que junte mecânica e dados', 'TCC, iniciação científica, equipe de competição.'],
-    ['Aprenda a especificar bem', 'quem escreve a melhor especificação comanda a ferramenta.'],
-  ]
-  return (
-    <Slide step={step}>
-      <div className="kicker" data-in>Fechamento</div>
-      <h1 className="h1" data-split>Três ações para segunda-feira</h1>
-      <div style={{ marginTop: 72 }}>
-        {A.map(([t, d], i) => (
-          <div key={t} data-step={i} style={{ display: 'flex', gap: 48, alignItems: 'baseline', padding: '30px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-            <span className="mono accent-t" style={{ fontSize: 72, fontWeight: 700 }}>{i + 1}</span>
-            <div>
-              <div style={{ fontSize: 50, fontWeight: 700, letterSpacing: '-0.02em' }}>{t}</div>
-              <div className="lead" style={{ fontSize: 36, marginTop: 6 }}>{d}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Slide>
-  )
+export function Conclusao({ step }: SlideProps) {
+  return <Slide step={step}>
+    <Heading kicker="Voltando à bomba do início">Em quais condições você confiaria?</Heading>
+    <div className="closing-questions" style={{ marginTop: 56 }}>
+      <div data-in><span>01</span><p>Que evidências sustentam a recomendação?</p></div>
+      <div data-step="1"><span>02</span><p>Quem define o objetivo e pode contestar?</p></div>
+      <div data-step="2"><span>03</span><p>Que competência você quer desenvolver para participar?</p></div>
+    </div>
+    <p className="takeaway" data-step="2">A formação em engenharia ajuda a construir sistemas e reconhecer seus limites.</p>
+  </Slide>
 }
-
 export function Obrigado({ step }: SlideProps) {
-  return (
-    <Slide step={step} className="center">
-      <h1 className="h-display" data-split style={{ fontSize: 180 }}>Perguntas?</h1>
-      <p className="lead" data-in style={{ marginTop: 32 }}>Obrigado, SAEM 2026.</p>
-      <div data-in style={{ marginTop: 72, display: 'flex', gap: 56, alignItems: 'center' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 32, marginTop: 6 }}>{SPEAKER.role}</div>
-        </div>
-        <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 64 }} />
-        <div className="qr-card" style={{ width: 200, padding: 14, borderRadius: 16 }}>
-          <QR url={audienceUrl()} />
-        </div>
-      </div>
-    </Slide>
-  )
+  return <Slide step={step} className="closing-slide">
+    <div data-in><div className="kicker">SAEM 2026 · UFJF</div><h1 className="h-display" data-split>Perguntas?</h1><p className="lead" style={{ marginTop: 36 }}>Obrigado por participar.</p><div className="closing-person"><strong>{SPEAKER.name}</strong><p>{SPEAKER.role}</p><img src="/logo-4matt-branco.png" alt="4MATT" /></div></div>
+    <div data-in className="closing-material"><div className="qr-card"><QR url={resourcesUrl()} /><div className="url">{resourcesUrlLabel()}</div></div><h2>Seu próximo projeto</h2><p>Plano de 30 dias, referências<br />e projetos por frente de atuação.</p></div>
+  </Slide>
 }

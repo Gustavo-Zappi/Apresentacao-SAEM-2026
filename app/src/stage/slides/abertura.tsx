@@ -3,44 +3,31 @@ import QR from '../../components/QR'
 import { audienceUrl, audienceUrlLabel } from '../../config'
 import { SPEAKER } from '../speaker'
 import type { SlideProps } from '../types'
+import { Heading, PumpSystem } from './shared'
 
 export function Capa({ step }: SlideProps) {
-  return (
-    <Slide step={step}>
-      <div className="kicker" data-in>II SAEM · Engenharia Mecânica · UFJF · 11/11/2026</div>
-      <h1 className="h-display" data-split style={{ maxWidth: 1300, marginTop: 120 }}>
-        Do vapor aos <span className="accent">agentes de IA</span>
-      </h1>
-      <p className="lead" data-in style={{ marginTop: 40, maxWidth: 1100 }}>
-        A IA na engenharia, nas empresas e na sua carreira
-      </p>
-      <div data-in style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 28 }}>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 32, marginTop: 8 }}>{SPEAKER.role}</div>
-        </div>
+  return <Slide step={step} className="cover-v3">
+    <div className="kicker" data-in>II SAEM · Engenharia Mecânica · UFJF · 11/11/2026</div>
+    <div className="cover-layout">
+      <div>
+        <h1 className="cover-title" data-split>Inteligência Artificial: <span className="accent-t">transformando organizações</span> e criando novas carreiras.</h1>
+        <p className="lead" data-in style={{ marginTop: 36, maxWidth: 1000 }}>Tecnologia, decisões e caminhos para quem vem da engenharia</p>
       </div>
-      <div data-in style={{ position: 'absolute', right: 128, bottom: 96, width: 380, textAlign: 'center' }}>
-        <div className="qr-card" style={{ padding: 22, borderRadius: 22 }}>
-          <QR url={audienceUrl()} />
-          <div className="url" style={{ fontSize: 24 }}>{audienceUrlLabel()}</div>
-        </div>
-        <div className="mono" style={{ fontSize: 26, fontWeight: 700, marginTop: 18, letterSpacing: '0.06em' }}>
-          ENTRE AGORA E VOTE
-        </div>
-      </div>
-    </Slide>
-  )
+      <div data-in className="cover-qr"><div className="qr-card"><QR url={audienceUrl()} /><div className="url">{audienceUrlLabel()}</div></div><p>Participe da conversa</p></div>
+    </div>
+    <div className="cover-signature" data-in><div><strong>{SPEAKER.name}</strong><p>{SPEAKER.role}</p></div><img src="/logo-4matt-branco.png" alt="4MATT" /></div>
+  </Slide>
 }
-
-export function Secao({ step, n, title, sub }: SlideProps & { n: string; title: string; sub: string }) {
-  return (
-    <Slide step={step}>
-      <div style={{ marginTop: 'auto', marginBottom: 'auto' }}>
-        <div className="mono accent-t" data-in style={{ fontSize: 260, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.05em', opacity: 0.9 }}>{n}</div>
-        <h1 className="h-display" data-split style={{ maxWidth: 1500, marginTop: 24 }}>{title}</h1>
-        <p className="lead" data-in style={{ marginTop: 32 }}>{sub}</p>
+export function Dilema({ step }: SlideProps) {
+  return <Slide step={step}>
+    <Heading kicker="Uma decisão dentro da fábrica">A IA recomendou parar a bomba</Heading>
+    <div className="split-layout" style={{ marginTop: 44 }}>
+      <div className="pump-story" data-in><PumpSystem active /><p className="diagram-caption">Situação hipotética para acompanhar a palestra</p></div>
+      <div className="decision-story">
+        <p className="lead" data-in>A manutenção vê risco de falha.<br />A produção precisa cumprir o turno.</p>
+        <p className="big-question" data-step="1">Quem define o objetivo?<br /><span className="accent-t">Quem pode discordar?</span></p>
       </div>
-    </Slide>
-  )
+    </div>
+    <p className="takeaway" data-step="1">A recomendação passa a fazer parte de uma decisão organizacional.</p>
+  </Slide>
 }

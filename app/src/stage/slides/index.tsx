@@ -1,143 +1,69 @@
 import Poll from '../../components/Poll'
-import { QUESTION_BY_ID } from '../../data/questions'
 import type { SlideDef } from '../types'
-import { Capa, Secao } from './abertura'
-import { Carreira, Faculdade } from './trajetoria'
-import { Fotos3D, NovaEra, Passado } from './ia-engenharia'
-import { AgenteDef, AgenteDemo } from './agentes'
-import { Escala, Manchete, ManchetexFato, Mural } from './navier'
-import { Ano4, FabricaHistoria } from './analogia'
-import { Acoes, Carreiras, Gargalos, Obrigado } from './futuro'
-
-const poll = (id: string, qid: string, minutes: number, notes: string, kicker?: string): SlideDef => ({
-  id,
-  title: `Votação: ${QUESTION_BY_ID[qid].prompt}`,
-  steps: 2,
-  flow: 'still',
-  question: qid,
-  minutes,
-  notes,
-  Component: ({ step }) => <Poll qid={qid} step={step} kicker={kicker} />,
-})
-
-const secao = (id: string, n: string, title: string, sub: string, notes?: string): SlideDef => ({
-  id, title: `Seção ${n}`, steps: 1, flow: 'surge', transition: 'wipe', minutes: 0.5, notes,
-  Component: ({ step }) => <Secao step={step} n={n} title={title} sub={sub} />,
-})
+import { TALK } from '../../data/event'
+import { SOURCES } from '../../data/sources'
+import { Capa, Dilema } from './abertura'
+import { Trajetoria } from './trajetoria'
+import { Passado, Tecnologias, Fotos3D } from './ia-engenharia'
+import { AgenteDef, AgentePedido, AgenteExec, AgenteLimites } from './agentes'
+import { BombaEmpresa, Processo, Evidencia, Objetivos, Autonomia, Aprendizagem } from './organizacoes'
+import { FabricaHistoria } from './analogia'
+import { Navier } from './navier'
+import { CarreirasTecnologia, CarreirasGestao, Conclusao, Obrigado } from './futuro'
+import { PlanoProjeto } from './projeto'
+import { Mercado } from './mercado'
 
 export const SLIDES: SlideDef[] = [
-  {
-    id: 'capa', title: 'Capa', steps: 1, flow: 'laminar', minutes: 1,
-    notes: 'Deixe no ar enquanto a plateia entra. O QR leva ao app: quem entrar agora vota na primeira pergunta.\nSe a sala permitir, reduza a luz perto da tela: o fundo escuro ganha contraste.',
-    Component: Capa,
-  },
-  poll('p-uso', 'uso-ia', 1.5,
-    'Quebra-gelo. "A maioria já usa. A pergunta de hoje é o que muda quando a IA deixa de responder e passa a executar."',
-    'Antes de começar'),
-
-  // ---------------------------------------------------------------- conexão pessoal (curta)
-  {
-    id: 'faculdade', title: 'Trajetória: a graduação', steps: 3, flow: 'still', minutes: 2,
-    notes: 'Conexão, não currículo. Um clique por item.\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/public/fotos (ver LEIA-ME.txt).',
-    Component: Faculdade,
-  },
-  {
-    id: 'carreira', title: 'Trajetória: CSN → TI → IA', steps: 3, flow: 'still', minutes: 3,
-    notes: 'Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Como se encontrou na IA.\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
-    Component: Carreira,
-  },
-
-  // ---------------------------------------------------------------- IA na engenharia: passado e nova era
-  secao('s1', '01', 'A IA já está na engenharia', 'O que mudou é o tipo de IA.'),
-  {
-    id: 'passado', title: 'IA na engenharia há décadas', steps: 2, flow: 'still', minutes: 3,
-    notes: 'Sendai 1987 (fuzzy, Hitachi) · redes neurais em diagnóstico por vibração (anos 1990) · NASA ST5 2006 (antena por algoritmo evolutivo, voou de 22/03 a 30/06/2006) · Airbus 2015 (partição biônica, 45% mais leve) · GM 2018 (suporte 40% mais leve, 20% mais resistente, 8 peças em 1, prova de conceito).\nClique: a mensagem.',
-    Component: Passado,
-  },
-  {
-    id: 'fotos3d', title: 'Nova era: fotos viram 3D', steps: 3, flow: 'none', minutes: 3,
-    notes: 'A animação roda sozinha: fotos → nuvem de pontos → sólido. É uma ilustração do conceito.\nGaussian Splatting (SIGGRAPH 2023) reconstrói, não "gera". TRELLIS.2 (Microsoft, 12/2025, MIT) gera 3D a partir de uma imagem.\nHonestidade: precisão ainda não substitui metrologia.',
-    Component: Fotos3D,
-  },
-  {
-    id: 'novaera', title: 'Nova era: a IA propõe', steps: 4, flow: 'still', minutes: 4,
-    notes: 'Um clique por linha. Números são dos fabricantes (SimAI 10-100×, LEAP 71 5 kN).\nMensagem: antes a IA otimizava dentro das nossas regras; agora ela propõe geometria, escreve código e conversa.',
-    Component: NovaEra,
-  },
-
-  // ---------------------------------------------------------------- agentes
-  secao('s2', '02', 'Agentes de IA', 'Da resposta à execução.'),
-  {
-    id: 'agente-def', title: 'O que é um agente', steps: 3, flow: 'still', minutes: 2.5,
-    notes: 'Clique 1: o diagrama de malha fechada. Clique 2: a analogia com controle.\nObjetivo = setpoint · planejar = controlador · ferramentas = atuador · verificar = sensor.',
-    Component: AgenteDef,
-  },
-  {
-    id: 'agente-demo', title: 'Demo: agente dimensiona uma bomba', steps: 5, flow: 'still', minutes: 6,
-    notes: 'IDEAL: faça ao vivo (Claude ou outro assistente com execução de código) com o mesmo pedido. Este slide é o backup.\nNúmeros conferidos: água 20 °C, DN 80 (D = 77,9 mm), aço comercial ε = 0,045 mm, Colebrook, K acessórios = 8, η = 70%.\nv = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,8 m · hm = 1,25 m · H = 24,0 m · P eixo = 2,8 kW.\nJoukowsky com a ≈ 1200 m/s: ΔH ≈ 214 m (pior caso, fechamento instantâneo).\nGancho: "esse foi o tema da minha IC". A decisão de engenharia continua humana.',
-    Component: AgenteDemo,
-  },
-
-  // ---------------------------------------------------------------- manchetes
-  secao('s3', '03', 'As manchetes', 'E o que está por trás delas.'),
-  {
-    id: 'mural', title: 'Mural de manchetes', steps: 2, flow: 'laminar', minutes: 1.5,
-    notes: 'Passe rápido pelas manchetes. Clique: destaque para Navier-Stokes.',
-    Component: Mural,
-  },
-  {
-    id: 'manchete', title: 'Manchete Navier-Stokes', steps: 2, flow: 'turbulent', minutes: 1,
-    notes: 'O fundo entra em regime turbulento de propósito. Pausa dramática.',
-    Component: Manchete,
-  },
-  poll('p-ns', 'ns-manchete', 1.5, 'Tom neutro entre empresas de IA. Revele: alegação em avaliação. RECHECAR o status antes do evento.'),
-  {
-    id: 'fato', title: 'Manchete × fato', steps: 6, flow: 'still', minutes: 3,
-    notes: 'Um clique por linha. Status de 28/10/2026: rechecar antes de subir no palco.',
-    Component: ManchetexFato,
-  },
-  {
-    id: 'escala', title: 'Escala: 10.000 agentes', steps: 3, flow: 'laminar', minutes: 1.5,
-    notes: 'Conecte com a seção de agentes: isto é um sistema com milhares de agentes trabalhando em paralelo.',
-    Component: Escala,
-  },
-
-  // ---------------------------------------------------------------- analogia da eletricidade
-  secao('s4', '04', 'Já vimos esse filme', 'A eletricidade levou décadas para mudar as fábricas.'),
-  poll('p-eletricidade', 'eletricidade', 1.5, 'Chute da plateia. Revele: ≈ 40 anos (Paul David, 1990).'),
-  {
-    id: 'fabrica', title: 'A fábrica: do vapor à IA (3D)', steps: 6, flow: 'none', minutes: 6,
-    notes: '1880 vapor + eixo no teto + correias.\n1882→ motor elétrico no lugar do vapor, tudo igual (≈5% da força motriz em 1899).\n1900-1920 um motor por máquina: o layout segue o processo (≈50% em 1920).\n1913 linha de montagem, Ford Highland Park.\nAnos 1920: o salto, ~40 anos depois.\nHoje: plugar IA no processo antigo = motor elétrico no eixo.',
-    Component: FabricaHistoria,
-  },
-  {
-    id: 'ano4', title: 'Estamos no ano 4', steps: 3, flow: 'laminar', minutes: 2,
-    notes: 'Eletricidade ≈ 40 anos; IA generativa popularizada em 11/2022 (ChatGPT) → ≈ 4 anos.\nPergunta: quem vai redesenhar a fábrica? Vocês.',
-    Component: Ano4,
-  },
-
-  // ---------------------------------------------------------------- carreiras e fechamento
-  {
-    id: 'gargalos', title: 'O que a nova fábrica exige', steps: 3, flow: 'still', minutes: 3,
-    notes: 'Especificar (cota e tolerância), validar (ensaio e metrologia), governar (FMEA e normas).',
-    Component: Gargalos,
-  },
-  poll('p-palavra', 'palavra', 2,
-    'Nuvem de palavras. Leia 3 ou 4 em voz alta. Trate ansiedade com honestidade: tarefas de nível inicial são as mais expostas.'),
-  secao('s5', '05', 'Quem vai redesenhar a fábrica', 'Frentes de carreira para quem vem da mecânica.'),
-  {
-    id: 'carreiras', title: 'Frentes de carreira', steps: 2, flow: 'still', minutes: 4,
-    notes: 'Clique 1: trilha de gestão. Use a sua trajetória como prova.',
-    Component: Carreiras,
-  },
-  poll('p-trilha', 'trilha', 2, 'Comente a frente mais votada e conecte a uma ação concreta.'),
-  {
-    id: 'acoes', title: 'Três ações', steps: 3, flow: 'still', minutes: 2,
-    Component: Acoes,
-  },
-  {
-    id: 'fim', title: 'Perguntas', steps: 1, flow: 'surge', transition: 'wipe', minutes: 10,
-    notes: 'Perguntas da plateia. Se houver vagas ou estágio na 4MATT, mencione aqui.',
-    Component: Obrigado,
-  },
+  { id: 'capa', title: TALK.title, steps: 1, flow: 'laminar', minutes: 0.5, Component: Capa,
+    notes: 'Deixe a capa visível na entrada. O QR abre a participação da plateia.\nTítulo e resumo oficiais preservados.\n' + TALK.summary + '\nRoteiro: 47 min de conteúdo + 3 min de margem + 10 min de perguntas. A margem serve para a demo e as votações, sem acrescentar assuntos.' },
+  { id: 'dilema', title: 'Uma decisão dentro da fábrica', steps: 2, flow: 'still', minutes: 1.5, Component: Dilema,
+    notes: 'Abertura: imaginem que trabalham na engenharia de uma fábrica. Um sistema de IA recomenda intervir em uma bomba. A manutenção vê risco e a produção quer manter a linha. Quem define o objetivo? Quem pode discordar, com quais evidências?\nSituação hipotética: não atribuir este caso a um cliente. O cálculo de projeto que veremos depois é uma etapa desse contexto, não um modelo de previsão de falha.' },
+  { id: 'p-autonomia', title: 'Votação: autonomia para agir', steps: 2, flow: 'still', minutes: 1, question: 'autonomia-bomba-v3',
+    Component: ({step}) => <Poll qid="autonomia-bomba-v3" step={step} kicker="Seu ponto de partida" />,
+    notes: '30 segundos para responder, depois encerrar. Sem resposta universalmente certa: explorar quais evidências e consequências mudariam a decisão. Se a rede falhar, usar mãos levantadas e continuar. Retomar essa posição no fechamento.' },
+  { id: 'trajetoria', title: 'A engenharia conecta essa trajetória', steps: 3, flow: 'still', minutes: 1.5, Component: Trajetoria,
+    notes: 'Conexão em 1,5 minuto. Formação: Trem Ki Voa, monitoria e IC em bombeamento. Indústria: gestão de equipamentos na CSN. TI: gestão de ativos físicos e digitais. IA: Head of AI na 4MATT.\nConte uma experiência concreta, sem inventar motivação ou episódio. A trajetória é um exemplo pessoal, não prova de que o mesmo caminho funciona para todos.' },
+  { id: 'passado', title: 'IA na engenharia antes dos chatbots', steps: 2, flow: 'still', minutes: 1, Component: Passado,
+    notes: 'Dois exemplos bastam. A busca evolutiva e o design generativo já exploravam alternativas. A novidade não é uma fronteira absoluta entre otimizar e propor: modelos de linguagem ampliam interação e integração.\nFontes: ' + SOURCES.nasa.url + '\n' + SOURCES.airbus.url },
+  { id: 'tecnologias', title: 'As tecnologias por trás da transformação', steps: 4, flow: 'still', minutes: 2.5, Component: Tecnologias,
+    notes: 'Um clique por capacidade. Prever falha; gerar código e alternativas; buscar contexto em documentos; coordenar ferramentas e ações. As capacidades podem coexistir. Recuperar um documento não garante que ele seja correto ou vigente. Simulação e medição continuam oferecendo referências de avaliação.\nExemplo de modelo aprendido: SimAI. A Ansys anuncia aceleração de 10–100 vezes em certos processos, com previsões em minutos. Não apresentar como garantia geral. Fonte: ' + SOURCES.simai.url },
+  { id: 'fotos3d', title: 'Representação 3D e precisão', steps: 2, flow: 'none', minutes: 1.5, Component: Fotos3D,
+    notes: 'A animação é ilustrativa, feita com uma peça programada. Ela não demonstra reconstrução de fotos. Gaussian Splatting: representação de cena e novas vistas. TRELLIS.2: geração de ativo 3D de imagem. Não equivalem a um sólido CAD com tolerâncias verificadas ou a um gêmeo digital operacional.\nFontes: ' + SOURCES.gaussian.url + '\n' + SOURCES.trellis.url },
+  { id: 'agente-def', title: 'Como funciona um sistema agente', steps: 3, flow: 'still', minutes: 2, Component: AgenteDef,
+    notes: 'Analogia com malha fechada: planejar, usar ferramentas, observar e avaliar. Diferentemente de uma garantia de estabilidade de controle, o ciclo pode falhar, repetir erro ou atingir o orçamento. Definir permissões, critérios de aceitação, condição de parada e intervenção. A própria autocrítica do modelo não basta como validação independente.' },
+  { id: 'agente-pedido', title: 'Demo: entradas e hipóteses', steps: 2, flow: 'still', minutes: 1, Component: AgentePedido,
+    notes: 'Demo de dimensionamento preliminar: água 20 °C, 30 m³/h, 120 m, D interno 77,9 mm, desnível 18 m, rugosidade 0,045 mm, K=8, rendimento 70%. Usar o mesmo pedido em um assistente que execute código. Exigir hipóteses e dados faltantes.\nO caso de parada na abertura é hipotético e não se demonstra apenas com esta conta de regime permanente. Se a demo ao vivo falhar, continuar pelos slides de referência ou abrir /demo-bombeamento.webm.' },
+  { id: 'agente-exec', title: 'Demo: cálculo rastreável', steps: 3, flow: 'still', minutes: 2, Component: AgenteExec,
+    notes: 'O slide calcula localmente a referência por Colebrook e Darcy–Weisbach; não há chamada de IA aqui. Comparar com a execução do assistente, ou usá-lo como alternativa offline. v=1,748 m/s, Re=136.204, f=0,01992, perdas=6,028 m, H=24,028 m, P eixo=2,801 kW.\nA demo não depende de o modelo errar. Se ele identificar todos os limites, valorizar essa identificação e passar às decisões de projeto.' },
+  { id: 'agente-limites', title: 'Demo: o que falta verificar', steps: 3, flow: 'still', minutes: 2, Component: AgenteLimites,
+    notes: 'H e potência não selecionam uma bomba. Faltam curva do fabricante, ponto de operação, sucção, NPSH e faixa de trabalho. Não prescrever motor de 4 kW como seleção completa.\nJoukowsky: aproximadamente 214 m com celeridade de 1.200 m/s e perda rápida de toda a velocidade. Não generalizar para qualquer parada. Remeter à análise de transiente e às condições reais.\nFontes: ' + SOURCES.pump.url + '\n' + SOURCES.operating.url },
+  { id: 'bomba-empresa', title: 'A bomba dentro da empresa', steps: 3, flow: 'still', minutes: 2.5, Component: BombaEmpresa,
+    notes: 'Transição: a conta terminou; a decisão ainda envolve outras perguntas. Quem garante os dados? Quem compara alternativas? Quem pode abrir uma ordem? Quem pode autorizar uma parada?\nPercorrer operação, engenharia/manutenção, compras e responsável pelo processo. A transformação exige coordenação entre áreas. Exemplo didático, sem métricas de cliente.' },
+  { id: 'processo', title: 'Processo atual e processo redesenhado', steps: 3, flow: 'still', minutes: 2.5, Component: Processo,
+    notes: 'Explicar como um fluxo fragmentado pode passar a compartilhar referências e verificações. O agente prepara trabalho; a política define execução e aprovações. Não prometer percentuais de ganho. Um piloto compara tempo total, retrabalho, falsos alertas e impacto operacional com a situação anterior.' },
+  { id: 'evidencia', title: 'Um resultado publicado de adoção', steps: 3, flow: 'still', minutes: 2, Component: Evidencia,
+    notes: 'Usar a versão publicada em QJE em 2025: 5.172 profissionais, aumento médio de 15% em questões resolvidas por hora. Efeitos heterogêneos: maiores ganhos para os menos experientes e pequenos declínios de qualidade entre os mais experientes.\nResultado daquela operação de atendimento, não previsão de 15% para engenharia ou redução de pessoal. Fonte: ' + SOURCES.work.url },
+  { id: 'fabrica', title: 'Eletrificação e redesenho do trabalho', steps: 3, flow: 'none', minutes: 2.5, Component: FabricaHistoria,
+    notes: 'Três cenas: força central e correias; eletricidade com o mesmo arranjo; motores distribuídos com liberdade de reorganização. A analogia explica o mecanismo dos investimentos complementares, sem prever uma duração para a adoção da IA.\nAlém da ferramenta: processos, formação, integração e experiência de gestão. A ilustração simplifica uma história que variou entre fábricas. Fonte: ' + SOURCES.jcurve.url },
+  { id: 'objetivos', title: 'Objetivos e poder de decisão', steps: 3, flow: 'still', minutes: 2, Component: Objetivos,
+    notes: 'Produção do turno e confiabilidade podem criar prioridades diferentes. Quem define o objetivo do sistema e resolve esse conflito? Quem suporta as consequências?\nLeitura inspirada em Harari: relação entre informação, cooperação e poder. As perguntas do slide são nossas, sem falsa citação. Fonte: ' + SOURCES.harari.url },
+  { id: 'autonomia', title: 'Limites de autonomia e contestação', steps: 3, flow: 'still', minutes: 3, Component: Autonomia,
+    notes: 'A matriz é uma proposta para o caso didático. Consultar documentos; preparar cálculo; solicitar compra; alterar operação. Explicar permissões e rastreabilidade. A organização define quem autoriza e quem responde. Intervenção humana é uma decisão de desenho, não uma propriedade garantida do modelo.\nVoltar à votação inicial: quais evidências mudariam sua escolha?' },
+  { id: 'navier', title: 'Navier–Stokes: anúncio e verificação', steps: 3, flow: 'still', minutes: 2, Component: Navier,
+    notes: 'Caso curto, 2 minutos. OpenAI publicou em 08/09/2026 prova com força externa suave e formalização em Lean. Clay falou em aparente resolução em 11/09 e processo sem pressa. Não dizer que o instituto rejeitou o resultado.\nEscala relatada pela OpenAI: cerca de 10 mil agentes, 88 horas, 2,7 milhões de mensagens, cerca de 130 bilhões de tokens de saída. Esses números não estabelecem retorno econômico para organizações. A atualização de 10/09 atribui à investigação da própria empresa a conclusão sobre ausência de influência dos prompts mencionados na disputa.\nFontes consultadas em 08/11/2026: ' + SOURCES.openai.url + '\n' + SOURCES.clay.url },
+  { id: 'aprendizagem', title: 'Tarefas, empregos e formação', steps: 3, flow: 'still', minutes: 1.5, Component: Aprendizagem,
+    notes: 'Tratar ansiedade sem prometer proteção automática pelo diploma. A automação afeta tarefas e pode deslocar trabalho; novas tarefas dependem de escolhas e contexto.\nProblema de aprendizagem: se tarefas de entrada forem automatizadas, como formar especialistas? Propor comparação de soluções, investigação de erros e retorno de profissionais experientes. Não afirmar que todos os iniciantes são os mais expostos.\nFontes: ' + SOURCES.autor.url + '\n' + SOURCES.tasks.url },
+  { id: 'mercado', title: 'Sua formação abre mais caminhos', steps: 3, flow: 'still', minutes: 2, Component: Mercado,
+    notes: 'Ampliar o horizonte além da função tradicional. Mútua (2023), tabela 6: setor público, serviços de arquitetura/engenharia e construção lideram entre engenheiros típicos registrados e com carteira assinada, em RAIS 2019. É estoque histórico, não ranking de novas admissões de todos os diplomados.\nFebraban 2026: 42% dos bancos consultados pretendem ampliar TI. Perfis de IA e dados demandados não implicam graduação específica. Brasscom: projeção de cerca de 33 mil novos empregos formais no macrossetor TIC em 2026, de todas as formações. Não tratar como vagas abertas de IA.\nA ponte de competências é uma interpretação: formular problemas, testar hipóteses e avaliar soluções. O ingresso exige conhecimentos adicionais. Não foi encontrado ranking nacional comparável de contratações recentes de todos os graduados em engenharia. Detalhes em /material e docs/pesquisa-setores-engenharia.md.\nFontes: ' + SOURCES.mutua.url + '\n' + SOURCES.febraban.url + '\n' + SOURCES.brasscom.url },
+  { id: 'carreiras-tec', title: 'Carreiras em tecnologia', steps: 3, flow: 'still', minutes: 3.5, Component: CarreirasTecnologia,
+    notes: 'Uma frente por clique. Confiabilidade: avaliar modelo e falsos alertas. Simulação: comparar previsões e erro fora do domínio. Agentes: integrar documentos e ferramentas com testes.\nPara cada frente, comentar a formação que já possuem e a competência adicional. O material /material traz um projeto por frente. São caminhos formativos, não levantamento de vagas.' },
+  { id: 'carreiras-gestao', title: 'Carreiras em gestão', steps: 3, flow: 'still', minutes: 3, Component: CarreirasGestao,
+    notes: 'Produto: escolher problema e critério de aceitação. Transformação: redesenhar fluxo entre áreas. Governança: evidências e limites de autonomia.\nExemplos de entregas: proposta de piloto, mapa do processo e matriz de autonomia. Head of AI é um exemplo de evolução de liderança na sua trajetória, não cargo de entrada.' },
+  { id: 'projeto', title: 'Um projeto em 30 dias', steps: 3, flow: 'still', minutes: 3, question: 'trilha-projeto-v3', Component: PlanoProjeto,
+    notes: 'Abra a segunda votação. Passo 0: escolher uma frente. Passo 1: encerrar e mostrar um projeto conforme a frente mais votada. Se não houver votos ou houver empate, indicar claramente a escolha de exemplo. Passo 2: apresentar as quatro semanas.\nProjeto pequeno, com referência, dados, comparação e teste de falhas. QR no fechamento leva ao plano completo e às fontes. Se não houver internet, usar escolha por mãos levantadas.' },
+  { id: 'conclusao', title: 'Retorno ao dilema inicial', steps: 3, flow: 'still', minutes: 1, Component: Conclusao,
+    notes: 'Retomar a bomba: quais dados sustentam a recomendação, quais limites ela tem, quem pode agir?\nFechamento: a formação em engenharia ajuda vocês a construir sistemas e reconhecer seus limites. Escolham um problema pequeno, testem uma solução e mostrem, com evidências, em quais condições ela merece confiança. Depois, abrir perguntas.' },
+  { id: 'fim', title: 'Perguntas e material de apoio', steps: 1, flow: 'laminar', minutes: 10, Component: Obrigado,
+    notes: 'Perguntas: 10 minutos. O QR abre /material, com o título e resumo oficiais, fontes, projetos por frente e plano de 30 dias. Vagas e oportunidades só devem ser mencionadas se houver informações reais confirmadas pelo palestrante.' },
 ]
+export const PLANNED_MINUTES = SLIDES.reduce((sum, slide) => sum + (slide.minutes ?? 0), 0)
