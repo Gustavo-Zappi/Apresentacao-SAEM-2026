@@ -280,7 +280,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .secao-bg img { filter: saturate(0.85) brightness(0.8); }
 .secao-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--c-ink-deep) 0%, rgba(18,15,46,0.75) 30%, rgba(18,15,46,0.15) 70%, rgba(18,15,46,0.35) 100%); pointer-events: none; }
 .secao-bg.islot-empty::after { display: none; }
-.traj4 .tcard h3 { font-size: 36px; margin: 20px 0 8px; line-height: 1.15; }
+.traj4 .tcard h3 { font-size: 36px; margin: 14px 0 6px; line-height: 1.15; }
 .traj4 .tcard p { font-size: 28px; }
 .tag-year { font-size: 30px; padding: 5px 14px; background: #FFB547; }
 .tl.tl-img { margin-top: 44px; gap: 26px; }
