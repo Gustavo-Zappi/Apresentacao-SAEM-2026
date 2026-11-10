@@ -2,17 +2,28 @@
 
 **Critério de sucesso:** o aluno sai entendendo que a IA já está na engenharia há décadas, que a IA generativa e os agentes abrem uma nova era, e que, como na eletrificação, o ganho vem de quem redesenha o processo.
 
-## Estrutura (28 slides, ≈ 60 min com perguntas)
+## Estrutura (25 slides, ≈ 66 min: 56 de conteúdo + 10 de perguntas)
 
-| # | Bloco | Conteúdo | Interação |
-|---|---|---|---|
-| 1-2 | Abertura | Capa com QR · quebra-gelo | Votação: uso de IA |
-| 3-4 | Conexão pessoal | Trem Ki Voa, monitoria (5 disciplinas), IC em bombeamento · CSN → Ativos de TI → IA | Fotos opcionais |
-| 5-8 | 01 · IA na engenharia | Linha do tempo 1987-2018 · fotos → 3D (animação 3D) · a IA passa a propor | |
-| 9-11 | 02 · Agentes | Definição como malha fechada · demo: agente dimensiona uma bomba | Demo ao vivo (slide é backup) |
-| 12-17 | 03 · Manchetes | Mural · Navier-Stokes · manchete × fato · escala de 10.000 agentes | Votação: a IA resolveu NS? |
-| 18-21 | 04 · Já vimos esse filme | Pergunta da eletricidade · fábrica 3D em 6 passos · "estamos no ano 4" | Votação: quanto tempo levou? |
-| 22-28 | 05 · Carreiras | Três gargalos · nuvem de palavras · frentes de carreira · três ações · perguntas | Nuvem + votação de trilha |
+Numeração igual à do palco: `#n` no link e no canto da tela (`/palco#10.3` = slide 10, passo 3). Versão alinhada ao deck de 10/11/2026.
+
+| # | Bloco | Conteúdo | Interação | Tempo |
+|---|---|---|---|---|
+| 0-3 | Abertura e trajetória | Capa com QR · graduação (UFSJ, Trem Ki Voa, monitoria, IC em bombeamento) · carreira (CSN → Ativos de TI → pós USP → IA) | Votação 1: uso de IA (#3) · fotos reais nos cards | 8,5 min |
+| 4-7 | 01 · IA na engenharia | Linha do tempo 1987-2018 com fotos · fotos → 3D (turbina a vapor e simulação) · a IA passa a propor | | 10,5 min |
+| 8-10 | 02 · Agentes | Agente como malha fechada, com malha de vazão 3D simulada · demo: agente dimensiona o sistema de bombeamento | Demo ao vivo (slide é backup) | 9,5 min |
+| 11-15 | 03 · Manchetes | Mural · Navier-Stokes · manchete × fato · escala de 10.000 agentes | | 7,5 min |
+| 16-18 | 04 · Já vimos esse filme | Pergunta retórica da eletricidade · fábrica 3D em 6 passos · "estamos no ano 4" | | 8,5 min |
+| 19-23 | 05 · Carreiras | Três gargalos · frentes de carreira · três ações | Votação 2: frente de carreira (#22) | 11,5 min |
+| 24 | Perguntas | | | 10 min |
+
+**Slides que se montam sozinhos (sem cliques):** #1, #2, #5, #9, #15, #18 e #19.
+
+**Mudanças em relação à versão de 28 slides:**
+- A votação de uso de IA passou para depois da trajetória (#3).
+- Saíram três interações: votação de Navier-Stokes, votação da eletricidade e nuvem de palavras. A pergunta da eletricidade virou pergunta retórica na abertura da seção 04 (#16); o "alegação em avaliação" fecha o manchete × fato (#14); a resposta à ansiedade da plateia foi para os gargalos (#19).
+- O slide "O que é um agente" (#9) mostra o ciclo ao lado de uma malha de vazão de bombeamento em 3D, com perturbação a cada ~11 s.
+
+Fala completa, teoria e perguntas prováveis de cada slide: [`roteiro-palestra-saem-2026.html`](roteiro-palestra-saem-2026.html).
 
 ## Fontes dos fatos no telão
 
@@ -49,4 +60,5 @@ v = 1,75 m/s · Re = 1,36·10⁵ · f = 0,0199 · hf = 4,78 m · hm = 1,25 m · 
 1. **Universidade:** a busca pública associa a Trem Ki Voa e a IC (Pellegrini, Zappi e Vilalta, ERMAC-RS 2020) à **UFSJ**. O slide diz "Engenharia Mecânica · UFSJ" (`app/src/stage/speaker.ts`).
 2. **Título:** em 09/11/2026 a capa passou a usar o título oficial, "Inteligência Artificial: transformando organizações e criando novas carreiras". "Do vapor aos agentes de IA" ficou como subtítulo. Propostas da v3: [`analise-v3-pensadores.md`](analise-v3-pensadores.md).
 3. **Motivos da migração para TI e da chegada à IA:** estão nas notas como roteiro de fala, não no slide.
-4. **Fotos:** `app/public/fotos/` (nomes em `LEIA-ME.txt`).
+4. **Fotos:** ficam em `app/src/images/`. A ligação de cada card com o arquivo está em `app/src/data/fotos.ts` (`FOTO_ARQUIVO`, slides #1 e #2) e em `app/src/data/images.ts` (campo `src`, slide #5). O card da monitoria (#1) ainda não tem foto.
+5. **Créditos das imagens de terceiros (#5):** NASA, Airbus e GM/Autodesk estão sem crédito na tela; preencher `credit` em `app/src/data/images.ts`.
