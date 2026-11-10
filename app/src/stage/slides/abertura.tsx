@@ -6,6 +6,7 @@ import ImageSlot from '../../components/ImageSlot'
 import type { ImgId } from '../../data/images'
 import type { SlideProps } from '../types'
 
+/** Capa: fica no ar enquanto a plateia entra. Ordem de leitura: evento, título, promessa, quem fala, QR. */
 export function Capa({ step }: SlideProps) {
   return (
     <Slide step={step}>
@@ -19,32 +20,33 @@ export function Capa({ step }: SlideProps) {
       <p className="lead" data-in style={{ marginTop: 40, maxWidth: 1100, fontSize: 34 }}>
         Do vapor aos agentes de IA: o que a história da engenharia ensina sobre o que vem agora
       </p>
-      <div data-in style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 28 }}>
-        <div>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 32, marginTop: 8 }}>{SPEAKER.role}</div>
-        </div>
+      <div data-in style={{ marginTop: 'auto' }}>
+        <div className="speaker-name">{SPEAKER.name}</div>
+        <div className="speaker-role">{SPEAKER.role}</div>
       </div>
-      <div data-in style={{ position: 'absolute', right: 128, bottom: 96, width: 380, textAlign: 'center' }}>
-        <div className="qr-card" style={{ padding: 22, borderRadius: 22 }}>
+      <div className="cover-qr" data-in="scale" data-delay="0.15">
+        <div className="qr-card sm">
           <QR url={audienceUrl()} />
-          <div className="url" style={{ fontSize: 24 }}>{audienceUrlLabel()}</div>
+          <div className="url">{audienceUrlLabel()}</div>
         </div>
-        <div className="mono" style={{ fontSize: 26, fontWeight: 700, marginTop: 18, letterSpacing: '0.06em' }}>
-          ENTRE AGORA E VOTE
-        </div>
+        <div className="cover-cta">ENTRE AGORA E VOTE</div>
       </div>
     </Slide>
   )
 }
 
+/**
+ * Abertura de seção. Chega por trás da cortina: a entrada espera a cortina liberar o lado esquerdo
+ * e então segue número, filete, título e subtítulo.
+ */
 export function Secao({ step, n, title, sub, img }: SlideProps & { n: string; title: string; sub: string; img?: ImgId }) {
   return (
-    <Slide step={step}>
+    <Slide step={step} delay={0.5}>
       {img && <ImageSlot id={img} height="100%" width="58%" optional className="secao-bg" radius={0} />}
-      <div style={{ marginTop: 'auto', marginBottom: 'auto', position: 'relative' }}>
-        <div className="mono accent-t" data-in style={{ fontSize: 260, fontWeight: 600, lineHeight: 1, letterSpacing: '-0.05em', opacity: 0.9 }}>{n}</div>
-        <h1 className="h-display" data-split style={{ maxWidth: 1500, marginTop: 24 }}>{title}</h1>
+      <div className="secao">
+        <div className="secao-n" data-in>{n}</div>
+        <div className="secao-rule" data-in="draw" />
+        <h1 className="h-display" data-split style={{ maxWidth: 1500 }}>{title}</h1>
         <p className="lead" data-in style={{ marginTop: 32 }}>{sub}</p>
       </div>
     </Slide>

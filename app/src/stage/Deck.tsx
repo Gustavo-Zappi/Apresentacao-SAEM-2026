@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import gsap from 'gsap'
 import FlowField, { setFlow } from '../components/FlowField'
+import Clock from '../components/Clock'
+import { EASE } from '../lib/motion'
 import { SLIDES } from './slides'
 import { QUESTION_BY_ID } from '../data/questions'
 import { live } from '../lib/live'
@@ -94,24 +97,30 @@ export default function Deck() {
       return
     }
     busy.current = true
+    const dir = next.i > cur.i ? 1 : -1
     const done = () => {
       busy.current = false
       const t = target.current
       if (t.i !== shownRef.current.i || t.s !== shownRef.current.s) run()
     }
-    const swap = () => setShown({ ...target.current })
+    // flushSync: o slide novo já está montado (com a entrada dele armada) antes de o palco reaparecer
+    const swap = () => flushSync(() => setShown({ ...target.current }))
     const wipe = SLIDES[next.i].transition === 'wipe'
+    const inner = innerRef.current
     const tl = gsap.timeline({ onComplete: done })
     if (wipe) {
-      tl.set(wipeRef.current, { transformOrigin: 'left center' })
-        .to(wipeRef.current, { scaleX: 1, duration: 0.5, ease: 'power3.in' })
+      // abertura de seção: uma cortina cruza a tela no sentido da navegação
+      tl.set(wipeRef.current, { transformOrigin: dir > 0 ? 'left center' : 'right center' })
+        .to(wipeRef.current, { scaleX: 1, duration: 0.55, ease: EASE.inOut })
         .call(swap)
-        .set(wipeRef.current, { transformOrigin: 'right center' }, '+=0.08')
-        .to(wipeRef.current, { scaleX: 0, duration: 0.6, ease: 'power3.out' })
+        .set(inner, { autoAlpha: 1, y: 0 })
+        .set(wipeRef.current, { transformOrigin: dir > 0 ? 'right center' : 'left center' }, '+=0.12')
+        .to(wipeRef.current, { scaleX: 0, duration: 0.7, ease: EASE.inOut })
     } else {
-      tl.to(innerRef.current, { autoAlpha: 0, y: -24, filter: 'blur(10px)', duration: 0.28, ease: 'power2.in' })
+      // troca comum: o slide atual sai no sentido da navegação e o próximo assenta no lugar
+      tl.to(inner, { autoAlpha: 0, y: -18 * dir, duration: 0.26, ease: EASE.in })
         .call(swap)
-        .set(innerRef.current, { autoAlpha: 1, y: 0, filter: 'blur(0px)' }, '+=0.06')
+        .fromTo(inner, { autoAlpha: 0, y: 14 * dir }, { autoAlpha: 1, y: 0, duration: 0.5, ease: EASE.out, immediateRender: false }, '+=0.04')
     }
   }, [])
 
@@ -246,6 +255,7 @@ export default function Deck() {
   return (
     <div className="viewport" onClick={(e) => { if (e.detail === 1 && e.clientX > window.innerWidth * 0.85) next() }}>
       <FlowField />
+      <div className="vignette" aria-hidden />
       <div className="stage" style={{ transform: `scale(${scale}) translate(-960px, -540px)` }}>
         <div ref={innerRef} style={{ position: 'absolute', inset: 0 }}>
           <SyncContext.Provider value={!alert || live.mode === 'local'}>
@@ -254,6 +264,10 @@ export default function Deck() {
         </div>
       </div>
       <div ref={wipeRef} className="wipe" />
+      {/* camada fixa do palco: fica por cima das transições e na mesma escala dos slides */}
+      <div className="stage stage-fixed" style={{ transform: `scale(${scale}) translate(-960px, -540px)` }}>
+        <Clock />
+      </div>
       {black && <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 40 }} />}
       <div className="progress" style={{ width: `${((shown.i + 1) / total) * 100}%` }} />
       <div className={`hud ${alert ? 'alert' : ''}`} onClick={(e) => { e.stopPropagation(); if (live.mode === 'supabase' && !keyOk) askKey() }}>

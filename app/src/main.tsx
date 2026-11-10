@@ -16,6 +16,9 @@ import '@fontsource/jetbrains-mono/latin-600.css'
 import './styles.css'
 
 gsap.registerPlugin(useGSAP, SplitText, DrawSVGPlugin)
+// Palco guiado por cliques: uma instrução nova para a mesma propriedade substitui a anterior.
+// Sem isso, dois cliques rápidos deixam animações antigas disputando o estado final do slide.
+gsap.defaults({ overwrite: 'auto' })
 
 // Ensaio/testes: acesso ao GSAP pelo console (só em `npm run dev`).
 if (import.meta.env.DEV) (window as unknown as { gsap: typeof gsap }).gsap = gsap

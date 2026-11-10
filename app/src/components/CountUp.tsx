@@ -1,15 +1,21 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
+import { EASE } from '../lib/motion'
 
 const fmt = (v: number, decimals: number) =>
   v.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })
 
-/** Número que "corre" até o valor quando `run` fica verdadeiro. */
+/**
+ * Número que "corre" até o valor quando `run` fica verdadeiro.
+ * O valor final fica reservado no layout (invisível), então a largura não muda durante a contagem
+ * e nada ao redor treme. Prefixo e sufixo saem em <i> para o CSS dar a eles um peso menor.
+ */
 export default function CountUp({
   to,
   decimals = 0,
   run = true,
-  duration = 1.8,
+  duration = 1.6,
+  delay = 0,
   prefix = '',
   suffix = '',
   className,
@@ -18,6 +24,7 @@ export default function CountUp({
   decimals?: number
   run?: boolean
   duration?: number
+  delay?: number
   prefix?: string
   suffix?: string
   className?: string
@@ -27,19 +34,28 @@ export default function CountUp({
 
   useEffect(() => {
     const el = ref.current!
-    const target = run ? to : 0
     const tw = gsap.to(obj.current, {
-      v: target,
+      v: run ? to : 0,
       duration: run ? duration : 0.3,
-      ease: run ? 'expo.out' : 'none',
+      delay: run ? delay : 0,
+      ease: run ? EASE.out : 'none',
       onUpdate: () => {
-        el.textContent = prefix + fmt(obj.current.v, decimals) + suffix
+        el.textContent = fmt(obj.current.v, decimals)
       },
     })
     return () => {
       tw.kill()
     }
-  }, [to, run, decimals, duration, prefix, suffix])
+  }, [to, run, decimals, duration, delay])
 
-  return <span ref={ref} className={className}>{prefix + fmt(0, decimals) + suffix}</span>
+  return (
+    <span className={`countup ${className ?? ''}`}>
+      {prefix && <i className="cu-pre">{prefix}</i>}
+      <span className="cu-num">
+        <span className="cu-ghost" aria-hidden>{fmt(to, decimals)}</span>
+        <span className="cu-val" ref={ref}>{fmt(0, decimals)}</span>
+      </span>
+      {suffix && <i className="cu-suf">{suffix}</i>}
+    </span>
+  )
 }

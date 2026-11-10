@@ -389,21 +389,15 @@ export default function TurbineCloud({ size = 860, sim = false }: { size?: numbe
       <div ref={ref} style={{ width: size, height: size }} />
       <div className="sim-legend" style={{ opacity: phase === 3 ? 1 : 0 }}>
         <div className="mono">TEMPERATURA DO VAPOR</div>
-        <div className="bar" />
+        <div className="ramp" />
         <div className="ends mono"><span>{T_IN} °C entrada</span><span>{String(T_OUT).replace('.', ',')} °C escape</span></div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 10, marginTop: -34 }}>
+      {/* etapas do processo: a etapa da vez acende; as concluídas ficam marcadas */}
+      <div className="phases">
         {PHASES.map((p, i) => (
-          <span
-            key={p}
-            className="mono"
-            style={{
-              fontSize: 22, fontWeight: 700, padding: '10px 14px', borderRadius: 8, whiteSpace: 'nowrap',
-              background: i === phase ? (i === 3 ? '#FF6A3D' : 'var(--c-purple)') : 'rgba(255,255,255,.08)',
-              color: '#fff', transition: 'background .4s',
-            }}
-          >
-            {i + 1} · {p}
+          <span key={p} className={`phase mono ${i === phase ? 'now' : i < phase ? 'done' : ''}`}>
+            <b>{i + 1}</b>
+            {p}
           </span>
         ))}
       </div>

@@ -8,6 +8,7 @@ import { audienceUrl } from '../../config'
 import { SPEAKER } from '../speaker'
 import type { SlideProps } from '../types'
 
+/** Três gargalos, um por clique. O cartão da vez acende (borda e número); os outros ficam inteiros na tela. */
 export function Gargalos({ step }: SlideProps) {
   const G: [string, string, ImgId, ReactNode][] = [
     ['Especificar', 'Como a cota e a tolerância no desenho: quem especifica bem comanda a ferramenta.', 'gargalo-especificar', <IcRuler />],
@@ -22,7 +23,7 @@ export function Gargalos({ step }: SlideProps) {
         {G.map(([t, d, img, icon], i) => (
           <div key={t} className="card" data-step={i} style={{ paddingTop: 28 }}>
             <ImageSlot id={img} icon={icon} height={200} style={{ marginBottom: 26 }} />
-            <h3 style={{ fontSize: 44 }}><span className="accent-t mono" style={{ marginRight: 18 }}>{i + 1}</span>{t}</h3>
+            <h3 style={{ fontSize: 44 }}><span className="num mono">{i + 1}</span>{t}</h3>
             <p>{d}</p>
           </div>
         ))}
@@ -45,14 +46,15 @@ const GES = [
   ['Liderança de IA', 'a sua trajetória'],
 ]
 
+/** Frentes de carreira: cada trilha entra num clique, com as linhas em cascata (ritmo de leitura da lista). */
 export function Carreiras({ step }: SlideProps) {
   const col = (title: string, rows: string[][], s: number) => (
-    <div data-step={s}>
-      <div className="mono accent-t" style={{ fontSize: 30, fontWeight: 700, letterSpacing: '0.12em', marginBottom: 20 }}>{title}</div>
+    <div className="lane" data-step={s}>
+      <div className="label lane-h" data-sub>{title}</div>
       {rows.map(([f, p]) => (
-        <div key={f} style={{ padding: '16px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-          <div style={{ fontSize: 34, fontWeight: 700 }}>{f}</div>
-          <div className="muted" style={{ fontSize: 27, marginTop: 4 }}>ponte: {p}</div>
+        <div key={f} className="lane-row" data-sub>
+          <div className="lane-t">{f}</div>
+          <div className="lane-p"><b>ponte:</b> {p}</div>
         </div>
       ))}
     </div>
@@ -69,6 +71,7 @@ export function Carreiras({ step }: SlideProps) {
   )
 }
 
+/** Três ações, uma por clique. O número da ação da vez fica preenchido; nada some nem perde leitura. */
 export function Acoes({ step }: SlideProps) {
   const A = [
     ['Use IA como colega de estudo', 'e verifique a resposta como verificaria uma conta.'],
@@ -79,13 +82,13 @@ export function Acoes({ step }: SlideProps) {
     <Slide step={step}>
       <div className="kicker" data-in>Fechamento</div>
       <h1 className="h1" data-split>Três ações para segunda-feira</h1>
-      <div style={{ marginTop: 72 }}>
+      <div style={{ marginTop: 64 }}>
         {A.map(([t, d], i) => (
-          <div key={t} data-step={i} style={{ display: 'flex', gap: 48, alignItems: 'baseline', padding: '30px 0', borderTop: '1px solid rgba(255,255,255,.12)' }}>
-            <span className="mono accent-t" style={{ fontSize: 72, fontWeight: 700 }}>{i + 1}</span>
+          <div key={t} className="action" data-step={i}>
+            <span className="action-n mono">{i + 1}</span>
             <div>
-              <div style={{ fontSize: 50, fontWeight: 700, letterSpacing: '-0.02em' }}>{t}</div>
-              <div className="lead" style={{ fontSize: 36, marginTop: 6 }}>{d}</div>
+              <div className="action-t">{t}</div>
+              <div className="lead action-d">{d}</div>
             </div>
           </div>
         ))}
@@ -96,16 +99,17 @@ export function Acoes({ step }: SlideProps) {
 
 export function Obrigado({ step }: SlideProps) {
   return (
-    <Slide step={step} className="center">
+    <Slide step={step} className="center" delay={0.5}>
       <h1 className="h-display" data-split style={{ fontSize: 180 }}>Perguntas?</h1>
       <p className="lead" data-in style={{ marginTop: 32 }}>Obrigado, SAEM 2026.</p>
-      <div data-in style={{ marginTop: 72, display: 'flex', gap: 56, alignItems: 'center' }}>
+      <div className="closing" data-in>
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 32, marginTop: 6 }}>{SPEAKER.role}</div>
+          <div className="speaker-name">{SPEAKER.name}</div>
+          <div className="speaker-role" style={{ marginTop: 6 }}>{SPEAKER.role}</div>
         </div>
+        <i className="closing-div" aria-hidden />
         <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 64 }} />
-        <div className="qr-card" style={{ width: 200, padding: 14, borderRadius: 16 }}>
+        <div className="qr-card xs">
           <QR url={audienceUrl()} />
         </div>
       </div>

@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import ImageSlot from '../../components/ImageSlot'
 import { IcFactory } from '../../components/Icons'
+import { EASE } from '../../lib/motion'
 import type { ImgId } from '../../data/images'
 import { Factory } from '../../three/factory'
 import type { SlideProps } from '../types'
@@ -19,10 +20,20 @@ export const CAPTIONS: { yr: string; h: string; p: string; stat: string; img: Im
   { img: 'hist-hoje', yr: 'Hoje', h: 'E a IA?', p: 'Colocar IA no processo antigo é trocar o vapor pelo motor elétrico. O ganho vem de redesenhar a fábrica.', stat: '' },
 ]
 
+/**
+ * A fábrica em seis tempos. A cena 3D muda a cada clique e a legenda acompanha:
+ * o texto atual sai, o painel ajusta a altura sem pulo e o texto novo entra em cascata
+ * (ano, título, explicação, dado), a tempo de o palestrante começar a frase.
+ * O andamento dos seis tempos fica no topo do painel, longe do relógio.
+ */
 export function FabricaHistoria({ step }: SlideProps) {
   const host = useRef<HTMLDivElement>(null)
   const fac = useRef<Factory | null>(null)
   const capRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
+  const last = Math.min(step, CAPTIONS.length - 1)
+  const [shown, setShown] = useState(last)
+  const lastH = useRef(0)
 
   useEffect(() => {
     const f = new Factory(host.current!, 1920, 1080, 380)
@@ -38,51 +49,97 @@ export function FabricaHistoria({ step }: SlideProps) {
     fac.current?.setStep(step)
   }, [step])
 
+  // saída do texto atual
   useGSAP(
     () => {
-      gsap.fromTo(capRef.current!.children, { y: 26, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.7, ease: 'power3.out', delay: 0.2 })
+      const kids = bodyRef.current!.children
+      if (shown === last) {
+        gsap.to(kids, { autoAlpha: 1, y: 0, duration: 0.3, ease: EASE.out, overwrite: true })
+        return
+      }
+      gsap.to(kids, {
+        autoAlpha: 0,
+        y: -10,
+        duration: 0.2,
+        ease: EASE.in,
+        stagger: 0.025,
+        overwrite: true,
+        onComplete: () => {
+          lastH.current = capRef.current!.offsetHeight
+          setShown(last)
+        },
+      })
     },
-    { dependencies: [step], scope: capRef },
+    { dependencies: [last] },
   )
 
-  const c = CAPTIONS[Math.min(step, CAPTIONS.length - 1)]
+  // entrada do texto novo e ajuste de altura do painel
+  useGSAP(
+    () => {
+      const cap = capRef.current!
+      const h = cap.offsetHeight
+      const swap = lastH.current > 0
+      if (swap && lastH.current !== h) gsap.fromTo(cap, { height: lastH.current }, { height: h, duration: 0.55, ease: EASE.inOut, clearProps: 'height', overwrite: true })
+      gsap.fromTo(bodyRef.current!.children, { autoAlpha: 0, y: 22 }, { autoAlpha: 1, y: 0, duration: 0.65, ease: EASE.out, stagger: 0.09, delay: swap ? 0.08 : 0.45, overwrite: true })
+      return () => {
+        lastH.current = 0
+      }
+    },
+    { dependencies: [shown] },
+  )
+
+  const c = CAPTIONS[shown]
   return (
     <Slide step={step} className="no-pad">
       <div ref={host} className="scene3d" />
-      <div className="cap" ref={capRef} key={step}>
-        <ImageSlot id={c.img} icon={<IcFactory />} height={250} style={{ marginBottom: 26 }} />
-        <div className="yr">{c.yr}</div>
-        <h2>{c.h}</h2>
-        <p>{c.p}</p>
-        {c.stat && <div className="stat">{c.stat}</div>}
-      </div>
-      <div style={{ position: 'absolute', right: 96, bottom: 70, display: 'flex', gap: 12 }}>
-        {CAPTIONS.map((_, i) => (
-          <i key={i} style={{ width: 46, height: 8, borderRadius: 4, background: i <= step ? '#9156F1' : 'rgba(255,255,255,.25)', display: 'block' }} />
-        ))}
+      <div className="cap" ref={capRef} data-in="left">
+        <div className="cap-steps" aria-hidden>
+          {CAPTIONS.map((_, i) => (
+            <i key={i} className={i < last ? 'done' : i === last ? 'now' : ''} />
+          ))}
+        </div>
+        <div ref={bodyRef}>
+          <ImageSlot key={c.img} id={c.img} icon={<IcFactory />} height={250} style={{ marginBottom: 26 }} />
+          <div className="yr">{c.yr}</div>
+          <h2>{c.h}</h2>
+          <p>{c.p}</p>
+          {c.stat && <div className="stat">{c.stat}</div>}
+        </div>
       </div>
     </Slide>
   )
 }
 
-/** A lição: estamos no ano 4 de uma transformação que, na eletricidade, levou ~40. */
+/**
+ * A lição: estamos no ano 4 de uma transformação que, na eletricidade, levou ~40.
+ * As duas barras usam a mesma régua de 40 anos (um traço por década), então a diferença se lê sem conta.
+ * A barra da eletricidade enche uma vez, na entrada; a da IA entra no clique e a ponta dela pulsa
+ * duas vezes ("estamos aqui"). No último clique, as barras recuam e a pergunta assume.
+ */
 export function Ano4({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
   useGSAP(
     () => {
-      gsap.fromTo('.bar-el', { scaleX: 0 }, { scaleX: 1, duration: 1.8, ease: 'power2.inOut', delay: 0.5, transformOrigin: 'left' })
-      if (step >= 1) gsap.fromTo('.bar-ia', { scaleX: 0 }, { scaleX: 1, duration: 1, ease: 'power2.out', transformOrigin: 'left' })
+      gsap.fromTo('.bar-el', { scaleX: 0 }, { scaleX: 1, duration: 1.8, ease: EASE.inOut, delay: 0.6 })
+    },
+    { scope: ref },
+  )
+  useGSAP(
+    () => {
+      gsap.to('.bar-ia', { scaleX: step >= 1 ? 1 : 0, duration: step >= 1 ? 0.9 : 0.3, ease: EASE.out, delay: step >= 1 ? 0.3 : 0, overwrite: true })
+      gsap.to('.cmp', { opacity: step >= 2 ? 0.7 : 1, duration: 0.6, ease: EASE.soft })
     },
     { scope: ref, dependencies: [step] },
   )
-  const row = (label: string, sub: string, cls: string, years: number, color: string, s?: number) => (
-    <div data-step={s} style={{ marginTop: 56 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <span style={{ fontSize: 44, fontWeight: 800 }}>{label}</span>
-        <span className="mono" style={{ fontSize: 30, fontWeight: 700 }}>{sub}</span>
+  const row = (label: string, sub: string, cls: string, years: number, s?: number) => (
+    <div className="cmp-row" data-step={s} data-in={s === undefined ? 'up' : undefined}>
+      <div className="cmp-head">
+        <span className="cmp-label">{label}</span>
+        <span className="cmp-sub mono">{sub}</span>
       </div>
-      <div style={{ height: 64, marginTop: 16, background: 'rgba(255,255,255,.1)', borderRadius: 10, overflow: 'hidden' }}>
-        <div className={cls} style={{ width: `${(years / 40) * 100}%`, height: '100%', background: color, borderRadius: 10 }} />
+      <div className="cmp-track">
+        <div className={`cmp-fill ${cls}`} style={{ width: `${(years / 40) * 100}%` }} />
+        <div className="cmp-ticks" aria-hidden><i /><i /><i /></div>
       </div>
     </div>
   )
@@ -91,9 +148,11 @@ export function Ano4({ step }: SlideProps) {
       <div ref={ref}>
         <div className="kicker" data-in>Já vimos esse filme</div>
         <h1 className="h1" data-split>Estamos no começo</h1>
-        {row('Eletricidade', '1882 → anos 1920 · ≈ 40 anos', 'bar-el', 40, 'linear-gradient(90deg,#58178B,#9156F1)')}
-        {row('IA generativa', '11/2022 → hoje · ≈ 4 anos', 'bar-ia', 4, '#FFB547', 1)}
-        <p className="lead" data-step="2" style={{ marginTop: 64, color: '#fff', fontWeight: 600, fontSize: 48 }}>
+        <div className="cmp">
+          {row('Eletricidade', '1882 → anos 1920 · ≈ 40 anos', 'bar-el', 40)}
+          {row('IA generativa', '11/2022 → hoje · ≈ 4 anos', 'bar-ia', 4, 1)}
+        </div>
+        <p className="lead strong" data-step="2" style={{ marginTop: 64, fontSize: 48 }}>
           A pergunta não é se a fábrica vai ser redesenhada. <span className="accent-t">É quem vai redesenhar.</span>
         </p>
       </div>

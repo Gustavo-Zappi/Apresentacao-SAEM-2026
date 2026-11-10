@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
 import gsap from 'gsap'
 import { normalizeWord } from '../data/questions'
+import { EASE } from '../lib/motion'
 
 type Placed = { word: string; n: number; size: number; x: number; y: number }
 
@@ -39,7 +40,8 @@ function layout(counts: Record<string, number>): Placed[] {
   return out
 }
 
-const PALETTE = ['#9156F1', '#ffffff', '#cbb3ff', '#ffffff', '#b48cff']
+// só cores do sistema: branco, lilás de texto e o roxo da marca para a palavra mais citada
+const PALETTE = ['#9156F1', '#FFFFFF', '#CBB3FF', '#FFFFFF', '#CBB3FF']
 
 export default function WordCloud({ counts }: { counts: Record<string, number> }) {
   const placed = useMemo(() => layout(counts), [counts])
@@ -54,10 +56,10 @@ export default function WordCloud({ counts }: { counts: Record<string, number> }
       const target = { x: p.x, y: p.y, xPercent: -50, yPercent: -50, fontSize: p.size }
       if (!seen.current.has(p.word)) {
         seen.current.add(p.word)
-        gsap.fromTo(el, { ...target, scale: 0, rotation: gsap.utils.random(-25, 25), autoAlpha: 0 },
-          { scale: 1, rotation: 0, autoAlpha: 1, duration: 1.1, ease: 'elastic.out(1, 0.55)' })
+        // palavra nova: cresce do centro, sem quicar nem girar
+        gsap.fromTo(el, { ...target, scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.8, ease: EASE.out })
       } else {
-        gsap.to(el, { ...target, duration: 0.9, ease: 'power3.inOut' })
+        gsap.to(el, { ...target, duration: 0.9, ease: EASE.inOut })
       }
     })
   }, [placed])

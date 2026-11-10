@@ -1,62 +1,128 @@
-import { useRef } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import PumpSystem, { ROLE } from '../../components/PumpSystem'
+import { IcCube, IcGauge, IcPlan, IcTarget, IcTool } from '../../components/Icons'
+import { DUR, EASE } from '../../lib/motion'
 import type { SlideProps } from '../types'
 
 /* ---------------------------------------------------------------- Definição: malha fechada */
 
-// Blocos do diagrama (coordenadas do SVG 1660×520)
-const B = [
-  { id: 'obj', x: 0, y: 190, w: 250, label: 'Objetivo', sub: 'setpoint', c: ROLE.obj },
-  { id: 'plan', x: 400, y: 190, w: 300, label: 'Planejar', sub: 'controlador', c: ROLE.plan },
-  { id: 'tool', x: 800, y: 190, w: 300, label: 'Ferramentas', sub: 'atuador', c: ROLE.tool },
-  { id: 'world', x: 1200, y: 190, w: 300, label: 'Resultado', sub: 'planta', c: ROLE.world },
-  { id: 'check', x: 800, y: 400, w: 300, label: 'Verificar', sub: 'sensor', c: ROLE.check },
+// Blocos do diagrama (coordenadas do SVG 1664×490, desenhado em tamanho real).
+// `at` é a distância, ao longo do ciclo, em que o pulso passa pelo bloco (o ciclo começa no somador).
+const BW = 280
+const BH = 176
+const B: { id: keyof typeof ROLE; x: number; y: number; label: string; sub: string; icon: ReactNode; at: number }[] = [
+  { id: 'obj', x: 96, y: 10, label: 'Objetivo', sub: 'setpoint', icon: <IcTarget x={96 + BW / 2 - 28} y={10 + 26} size={56} />, at: -1 },
+  { id: 'plan', x: 548, y: 10, label: 'Planejar', sub: 'controlador', icon: <IcPlan x={548 + BW / 2 - 28} y={10 + 26} size={56} />, at: 226 },
+  { id: 'tool', x: 918, y: 10, label: 'Ferramentas', sub: 'atuador', icon: <IcTool x={918 + BW / 2 - 28} y={10 + 26} size={56} />, at: 596 },
+  { id: 'world', x: 1288, y: 10, label: 'Resultado', sub: 'planta', icon: <IcCube x={1288 + BW / 2 - 28} y={10 + 26} size={56} />, at: 966 },
+  { id: 'check', x: 918, y: 304, label: 'Verificar', sub: 'sensor', icon: <IcGauge x={918 + BW / 2 - 28} y={304 + 26} size={56} />, at: 1626 },
 ]
-const H = 110
-const LOOP = 'M 250 245 L 400 245 M 700 245 L 800 245 M 1100 245 L 1200 245 M 1350 300 L 1350 455 L 1100 455 M 800 455 L 330 455 L 330 245'
+const SUM = { x: 462, y: 98 }
+// fios, na ordem em que o ciclo é narrado; cada um termina numa seta
+const WIRES = [
+  { d: 'M 376 98 H 428', tip: [436, 98, 0] },
+  { d: 'M 488 98 H 532', tip: [540, 98, 0] },
+  { d: 'M 828 98 H 902', tip: [910, 98, 0] },
+  { d: 'M 1198 98 H 1272', tip: [1280, 98, 0] },
+  { d: 'M 1428 186 V 392 H 1214', tip: [1206, 392, 180] },
+  { d: 'M 918 392 H 462 V 132', tip: [462, 124, -90] },
+]
+const CYCLE = 'M 462 98 L 1428 98 L 1428 392 L 462 392 Z'
+const CYCLE_LEN = 2512
 
 export function AgenteDef({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const built = useRef(false)
+  const loop = useRef<gsap.core.Tween | null>(null)
+
   useGSAP(
     () => {
-      const abs = ref.current!.querySelector('.abs-loop')
-      const pid = ref.current!.querySelector('.pid-loop')
-      const def = ref.current!.querySelector('.def-lead')
-      gsap.to(def, { autoAlpha: step >= 2 ? 0 : 1, duration: 0.5 })
+      const root = ref.current!
+      const q = gsap.utils.selector(root)
+      const abs = q('.abs-loop')
+      const pid = q('.pid-loop')
+
+      gsap.to(q('.def-lead'), { autoAlpha: step >= 2 ? 0 : 1, y: step >= 2 ? -12 : 0, duration: 0.45, ease: step >= 2 ? EASE.in : EASE.out })
+
+      // pulso que percorre o ciclo: cada bloco acende quando o pulso passa por ele
+      const startPulse = (delay: number) => {
+        loop.current?.kill()
+        const path = root.querySelector<SVGPathElement>('.cycle-path')!
+        const dot = root.querySelector<SVGGElement>('.pulse')!
+        const glows = B.map((b) => root.querySelector<SVGRectElement>(`.blk-glow[data-k="${b.id}"]`)!)
+        const sum = root.querySelector<SVGCircleElement>('.sum-glow')!
+        const o = { l: 0 }
+        gsap.set(dot, { autoAlpha: 0 })
+        loop.current = gsap.to(o, {
+          l: CYCLE_LEN,
+          duration: 6.5,
+          ease: 'none',
+          repeat: -1,
+          delay,
+          onStart: () => gsap.to(dot, { autoAlpha: 1, duration: 0.4 }),
+          onUpdate: () => {
+            const p = path.getPointAtLength(o.l)
+            dot.setAttribute('transform', `translate(${p.x} ${p.y})`)
+            B.forEach((b, i) => {
+              if (b.at < 0) return
+              const d = Math.abs(o.l - b.at)
+              glows[i].style.opacity = String(Math.max(0, 1 - d / 190))
+            })
+            const ds = Math.min(o.l, CYCLE_LEN - o.l)
+            sum.style.opacity = String(Math.max(0, 1 - ds / 120))
+          },
+        })
+      }
+
       if (step >= 2) {
-        gsap.to(abs, { autoAlpha: 0, scale: 0.94, duration: 0.6, ease: 'power2.in' })
-        gsap.fromTo(pid, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.9, delay: 0.35, ease: 'power3.out' })
+        // "na prática": o diagrama abstrato dá lugar ao sistema real, e os papéis entram na ordem do ciclo
+        loop.current?.kill()
+        loop.current = null
+        gsap.to(abs, { autoAlpha: 0, scale: 0.96, duration: 0.4, ease: EASE.in, transformOrigin: '50% 40%' })
+        gsap.fromTo(pid, { autoAlpha: 0, y: 26 }, { autoAlpha: 1, y: 0, duration: 0.8, delay: 0.3, ease: EASE.out })
+        gsap.fromTo(q('.ps-tag'), { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: 0.55, ease: EASE.out, stagger: 0.24, delay: 0.85 })
         return
       }
-      gsap.set(pid, { autoAlpha: 0 })
-      gsap.to(abs, { autoAlpha: 1, scale: 1, duration: 0.4 })
-      if (step < 1) return
+      gsap.to(pid, { autoAlpha: 0, duration: 0.3, ease: EASE.in })
+      gsap.to(abs, { autoAlpha: 1, scale: 1, duration: 0.5, ease: EASE.out })
+      if (step < 1) {
+        loop.current?.kill()
+        loop.current = null
+        built.current = false
+        return
+      }
+      if (built.current) {
+        if (!loop.current) startPulse(0.3)
+        return
+      }
+      built.current = true
+
+      // construção na ordem da frase: objetivo, planejar, ferramentas, resultado, verificar, e o ciclo se fecha
       const tl = gsap.timeline()
-      tl.fromTo('.blk', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%' }, { scale: 1, autoAlpha: 1, stagger: 0.12, duration: 0.5, ease: 'back.out(2)' })
-      tl.fromTo('.wire', { drawSVG: '0%' }, { drawSVG: '100%', duration: 1.4, ease: 'power1.inOut' }, 0.3)
-      // pulso percorrendo o ciclo
-      const path = ref.current!.querySelector<SVGPathElement>('.cycle-path')!
-      const len = path.getTotalLength()
-      const dot = ref.current!.querySelector<SVGCircleElement>('.pulse')!
-      const o = { l: 0 }
-      tl.to(o, {
-        l: len, duration: 4, ease: 'none', repeat: -1,
-        onUpdate: () => {
-          const p = path.getPointAtLength(o.l)
-          dot.setAttribute('cx', String(p.x))
-          dot.setAttribute('cy', String(p.y))
-        },
-      }, 1.4)
+      const order = [q('.blk-obj'), q('.sum'), q('.blk-plan'), q('.blk-tool'), q('.blk-world'), q('.blk-check')]
+      const AT = [0, 0.16, 0.3, 0.56, 0.82, 1.12]
+      order.forEach((el, i) => tl.fromTo(el, { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: DUR.base, ease: EASE.out }, AT[i]))
+      const WAT = [0.12, 0.26, 0.5, 0.76, 1.02, 1.4]
+      const WD = [0.25, 0.25, 0.3, 0.3, 0.55, 0.7]
+      q('.wire').forEach((w, i) => {
+        tl.fromTo(w, { drawSVG: '0%' }, { drawSVG: '100%', duration: WD[i], ease: EASE.draw }, WAT[i])
+        tl.fromTo(q('.tip')[i], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2 }, WAT[i] + WD[i] - 0.05)
+      })
+      startPulse(2.2)
+      return () => {
+        built.current = false
+        loop.current = null
+      }
     },
     { scope: ref, dependencies: [step] },
   )
 
   return (
     <Slide step={step}>
-      <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div ref={ref} className="fill">
         <div className="kicker" data-in>O que é um agente de IA</div>
         <h1 className="h1" data-split>Chatbot responde. Agente executa.</h1>
         <div className="def-lead">
@@ -65,24 +131,52 @@ export function AgenteDef({ step }: SlideProps) {
           <b className="accent-t">verifica</b> o próprio resultado, em ciclo, até entregar.
         </p>
         </div>
-        <div data-step="1" style={{ marginTop: 24, position: 'relative' }}>
-          <div className="pid-loop" style={{ position: 'absolute', left: 0, right: 0, top: -150, visibility: 'hidden' }}>
-            <div className="mono accent-t" style={{ fontSize: 26, fontWeight: 700, letterSpacing: '0.1em', marginBottom: 6 }}>NA PRÁTICA · MALHA DE VAZÃO DE UM SISTEMA DE BOMBEAMENTO</div>
+        <div data-step="1" style={{ marginTop: 44, position: 'relative' }}>
+          <div className="pid-loop" style={{ position: 'absolute', left: 0, right: 0, top: -170, visibility: 'hidden' }}>
+            <div className="label" style={{ marginBottom: 10 }}>NA PRÁTICA · MALHA DE VAZÃO DE UM SISTEMA DE BOMBEAMENTO</div>
             <PumpSystem mode="loop" width={1600} />
           </div>
-          <svg className="abs-loop" viewBox="0 0 1660 520" width="1490" height="467" style={{ overflow: 'visible', display: 'block', margin: '0 auto' }}>
-            <path className="wire" d={LOOP} stroke="rgba(255,255,255,.7)" strokeWidth="5" fill="none" />
-            <path className="cycle-path" d="M 330 245 L 1350 245 L 1350 455 L 330 455 Z" fill="none" stroke="none" />
-            {B.map((b) => (
-              <g key={b.id} className="blk">
-                <rect x={b.x} y={b.y} width={b.w} height={H} rx="14" fill="#201E4B" stroke={b.c} strokeWidth="4" />
-                <text x={b.x + b.w / 2} y={b.y + 52} textAnchor="middle" fill="#fff" fontSize="38" fontWeight="700" fontFamily="Poppins">{b.label}</text>
-                <text x={b.x + b.w / 2} y={b.y + 90} textAnchor="middle" fill={b.c} fontSize="26" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
+          <svg className="abs-loop loopd" viewBox="0 0 1664 490" width="1664" height="490" style={{ overflow: 'visible', display: 'block' }}>
+            <defs>
+              <linearGradient id="blk-fill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#2B2764" />
+                <stop offset="1" stopColor="#1A1744" />
+              </linearGradient>
+              <filter id="blk-blur" x="-30%" y="-40%" width="160%" height="180%">
+                <feGaussianBlur stdDeviation="14" />
+              </filter>
+              <radialGradient id="pulse-g">
+                <stop offset="0" stopColor="#fff" />
+                <stop offset="0.35" stopColor="#E6DBFF" />
+                <stop offset="1" stopColor="#9156F1" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <path className="cycle-path" d={CYCLE} fill="none" stroke="none" />
+            {WIRES.map((w) => (
+              <g key={w.d}>
+                <path className="wire" d={w.d} />
+                <path className="tip" d="M 0 0 L -15 -8.5 V 8.5 Z" transform={`translate(${w.tip[0]} ${w.tip[1]}) rotate(${w.tip[2]})`} />
               </g>
             ))}
-            <circle className="blk" cx="330" cy="245" r="22" fill="#120F2E" stroke="#fff" strokeWidth="4" />
-            <text x="330" y="256" textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
-            <circle className="pulse" cx="330" cy="245" r="14" fill="#FFB547" style={{ filter: 'drop-shadow(0 0 12px #FFB547)' }} />
+            {/* o pulso corre pelos fios e passa por trás dos blocos, que acendem na passagem */}
+            <g className="pulse">
+              <circle r="26" fill="url(#pulse-g)" />
+              <circle r="7" fill="#fff" />
+            </g>
+            {B.map((b) => (
+              <g key={b.id} className={`blk blk-${b.id}`} style={{ color: ROLE[b.id] }}>
+                <rect className="blk-glow" data-k={b.id} x={b.x} y={b.y} width={BW} height={BH} rx="22" fill="currentColor" filter="url(#blk-blur)" />
+                <rect x={b.x} y={b.y} width={BW} height={BH} rx="22" fill="url(#blk-fill)" stroke="currentColor" strokeOpacity="0.7" strokeWidth="3" />
+                {b.icon}
+                <text x={b.x + BW / 2} y={b.y + 124} textAnchor="middle" fill="#fff" fontSize="38" fontWeight="700" fontFamily="Poppins" letterSpacing="-0.4">{b.label}</text>
+                <text x={b.x + BW / 2} y={b.y + 157} textAnchor="middle" fill="currentColor" fontSize="25" fontWeight="600" fontFamily="JetBrains Mono">{b.sub}</text>
+              </g>
+            ))}
+            <g className="sum">
+              <circle className="sum-glow" cx={SUM.x} cy={SUM.y} r="30" fill="#fff" filter="url(#blk-blur)" />
+              <circle cx={SUM.x} cy={SUM.y} r="26" fill="#1A1744" stroke="#fff" strokeWidth="3.5" />
+              <text x={SUM.x} y={SUM.y + 11} textAnchor="middle" fill="#fff" fontSize="30" fontWeight="700" fontFamily="Poppins">Σ</text>
+            </g>
           </svg>
         </div>
         <p className="lead" data-step="2" style={{ marginTop: 'auto', fontSize: 36 }}>
@@ -112,22 +206,46 @@ const LOG: Line[] = [
 ]
 const COLOR: Record<Line['who'], string> = { Você: 'hm', Agente: 'ag', Ferramenta: 'tool', Verifica: 'ok', Engenheiro: 'hm' }
 
+/**
+ * Registro do agente: a linha nova entra por baixo e empurra as anteriores, como num terminal.
+ * As linhas antigas perdem peso; a da vez fica em branco pleno.
+ */
+function TermLog({ step }: { step: number }) {
+  const inner = useRef<HTMLDivElement>(null)
+  const lastH = useRef<number | null>(null)
+  useLayoutEffect(() => {
+    const el = inner.current!
+    const h = el.offsetHeight
+    if (lastH.current !== null && h !== lastH.current) {
+      // o bloco é ancorado embaixo: compensa a mudança de altura e desliza até o lugar
+      const from = (Number(gsap.getProperty(el, 'y')) || 0) + (h - lastH.current)
+      gsap.fromTo(el, { y: from }, { y: 0, duration: 0.6, ease: EASE.out, overwrite: true })
+    }
+    lastH.current = h
+  }, [step])
+  return (
+    <div className="term term-log" data-in style={{ marginTop: 18 }}>
+      <div className="term-scroll" ref={inner}>
+        {LOG.filter((l) => l.step <= step).map((l, i) => (
+          <div key={i} className={`ln ${l.step === step ? 'now' : 'old'} ${l.who === 'Engenheiro' ? 'key' : ''}`}>
+            <span className={`who ${COLOR[l.who]}`}>{l.who}</span>
+            <span className="txt">{l.text}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export function AgenteDemo({ step }: SlideProps) {
   return (
     <Slide step={step}>
       <div className="kicker" data-in>Demonstração · agente de engenharia</div>
       <h1 className="h1" data-split style={{ fontSize: 64 }}>Dimensionar um sistema de bombeamento</h1>
-      <div data-in style={{ marginTop: 26 }}>
+      <div data-in="fade" style={{ marginTop: 26 }}>
         <PumpSystem mode="sizing" stage={step} width={1664} />
       </div>
-      <div className="term term-log" data-in style={{ marginTop: 18 }}>
-        {LOG.filter((l) => l.step <= step).map((l, i, arr) => (
-          <div key={i} className={`ln ${i < arr.length - 3 ? 'gone' : l.step < step ? 'old' : ''}`}>
-            <span className={`who ${COLOR[l.who]}`}>{l.who}</span>
-            <span style={l.who === 'Engenheiro' ? { fontWeight: 700 } : undefined}>{l.text}</span>
-          </div>
-        ))}
-      </div>
+      <TermLog step={step} />
     </Slide>
   )
 }

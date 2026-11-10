@@ -1,10 +1,12 @@
 import { useRef } from 'react'
 import gsap from 'gsap'
+import { SplitText } from 'gsap/SplitText'
 import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import CountUp from '../../components/CountUp'
 import ImageSlot from '../../components/ImageSlot'
 import { IcFlow } from '../../components/Icons'
+import { EASE } from '../../lib/motion'
 import type { ImgId } from '../../data/images'
 import type { SlideProps } from '../types'
 
@@ -16,46 +18,61 @@ const MURAL: { d: string; t: string; s: string; r: number; x: number; y: number;
   { d: '08/09/2026', t: 'IA teria resolvido um Problema do Milênio: Navier-Stokes', s: 'Quanta Magazine', r: -2, x: 800, y: 345, img: 'turbulencia', hot: true },
 ]
 
+/**
+ * Mural: os recortes pousam na ordem cronológica (a da leitura), um a cada 0,2 s.
+ * No clique, os outros recuam e o de Navier-Stokes avança, endireita e ganha o contorno:
+ * só então ele se diferencia dos demais, no momento em que o palestrante o anuncia.
+ */
 export function Mural({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
   useGSAP(
     () => {
-      gsap.from('.clip', { y: 300, rotation: () => gsap.utils.random(-25, 25), autoAlpha: 0, duration: 1, stagger: 0.18, ease: 'back.out(1.4)', delay: 0.4 })
+      gsap.from('.clip', {
+        y: 64,
+        rotation: (i, el: HTMLElement) => Number(el.dataset.r) + (i % 2 ? 4 : -4),
+        scale: 0.96,
+        autoAlpha: 0,
+        duration: 0.9,
+        stagger: 0.2,
+        ease: EASE.out,
+        delay: 0.5,
+      })
     },
     { scope: ref },
   )
   useGSAP(
     () => {
+      const mounting = first.current
+      first.current = false
       if (step >= 1) {
-        gsap.to('.clip:not(.hot)', { autoAlpha: 0.3, scale: 0.94, duration: 0.6 })
-        gsap.to('.clip.hot', { scale: 1.12, rotation: 0, duration: 0.8, ease: 'power3.out' })
-      } else {
-        gsap.to('.clip:not(.hot)', { autoAlpha: 1, scale: 1, duration: 0.4 })
+        gsap.to('.clip:not(.hot)', { autoAlpha: 0.3, scale: 0.95, duration: 0.6, ease: EASE.soft, overwrite: 'auto' })
+        gsap.to('.clip.hot', { scale: 1.12, rotation: 0, duration: 0.85, ease: EASE.out, overwrite: 'auto' })
+        gsap.to('.clip-ring', { autoAlpha: 1, scale: 1, duration: 0.6, ease: EASE.out, delay: 0.15 })
+      } else if (!mounting) {
+        gsap.to('.clip:not(.hot)', { autoAlpha: 1, scale: 1, duration: 0.45, ease: EASE.soft, overwrite: 'auto' })
+        gsap.to('.clip.hot', { scale: 1, rotation: (_i, el: HTMLElement) => Number(el.dataset.r), duration: 0.5, ease: EASE.out, overwrite: 'auto' })
+        gsap.to('.clip-ring', { autoAlpha: 0, scale: 1.03, duration: 0.3 })
+      }
+      return () => {
+        first.current = true
       }
     },
     { scope: ref, dependencies: [step] },
   )
   return (
     <Slide step={step}>
-      <div ref={ref} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div ref={ref} className="fill">
         <div className="kicker" data-in>As manchetes</div>
         <h1 className="h1" data-split>A engenharia virou notícia</h1>
         <div style={{ position: 'relative', flex: 1, marginTop: 40 }}>
           {MURAL.map((m) => (
-            <div
-              key={m.t}
-              className={`clip ${m.hot ? 'hot' : ''}`}
-              style={{
-                position: 'absolute', left: m.x, top: m.y, width: 540, padding: '28px 32px', borderRadius: 6,
-                background: '#f4f1ea', color: '#111', transform: `rotate(${m.r}deg)`,
-                boxShadow: m.hot ? '0 0 0 6px #FFB547, 0 40px 100px rgba(0,0,0,.6)' : '0 30px 80px rgba(0,0,0,.5)',
-                zIndex: m.hot ? 2 : 1,
-              }}
-            >
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: 24, letterSpacing: '0.12em', borderBottom: '2px solid #111', paddingBottom: 8 }}>{m.d}</div>
+            <div key={m.t} className={`clip ${m.hot ? 'hot' : ''}`} data-r={m.r} style={{ left: m.x, top: m.y, transform: `rotate(${m.r}deg)`, zIndex: m.hot ? 2 : 1 }}>
+              {m.hot && <i className="clip-ring" />}
+              <div className="clip-date">{m.d}</div>
               <ImageSlot id={m.img} height={92} radius={2} className="news-photo" style={{ marginTop: 10 }} />
-              <div style={{ fontFamily: 'Georgia, serif', fontWeight: 900, fontSize: 33, lineHeight: 1.1, marginTop: 10 }}>{m.t}</div>
-              <div style={{ fontFamily: 'Georgia, serif', fontSize: 24, marginTop: 12, color: '#333' }}>{m.s}</div>
+              <div className="clip-title">{m.t}</div>
+              <div className="clip-src">{m.s}</div>
             </div>
           ))}
         </div>
@@ -64,33 +81,52 @@ export function Mural({ step }: SlideProps) {
   )
 }
 
+/**
+ * A manchete. Sem tremor nem falha de imagem: o jornal assenta na mesa, a manchete sobe palavra por
+ * palavra e um avanço muito lento sustenta a pausa. No clique, o jornal recua e a frase assume.
+ */
 export function Manchete({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const first = useRef(true)
   useGSAP(
     () => {
-      const tl = gsap.timeline({ delay: 0.2 })
-      tl.from('.paper', { rotation: -14, scale: 0.4, autoAlpha: 0, duration: 1.1, ease: 'expo.out' })
-      tl.to('.glitch', { x: () => gsap.utils.random(-8, 8), skewX: () => gsap.utils.random(-8, 8), duration: 0.06, repeat: 9, yoyo: true, ease: 'none' }, '-=0.2')
-      tl.set('.glitch', { x: 0, skewX: 0 })
+      const tl = gsap.timeline({ delay: 0.25 })
+      tl.from('.paper', { y: 56, scale: 0.94, rotation: -1.6, autoAlpha: 0, duration: 1.1, ease: EASE.outStrong })
+      tl.from('.paper-rule', { scaleX: 0, transformOrigin: '50% 50%', duration: 0.8, ease: EASE.inOut }, 0.25)
+      const s = SplitText.create('.paper-h', { type: 'words', mask: 'words' })
+      tl.from(s.words, { yPercent: 112, duration: 0.95, ease: EASE.outStrong, stagger: 0.1 }, 0.4)
+      tl.from('.paper-sub, .paper .islot', { autoAlpha: 0, y: 14, duration: 0.7, ease: EASE.out, stagger: 0.14 }, 1.0)
+      tl.to('.paper-zoom', { scale: 1.03, duration: 10, ease: 'sine.out' }, 1.3)
     },
     { scope: ref },
+  )
+  useGSAP(
+    () => {
+      const mounting = first.current
+      first.current = false
+      if (mounting && step < 1) return
+      gsap.to('.paper-dim', { opacity: step >= 1 ? 0.88 : 1, scale: step >= 1 ? 0.95 : 1, y: step >= 1 ? -14 : 0, duration: 0.7, ease: EASE.out })
+      return () => {
+        first.current = true
+      }
+    },
+    { scope: ref, dependencies: [step] },
   )
   return (
     <Slide step={step} className="center">
       <div ref={ref}>
-        <div className="paper" style={{ background: '#f4f1ea', color: '#111', padding: '56px 96px 64px', borderRadius: 6, boxShadow: '0 60px 160px rgba(0,0,0,.6)', maxWidth: 1500 }}>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: 28, letterSpacing: '0.3em', borderBottom: '3px double #111', paddingBottom: 14, marginBottom: 32 }}>
-            EDIÇÃO EXTRA · 08/09/2026
+        <div className="paper-dim">
+          <div className="paper-zoom">
+            <div className="paper">
+              <div className="paper-mast">EDIÇÃO EXTRA · 08/09/2026</div>
+              <i className="paper-rule" />
+              <div className="paper-h">IA resolve Navier-Stokes</div>
+              <div className="paper-sub">Problema do Milênio de US$ 1 milhão estaria resolvido</div>
+              <ImageSlot id="turbulencia" icon={<IcFlow />} height={230} radius={2} className="news-photo" style={{ marginTop: 28 }} />
+            </div>
           </div>
-          <div className="glitch" style={{ fontFamily: 'Georgia, serif', fontWeight: 900, fontSize: 112, lineHeight: 1, letterSpacing: '-0.02em' }}>
-            IA resolve Navier-Stokes
-          </div>
-          <div style={{ fontFamily: 'Georgia, serif', fontSize: 34, marginTop: 28, color: '#444' }}>
-            Problema do Milênio de US$ 1 milhão estaria resolvido
-          </div>
-          <ImageSlot id="turbulencia" icon={<IcFlow />} height={230} radius={2} className="news-photo" style={{ marginTop: 28 }} />
         </div>
-        <p className="lead" data-step="1" style={{ marginTop: 64 }}>
+        <p className="lead" data-step="1" style={{ marginTop: 52, color: '#fff' }}>
           Quem não conhece a equação lê a manchete errado.
         </p>
       </div>
@@ -106,52 +142,39 @@ const ROWS = [
   ['Agora a CFD está resolvida', 'Não. RANS, LES e modelos de turbulência seguem iguais amanhã'],
 ]
 
+/**
+ * Manchete × fato: um par por clique. A manchete é riscada, perde peso e o fato entra ao lado;
+ * uma faixa marca a linha da vez e as já discutidas recuam. Tudo em transição de CSS (ver .mf-row).
+ */
 export function ManchetexFato({ step }: SlideProps) {
   return (
     <Slide step={step}>
       <div className="kicker" data-in>Manchete × fato</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '720px 1fr', columnGap: 56, rowGap: 0, marginTop: 24 }}>
-        <div className="mono" data-in style={{ fontSize: 28, fontWeight: 700, letterSpacing: '0.12em', paddingBottom: 18 }}>A MANCHETE</div>
-        <div className="mono accent-t" data-in style={{ fontSize: 28, fontWeight: 700, letterSpacing: '0.12em', paddingBottom: 18 }}>O FATO (EM 28/10/2026)</div>
+      <div className="mf">
+        <div className="mf-head" data-in>
+          <div className="label" style={{ color: '#fff' }}>A MANCHETE</div>
+          <div className="label">O FATO (EM 28/10/2026)</div>
+        </div>
         {ROWS.map(([h, f], i) => (
-          <Row key={h} headline={h} fact={f} on={step >= i + 1} />
+          <div key={h} className={`mf-row ${step > i + 1 ? 'past' : step === i + 1 ? 'now' : 'todo'}`} data-in>
+            <div className="mf-h">
+              <span>
+                “{h}”
+                <i className="strike" />
+              </span>
+            </div>
+            <div className="mf-f">{f}</div>
+          </div>
         ))}
       </div>
     </Slide>
   )
 }
 
-function Row({ headline, fact, on }: { headline: string; fact: string; on: boolean }) {
-  const ref = useRef<HTMLDivElement>(null)
-  useGSAP(
-    () => {
-      const strike = ref.current!.querySelector('.strike')
-      const f = ref.current!.nextElementSibling
-      if (on) {
-        gsap.to(strike, { scaleX: 1, duration: 0.5, ease: 'power3.inOut' })
-        gsap.to(ref.current, { color: 'rgba(255,255,255,.55)', duration: 0.5 })
-        gsap.fromTo(f, { autoAlpha: 0, x: 40 }, { autoAlpha: 1, x: 0, duration: 0.7, delay: 0.25, ease: 'power3.out' })
-      } else {
-        gsap.set(strike, { scaleX: 0 })
-        gsap.set(ref.current, { color: '#fff' })
-        gsap.set(f, { autoAlpha: 0 })
-      }
-    },
-    { dependencies: [on] },
-  )
-  return (
-    <>
-      <div ref={ref} data-in style={{ fontSize: 36, fontWeight: 700, padding: '20px 0', whiteSpace: 'nowrap', borderTop: '2px solid rgba(255,255,255,.16)', position: 'relative' }}>
-        <span style={{ position: 'relative' }}>
-          “{headline}”
-          <i className="strike" style={{ position: 'absolute', left: -6, right: -6, top: '52%', height: 4, background: '#9156F1', transform: 'scaleX(0)', transformOrigin: 'left', display: 'block' }} />
-        </span>
-      </div>
-      <div style={{ fontSize: 31, lineHeight: 1.35, fontWeight: 400, padding: '20px 0', borderTop: '2px solid rgba(255,255,255,.16)' }}>{fact}</div>
-    </>
-  )
-}
-
+/**
+ * Escala: os quatro números contam um depois do outro, da esquerda para a direita, enquanto são lidos.
+ * As duas frases entram uma por clique; a segunda (a conclusão) fica em evidência.
+ */
 export function Escala({ step }: SlideProps) {
   const items = [
     { to: 10000, label: 'agentes em paralelo', prefix: '~' },
@@ -160,16 +183,16 @@ export function Escala({ step }: SlideProps) {
     { to: 130, label: 'bilhões de tokens', prefix: '~', suffix: ' bi' },
   ]
   return (
-    <Slide step={step}>
+    <Slide step={step} focus={0.62}>
       <div className="kicker" data-in>O que mudou de verdade</div>
       <h1 className="h1" data-split>Escala de trabalho intelectual industrial</h1>
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)', marginTop: 80 }}>
-        {items.map((it) => (
-          <div key={it.label} className="card" data-in>
-            <div className="num" style={{ fontSize: 96 }}>
-              <CountUp to={it.to} decimals={it.decimals ?? 0} prefix={it.prefix} suffix={it.suffix} duration={2.6} />
+      <div className="stats">
+        {items.map((it, i) => (
+          <div key={it.label} className="card stat" data-in>
+            <div className="stat-n">
+              <CountUp to={it.to} decimals={it.decimals ?? 0} prefix={it.prefix} suffix={it.suffix} duration={1.5} delay={0.6 + i * 0.16} />
             </div>
-            <p style={{ fontSize: 34 }}>{it.label}</p>
+            <p>{it.label}</p>
           </div>
         ))}
       </div>
@@ -177,7 +200,7 @@ export function Escala({ step }: SlideProps) {
         Formalização em Lean em ~17 h por outro modelo. Custo estimado em vários milhões de dólares.
       </p>
       <p className="lead" data-step="2" style={{ marginTop: 20, color: '#fff' }}>
-        Escala cria gargalos novos: <span className="accent" style={{ fontWeight: 600 }}>validação, crédito e uso de dados.</span>
+        Escala cria gargalos novos: <span className="accent-t" style={{ fontWeight: 600 }}>validação, crédito e uso de dados.</span>
       </p>
     </Slide>
   )
