@@ -33,10 +33,16 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | S | Simular votos (só modo local) |
 | H | Ajuda |
 
+## Roteiro de cliques e votações
+
+- **Só duas perguntas ao público**: `#3` (uso de IA, logo depois da apresentação pessoal) e `#22` (frente de carreira, no fechamento). As outras perguntas continuam em `src/data/questions.ts`, fora do deck; para trocar a pergunta final pela nuvem de palavras, use `poll('p-palavra', 'palavra', ...)` no lugar de `p-trilha` em `src/stage/slides/index.tsx`.
+- **Sem cliques intermediários** (o slide se monta sozinho, fale por cima): `#1` e `#2` (trajetória), `#5` (IA há décadas), `#9` (o que é um agente), `#15` (escala), `#18` (estamos no começo) e `#19` (gargalos).
+- **Com cliques**: turbina `#6` (3), nova era `#7` (4), demo da bomba `#10` (9), mural `#12` (2), manchete `#13` (2), manchete × fato `#14` (6), fábrica `#17` (6), carreiras `#21` (2), ações `#23` (3) e as duas votações (2 cada).
+
 ## Numeração e desempenho
 
 - O canto inferior direito mostra `#slide.passo` (o mesmo número do link, começando em 0) e a posição `n/total`.
-- Notebook fraco no projetor: abra `/palco?q=baixa`. A fábrica 3D desliga sombras e bloom e reduz a resolução interna.
+- Notebook fraco no projetor: abra `/palco?q=baixa`. As cenas 3D (turbina, bomba e fábrica) desligam sombras e bloom, reduzem partículas e a resolução interna.
 - **Modo projetor** (indicador `◐ projetor` no canto): levanta sombras e exposição das cenas 3D, deixa o texto secundário em branco pleno e reduz as partículas do fundo. Se no anfiteatro a imagem ficar estourada, tecle **C** para desligar (ou abra `/palco?projetor=0`).
 
 ## Banco e publicação (VPS)
@@ -52,7 +58,7 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 
 1. No notebook do projetor, abra `/status`. Tudo deve estar ✓. Se "Chave do apresentador" estiver ✗, abra `/palco` e tecle **K**.
 2. Em `/palco`, o indicador no canto inferior direito deve dizer **ao vivo** (verde). Em amarelo, ele diz o motivo; clicar nele pede a chave.
-3. Vá ao slide 2 (primeira votação) e responda com o seu celular. O voto deve aparecer no telão em até 3 s.
+3. Vá ao slide `#3` (primeira das duas votações, logo depois da trajetória) e responda com o seu celular. O voto deve aparecer no telão em até 3 s.
 4. Se votou em ensaio, tecle **R** no slide de cada pergunta para zerar antes da palestra.
 
 ## Editar conteúdo
@@ -62,12 +68,13 @@ Sem variáveis do Supabase o app roda em **modo local**: palco e plateia sincron
 | Perguntas e respostas certas | `src/data/questions.ts` |
 | Ordem dos slides, notas e tempos | `src/stage/slides/index.tsx` |
 | Nome, cargo e universidade | `src/stage/speaker.ts` |
-| Fotos da trajetória (#2 e #3) | `src/images/` com o nome do espaço (ex.: `usp.jpg`) ou mapeadas em `src/data/fotos.ts`; o formato antigo `public/fotos/` continua valendo |
+| Fotos da trajetória (#1 e #2) | `src/images/` com o nome do espaço (ex.: `usp.jpg`) ou mapeadas em `src/data/fotos.ts`; o formato antigo `public/fotos/` continua valendo |
 | Imagens ilustrativas dos slides (nome, sugestão de busca, crédito) | `public/imagens/` (ver `LEIA-ME.md`) e `src/data/images.ts` |
 | Título e resumo oficiais | `src/stage/speaker.ts` |
 | Cena 3D da fábrica (vapor → elétrica → linha → IA) | `src/three/factory.ts` |
 | Turbina do slide #6 (fotos → nuvem → modelo → simulação) | `src/components/TurbineCloud.tsx` |
-| Sistema de bombeamento dos slides #9 e #10 | `src/components/PumpSystem.tsx` |
+| Sistema de bombeamento 3D dos slides #9 e #10 | Cena: `src/three/pump.ts` · etiquetas, plano e balões: `src/components/PumpSystem.tsx` |
+| Slides que se montam sozinhos (instantes de cada item) | `auto(Componente, [segundos...])` em `src/stage/slides/index.tsx` |
 | Cores e tipografia (4MATT) | `src/styles.css` |
 
 ## Depois da palestra

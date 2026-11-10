@@ -62,15 +62,15 @@ type Pose = { p: [number, number, number]; t: [number, number, number] }
 
 // dimensionamento: 0 pedido · 1 plano · 2 fluido · 3 tubo · 4 acessórios · 5 altura · 6 bomba · 7 golpe · 8 decisão
 const SIZING_CAMS: Pose[] = [
-  { p: [-2.0, 3.9, 24.2], t: [-0.25, 2.62, 0] },
-  { p: [-2.0, 3.9, 24.2], t: [-0.25, 2.62, 0] },
+  { p: [-2.0, 4.05, 24.2], t: [-0.25, 2.8, 0] },
+  { p: [-2.0, 4.05, 24.2], t: [-0.25, 2.8, 0] },
   { p: [-6.6, 2.9, 14.2], t: [-4.3, 1.75, 0.3] },
   { p: [0.9, 5.1, 15.2], t: [1.9, 4.15, 0] },
   { p: [1.6, 3.4, 13.4], t: [-0.9, 2.75, 0.1] },
-  { p: [1.4, 3.7, 23.4], t: [0.1, 2.6, 0] },
+  { p: [1.4, 3.9, 23.4], t: [0.1, 2.85, 0] },
   { p: [0.9, 2.05, 5.9], t: [-1.55, 1.02, -0.35] },
   { p: [0.4, 3.9, 18.2], t: [1.0, 3.3, 0] },
-  { p: [-2.0, 3.9, 24.2], t: [-0.25, 2.62, 0] },
+  { p: [-2.0, 4.05, 24.2], t: [-0.25, 2.8, 0] },
 ]
 const SIZING_FOCUS: (Part | null)[] = [null, null, 'agua', 'tubo', 'acess', 'dz', 'bomba', 'golpe', null]
 const LOOP_CAM: Pose = { p: [-5.6, 5.9, 26], t: [-0.1, 2.45, 0] }
@@ -1097,7 +1097,7 @@ export class PumpScene {
     const hammer = s >= 7
     this.tl?.kill()
     const tl = (this.tl = gsap.timeline())
-    tl.to(this.st, { accRing: s === 4 ? 1 : 0, dz: s === 5 ? 1 : 0, egl: s === 3 || s === 5 ? 1 : 0, duration: 0.8 * d }, 0)
+    tl.to(this.st, { accRing: s === 4 ? 1 : 0, dz: s === 5 ? 1 : 0, egl: s === 3 ? 1 : 0, duration: 0.8 * d }, 0)
     if (hammer) {
       if (prev < 7 && !first) this.waveT = 0
       // bomba desarma: rotor para, vazão cai, retenção bate e a onda parte

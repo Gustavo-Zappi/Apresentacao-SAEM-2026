@@ -60,7 +60,7 @@ const CALLS: Record<number, Call> = {
     body: (<><b>⚠ Parada brusca: golpe de aríete</b><span>ΔH = a·Δv/g = 1200 × 1,75 / 9,81</span><span>≈ 214 m no pior caso (fechamento instantâneo)</span></>),
   },
 }
-CALLS[8] = { ...CALLS[7], x: 800, y: 560, from: [800, 630] }
+CALLS[8] = { ...CALLS[7], x: 890, y: 560, from: [890, 630] }
 
 /** Curva da bomba × curva do sistema: o ponto de operação é o que o agente calculou (30 m³/h, 24 m). */
 function HQ() {
@@ -74,12 +74,12 @@ function HQ() {
       <text x="54" y="26">H (m)</text>
       <path className="draw" d={curve((q) => 18 + 6.05 * (q / 30) ** 2)} stroke="#5AB0FF" strokeWidth="4" fill="none" />
       <path className="draw late" d={curve((q) => 30 - 6 * (q / 30) ** 2)} stroke="#CBB3FF" strokeWidth="4" fill="none" />
-      <text x={X(41)} y={Y(31)} fill="#5AB0FF" textAnchor="end">sistema</text>
-      <text x={X(41)} y={Y(13.5)} fill="#CBB3FF" textAnchor="end">bomba</text>
+      <text x={X(50)} y={Y(34.8) + 30} fill="#5AB0FF" textAnchor="end">sistema</text>
+      <text x={X(50)} y={Y(13.3) + 26} fill="#CBB3FF" textAnchor="end">bomba</text>
       <path className="pt" d={`M ${X(30)} 196 V ${Y(24)} H 46`} stroke="#FFB547" strokeWidth="2" strokeDasharray="5 5" fill="none" />
       <circle className="pt" cx={X(30)} cy={Y(24)} r="8" fill="#FFB547" />
       <circle className="pt ring" cx={X(30)} cy={Y(24)} r="8" fill="none" stroke="#FFB547" strokeWidth="2.5" />
-      <text className="pt" x={X(30) + 14} y={Y(24) - 10} fill="#FFB547" fontWeight="700">30 m³/h · 24 m</text>
+      <text className="pt" x={X(30) - 12} y={Y(24) + 58} textAnchor="end" fill="#FFB547" fontWeight="700">30 m³/h · 24 m</text>
     </svg>
   )
 }
@@ -214,7 +214,7 @@ export default function PumpSystem({
             <Anchor a="gate" on={stage === 4} className="p3-lbl left">gaveta</Anchor>
             <Anchor a="sucValve" on={stage === 4} className="p3-lbl">gaveta</Anchor>
             <Anchor a="dz" on={stage === 5} className="p3-lbl big right">Δz = 18 m</Anchor>
-            <Anchor a="egl0" on={stage === 3 || stage === 5} className="p3-lbl amber up">linha de energia: cai hf = 4,8 m</Anchor>
+            <Anchor a="egl0" on={stage === 3} className="p3-lbl amber up">linha de energia: cai hf = 4,8 m</Anchor>
             <Anchor a="meter" on={stage !== 6} className="p3-lcd"><span data-live="q">30,0</span><small>m³/h</small></Anchor>
             <Anchor a="motorSide" on={stage >= 7} className="p3-trip">PARADA</Anchor>
 

@@ -343,7 +343,7 @@ html.projetor .islot-credit { background: rgba(8, 6, 24, 0.85); color: #fff; }
 html.projetor .seg7 .off { fill: rgba(203, 179, 255, 0.11); }
 html.projetor .clock-tz { color: var(--c-purple-text); }
 
-/* ================================================================ ESCALA (#16) */
+/* ================================================================ ESCALA (#15) */
 .scale-grid { display: grid; grid-template-columns: 600px 1fr; gap: 72px; margin-top: 44px; align-items: start; }
 .scale-swarm { position: relative; }
 .scale-swarm canvas { border-radius: 10px; background: radial-gradient(closest-side, rgba(145,86,241,0.16), rgba(145,86,241,0) 100%); }
@@ -473,7 +473,7 @@ html.projetor .car-from { color: rgba(255,255,255,0.8); }
 .p3-leads .red line { stroke: #ff5a5a; }
 .p3-leads .red circle { fill: #ff5a5a; }
 @keyframes p3fade { from { opacity: 0; } }
-.p3-hq text { font: 600 17px var(--f-mono); fill: rgba(255,255,255,.85); }
+.p3-hq text { font: 600 18px var(--f-mono); fill: rgba(255,255,255,.85); }
 .p3-hq .draw { stroke-dasharray: 420; stroke-dashoffset: 420; animation: p3draw 1.1s .7s ease-out forwards; }
 .p3-hq .draw.late { animation-delay: 1.2s; }
 .p3-hq .pt { opacity: 0; animation: p3fade .5s 2.2s reverse both; animation-name: p3show; animation-direction: normal; }
