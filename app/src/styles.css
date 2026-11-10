@@ -442,8 +442,8 @@ html.projetor .car-from { color: rgba(255,255,255,0.8); }
 .p3-trip.on { animation: p3blink .8s steps(2) infinite; }
 @keyframes p3blink { 50% { opacity: .35; } }
 
-.p3-plan { position: absolute; left: 128px; right: 128px; top: 214px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
-.p3-step { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 12px; background: rgba(11,9,32,.72); border: 2px solid rgba(255,255,255,.16); opacity: 0; transform: translateY(-14px); transition: opacity .5s, transform .5s cubic-bezier(.2,.9,.3,1.2), border-color .4s, background .4s, box-shadow .4s; min-width: 0; }
+.p3-plan { position: absolute; z-index: 3; left: 128px; right: 128px; top: 214px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.p3-step { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 12px; background: rgba(11,9,32,.9); border: 2px solid rgba(255,255,255,.16); opacity: 0; transform: translateY(-14px); transition: opacity .5s, transform .5s cubic-bezier(.2,.9,.3,1.2), border-color .4s, background .4s, box-shadow .4s; min-width: 0; }
 .p3-plan.on .p3-step { opacity: 1; transform: none; }
 .p3-step i { flex: none; width: 36px; height: 36px; border-radius: 50%; font: 800 20px/36px var(--f-display); font-style: normal; text-align: center; background: rgba(255,255,255,.14); color: #fff; transition: background .4s, color .4s; }
 .p3-step b { display: block; font: 700 23px/1.15 var(--f-display); color: #fff; }
