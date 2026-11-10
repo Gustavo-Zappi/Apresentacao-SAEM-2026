@@ -76,6 +76,7 @@ const SPAN = 40
 
 export function Ano4({ step }: SlideProps) {
   const ref = useRef<HTMLDivElement>(null)
+  // régua da eletricidade: uma vez, ao abrir
   useGSAP(
     () => {
       const tl = gsap.timeline({ delay: 0.4 })
@@ -85,11 +86,18 @@ export function Ano4({ step }: SlideProps) {
         tl.fromTo(m, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'back.out(2)' }, 0.1 + at * 2.4)
       })
       tl.fromTo('.rule-el .rule-end', { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 2.5)
-      if (step >= 1) {
-        gsap.fromTo('.rule-ia .rule-fill', { scaleX: 0 }, { scaleX: 1, duration: 1, ease: 'power2.out', delay: 0.3 })
-        gsap.fromTo('.rule-ia .rule-here', { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.6, delay: 1.1, ease: 'back.out(2)' })
-        gsap.fromTo('.rule-ia .rule-ghost', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8, delay: 1.4 })
-      }
+    },
+    { scope: ref },
+  )
+  // régua da IA: quando o passo 1 entra
+  const iaShown = useRef(false)
+  useGSAP(
+    () => {
+      if (step < 1 || iaShown.current) return
+      iaShown.current = true
+      gsap.fromTo('.rule-ia .rule-fill', { scaleX: 0 }, { scaleX: 1, duration: 1, ease: 'power2.out', delay: 0.3 })
+      gsap.fromTo('.rule-ia .rule-here', { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.6, delay: 1.1, ease: 'back.out(2)' })
+      gsap.fromTo('.rule-ia .rule-ghost', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8, delay: 1.4 })
     },
     { scope: ref, dependencies: [step] },
   )

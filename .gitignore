@@ -1,2 +1,5 @@
 /supabase/.temp/
 /app/supabase/.temp/
+
+# worktrees locais de agentes
+/.claude/
