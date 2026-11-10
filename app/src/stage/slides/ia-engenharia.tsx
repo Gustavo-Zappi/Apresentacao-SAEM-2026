@@ -58,8 +58,9 @@ export function Fotos3D({ step }: SlideProps) {
   return (
     <Slide step={step}>
       <div style={{ display: 'grid', gridTemplateColumns: '860px 1fr', gap: 72, height: '100%', alignItems: 'center' }}>
+        {/* canvas sangrando até a borda esquerda e de cima a baixo (palco 1920×1080, margens 128/96) */}
         <div data-in>
-          <TurbineCloud size={860} sim={step >= 2} />
+          <TurbineCloud size={860} height={888} canvasW={1060} canvasH={1080} offsetX={-128} offsetY={-96} sim={step >= 2} />
         </div>
         <div>
           <div className="kicker" data-in>Uma nova era</div>

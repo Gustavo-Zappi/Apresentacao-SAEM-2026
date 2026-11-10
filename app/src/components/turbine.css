@@ -1,0 +1,29 @@
+/* Turbina a vapor (slide "Fotos viram modelo 3D"): canvas, chips de fase e rótulos da simulação */
+.turb { position: relative; }
+.turb-canvas { position: absolute; pointer-events: none; }
+.turb-canvas canvas { display: block; }
+.turb.bleed .turb-canvas {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 93%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 93%, transparent 100%);
+}
+.turb-chips { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; gap: 10px; }
+.turb-chip {
+  font-size: 22px; font-weight: 700; padding: 10px 14px; border-radius: 8px; white-space: nowrap;
+  background: rgba(22, 18, 52, 0.82); border: 1px solid rgba(255, 255, 255, 0.14); color: #fff;
+  transition: background 0.4s, border-color 0.4s, box-shadow 0.4s;
+}
+.turb-chip.on { background: var(--c-purple); border-color: var(--c-purple); box-shadow: 0 0 26px rgba(145, 86, 241, 0.55); }
+.turb-chip.on.sim { background: #ff6a3d; border-color: #ff6a3d; box-shadow: 0 0 26px rgba(255, 106, 61, 0.55); }
+.turb-lbl {
+  position: absolute; left: 0; top: 0; margin: -8px 0 0 14px; padding: 6px 12px 7px; border-radius: 0 10px 10px 0;
+  background: rgba(8, 6, 24, 0.9); border-left: 5px solid; display: flex; flex-direction: column; white-space: nowrap;
+  transition: opacity 0.6s; will-change: transform;
+}
+.turb-lbl b { font: 700 19px/1.2 var(--f-mono); letter-spacing: 0.08em; }
+.turb-lbl span { font: 600 22px/1.25 var(--f-mono); color: #fff; }
+.turb-lbl.hot { border-color: #ffb547; }
+.turb-lbl.hot b { color: #ffb547; }
+.turb-lbl.cold { border-color: #5a8ff5; border-left: 0; border-right: 5px solid #5a8ff5; border-radius: 10px 0 0 10px; text-align: right; translate: calc(-100% - 28px) 0; }
+.turb-lbl.cold b { color: #8fb4ff; }
+/* legenda no canto do canvas sangrado, com fundo para não brigar com a peça no close */
+.turb .sim-legend.turb-legend { left: -18px; top: -70px; width: 476px; padding: 14px 18px 16px; border-radius: 14px; background: rgba(10, 8, 30, 0.72); border: 1px solid rgba(255, 255, 255, 0.12); }
