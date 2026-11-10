@@ -15,6 +15,8 @@ export interface ImgDef {
   credit?: string
   /** object-position da imagem (ex.: 'center top'). */
   pos?: string
+  /** Arquivo em app/src/images (nome exato, com extensão). Tem prioridade sobre public/imagens. */
+  src?: string
 }
 
 export const IMAGES = {
@@ -26,11 +28,11 @@ export const IMAGES = {
   'secao-05': { file: 'secao-05', alt: 'Estudantes de engenharia', hint: 'Foto sua com equipe/alunos, laboratório da UFJF ou equipe de competição' },
 
   /* ------------------------------------------------ slide 5: IA na engenharia há décadas */
-  'passado-sendai': { file: 'passado-sendai', alt: 'Metrô de Sendai', hint: 'Metrô de Sendai, Linha Namboku, série 1000 (Wikimedia Commons)' },
-  'passado-vibracao': { file: 'passado-vibracao', alt: 'Análise de vibração', hint: 'Acelerômetro em mancal de motor ou espectro de vibração de máquina rotativa' },
-  'passado-st5': { file: 'passado-st5', alt: 'Antena da NASA ST5', hint: 'NASA ST5 evolved antenna (NASA, domínio público; há cópia no Wikimedia Commons)' },
-  'passado-airbus': { file: 'passado-airbus', alt: 'Partição biônica Airbus', hint: 'Airbus "bionic partition" A320 (sala de imprensa Airbus ou Autodesk)' },
-  'passado-gm': { file: 'passado-gm', alt: 'Suporte GM por design generativo', hint: 'GM seat bracket generative design Autodesk 2018 (press release GM)' },
+  'passado-sendai': { src: 'Metrodesundai2.jpg', file: 'passado-sendai', alt: 'Metrô de Sendai', hint: 'Metrô de Sendai, Linha Namboku, série 1000 (Wikimedia Commons)' },
+  'passado-vibracao': { src: 'Ia Na manutenção mecanica.jpeg', file: 'passado-vibracao', alt: 'Análise de vibração', hint: 'Acelerômetro em mancal de motor ou espectro de vibração de máquina rotativa' },
+  'passado-st5': { src: 'nasa_ST5_lg-jpg.webp', file: 'passado-st5', alt: 'Antena da NASA ST5', hint: 'NASA ST5 evolved antenna (NASA, domínio público; há cópia no Wikimedia Commons)' },
+  'passado-airbus': { src: 'airbusbionica.webp', file: 'passado-airbus', alt: 'Partição biônica Airbus', hint: 'Airbus "bionic partition" A320 (sala de imprensa Airbus ou Autodesk)' },
+  'passado-gm': { src: 'autodesk-gm.webp', file: 'passado-gm', alt: 'Suporte GM por design generativo', hint: 'GM seat bracket generative design Autodesk 2018 (press release GM)' },
 
   /* ------------------------------------------------ slides 7 e 12: nova era e manchetes */
   neuralcad: { file: 'neuralcad', alt: 'Texto para CAD', hint: 'Captura de tela do Zoo Text-to-CAD ou do Autodesk neural CAD (AU 2025)' },

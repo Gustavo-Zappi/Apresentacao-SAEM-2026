@@ -51,7 +51,7 @@ export const SLIDES: SlideDef[] = [
   // ---------------------------------------------------------------- conexão pessoal (curta)
   {
     id: 'faculdade', title: 'Trajetória: a graduação', steps: 1, flow: 'still', minutes: 2.5,
-    notes: 'Conexão, não currículo. O slide se monta sozinho (sem cliques): fale por cima.\n0. 2016, Engenharia Mecânica na UFSJ: "eu estava exatamente onde vocês estão".\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/public/fotos (ver LEIA-ME.txt).',
+    notes: 'Conexão, não currículo. O slide se monta sozinho (sem cliques): fale por cima.\n0. 2016, Engenharia Mecânica na UFSJ: "eu estava exatamente onde vocês estão".\n1. Trem Ki Voa: o que a equipe ensinou (prazo, projeto que precisa voar).\n2. Monitoria em 5 disciplinas: ensinar para aprender.\n3. IC em bombeamento em regime transiente lento: guarde, ela volta na demo do agente.\nFotos: app/src/images (mapeamento em src/data/fotos.ts).',
     Component: auto(Faculdade, [1.5, 2.4, 3.3]),
   },
   {

@@ -1,5 +1,6 @@
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { IMAGES, type ImgDef, type ImgId } from '../data/images'
+import { srcImageUrl } from '../data/fotos'
 
 const EXTS = ['jpg', 'png', 'webp', 'jpeg']
 const DEV = import.meta.env.DEV
@@ -54,14 +55,16 @@ export default function ImageSlot({
   style?: CSSProperties
 }) {
   const def: ImgDef = IMAGES[id]
-  const [url, setUrl] = useState<string | null | undefined>(undefined)
+  const bundled = def.src ? srcImageUrl(def.src) : undefined
+  const [url, setUrl] = useState<string | null | undefined>(bundled)
   useEffect(() => {
+    if (bundled) return
     let alive = true
     probe(def.file).then((u) => alive && setUrl(u))
     return () => {
       alive = false
     }
-  }, [def.file])
+  }, [def.file, bundled])
   const box: CSSProperties = { width, height, borderRadius: radius, ...style }
 
   if (!url) {

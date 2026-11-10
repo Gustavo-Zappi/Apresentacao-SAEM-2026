@@ -4,9 +4,12 @@ import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import Photo from '../../components/Photo'
 import { IcBoard, IcCrane, IcGrad, IcPlane, IcPump, IcServer, IcSpark } from '../../components/Icons'
-import { fotoUrl } from '../../data/fotos'
+import { FOTO_AJUSTE, fotoUrl } from '../../data/fotos'
 import { GRADUACAO } from '../speaker'
 import type { SlideProps } from '../types'
+
+/** Altura das fotos dos slides de trajetória (palco de 1920×1080). */
+const PHOTO_H = 405
 
 /** Trajetória 1: a graduação, em ordem. Conexão com a plateia, não o foco da palestra. */
 export function Faculdade({ step }: SlideProps) {
@@ -28,15 +31,15 @@ export function Faculdade({ step }: SlideProps) {
       <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="kicker" data-in>A graduação</div>
         <h1 className="h1" data-split>Eu já estive nessas cadeiras.</h1>
-        <div style={{ position: 'relative', marginTop: 52 }}>
+        <div style={{ position: 'relative', marginTop: 28 }}>
           <div style={{ height: 6, background: 'rgba(255,255,255,.18)', borderRadius: 3 }}>
             <div className="tl-line" style={{ position: 'static', height: 6, background: 'var(--c-purple)', transform: 'scaleX(0)', borderRadius: 3 }} />
           </div>
-          <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginTop: 36 }}>
+          <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, marginTop: 24 }}>
             {items.map((it, i) => (
               <div key={it.img} className="tcard" data-step={i}>
-                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={290} />
-                <div style={{ marginTop: 24 }}><span className={`tag ${i === 0 ? 'tag-year' : ''}`}>{it.tag}</span></div>
+                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} {...FOTO_AJUSTE[it.img]} />
+                <div style={{ marginTop: 18 }}><span className={`tag ${i === 0 ? 'tag-year' : ''}`}>{it.tag}</span></div>
                 <h3>{it.title}</h3>
                 <p>{it.text}</p>
               </div>
@@ -69,15 +72,15 @@ export function Carreira({ step }: SlideProps) {
       <div ref={ref} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <div className="kicker" data-in>Depois da formatura</div>
         <h1 className="h1" data-split>Da indústria pesada à IA</h1>
-        <div style={{ position: 'relative', marginTop: 52 }}>
+        <div style={{ position: 'relative', marginTop: 28 }}>
           <div style={{ height: 6, background: 'rgba(255,255,255,.18)', borderRadius: 3 }}>
             <div className="tl-line" style={{ position: 'static', height: 6, background: 'var(--c-purple)', transform: 'scaleX(0)', borderRadius: 3 }} />
           </div>
-          <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, marginTop: 36 }}>
+          <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, marginTop: 24 }}>
             {items.map((it, i) => (
               <div key={it.img} className="tcard" data-step={i}>
-                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={290} />
-                <div style={{ marginTop: 24 }}><span className="tag">{it.tag}</span></div>
+                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} {...FOTO_AJUSTE[it.img]} />
+                <div style={{ marginTop: 18 }}><span className="tag">{it.tag}</span></div>
                 <h3>{it.title}</h3>
                 <p>{it.text}</p>
               </div>
