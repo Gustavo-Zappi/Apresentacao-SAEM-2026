@@ -220,6 +220,8 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* ================================================================ FOTOS E TRAJETÓRIA */
 .photo { width: 100%; border-radius: 16px; overflow: hidden; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.18); }
 .photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-contain { background: #fff; }
+.photo-contain img { padding: 14px; }
 .photo-icon { width: 100%; height: 100%; display: grid; place-items: center; color: var(--c-purple-text); padding: 18%; background: radial-gradient(circle at 50% 40%, rgba(145,86,241,0.35), rgba(88,23,139,0.15) 70%); }
 .photo-icon svg { width: 100%; height: 100%; max-width: 150px; max-height: 150px; }
 .tcard h3 { font-size: 40px; font-weight: 700; margin: 26px 0 10px; letter-spacing: -0.01em; }

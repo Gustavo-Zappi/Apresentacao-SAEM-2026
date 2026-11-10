@@ -4,7 +4,7 @@ import { useGSAP } from '@gsap/react'
 import Slide from '../../components/Slide'
 import Photo from '../../components/Photo'
 import { IcBoard, IcCrane, IcGrad, IcPlane, IcPump, IcServer, IcSpark } from '../../components/Icons'
-import { fotoUrl } from '../../data/fotos'
+import { FOTO_AJUSTE, fotoUrl } from '../../data/fotos'
 import { GRADUACAO } from '../speaker'
 import type { SlideProps } from '../types'
 
@@ -38,7 +38,7 @@ export function Faculdade({ step }: SlideProps) {
           <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, marginTop: 24 }}>
             {items.map((it, i) => (
               <div key={it.img} className="tcard" data-step={i}>
-                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} />
+                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} {...FOTO_AJUSTE[it.img]} />
                 <div style={{ marginTop: 18 }}><span className={`tag ${i === 0 ? 'tag-year' : ''}`}>{it.tag}</span></div>
                 <h3>{it.title}</h3>
                 <p>{it.text}</p>
@@ -79,7 +79,7 @@ export function Carreira({ step }: SlideProps) {
           <div className="grid traj4" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: 32, marginTop: 24 }}>
             {items.map((it, i) => (
               <div key={it.img} className="tcard" data-step={i}>
-                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} />
+                <Photo src={fotoUrl(it.img)} alt={it.title} icon={it.icon} height={PHOTO_H} {...FOTO_AJUSTE[it.img]} />
                 <div style={{ marginTop: 18 }}><span className="tag">{it.tag}</span></div>
                 <h3>{it.title}</h3>
                 <p>{it.text}</p>

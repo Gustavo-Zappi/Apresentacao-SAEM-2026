@@ -9,22 +9,40 @@
  */
 export const FOTO_ARQUIVO: Record<string, string> = {
   // espaço: 'arquivo-em-src-images.jpg'
-  // ufsj: 'formatura-2016.jpg',
+  // slide 2: graduação
+  ufsj: 'ufsj_csa_fachada_2016.jpg',
+  'trem-ki-voa': 'TKV3Equipe.jpg',
+  ic: 'Iniciaçãocientifica.png',
+  // slide 3: carreira
+  csn: 'CSN1.jpg',
+  'ativos-ti': '4MATT1 - gestão de ativos de TI.webp',
+  usp: 'MBA Usp.jpg',
+  ia: 'AI 1.jpg',
+}
+
+/** Enquadramento por espaço: `pos` = object-position; `fit: 'contain'` mostra a imagem inteira (ex.: documento). */
+export const FOTO_AJUSTE: Record<string, { pos?: string; fit?: 'cover' | 'contain' }> = {
+  ic: { fit: 'contain' },
+  csn: { pos: '15% center' },
+  'ativos-ti': { pos: 'center 20%' },
+  usp: { pos: 'center 35%' },
+  ia: { pos: 'center 18%' },
 }
 
 // Vite empacota as imagens de src/images (o build da VPS leva junto, com hash no nome)
 const files = import.meta.glob('../images/*.{jpg,jpeg,png,webp,JPG,JPEG,PNG,WEBP}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>
+const norm = (f: string) => f.normalize('NFC').toLowerCase()
 const byFile = new Map<string, string>()
 const byBase = new Map<string, string>()
 for (const [path, url] of Object.entries(files)) {
   const file = path.split('/').pop()!
-  byFile.set(file.toLowerCase(), url)
+  byFile.set(norm(file), url)
   byBase.set(file.replace(/\.[^.]+$/, '').toLowerCase(), url)
 }
 
 /** URL da foto do espaço `slot`, ou o caminho antigo em public/fotos. */
 export function fotoUrl(slot: string): string {
   const mapped = FOTO_ARQUIVO[slot]
-  if (mapped && byFile.has(mapped.toLowerCase())) return byFile.get(mapped.toLowerCase())!
+  if (mapped && byFile.has(norm(mapped))) return byFile.get(norm(mapped))!
   return byBase.get(slot.toLowerCase()) ?? `/fotos/${slot}.jpg`
 }
