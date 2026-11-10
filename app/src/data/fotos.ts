@@ -16,7 +16,7 @@ export const FOTO_ARQUIVO: Record<string, string> = {
   // slide 3: carreira
   csn: 'CSN1.jpg',
   'ativos-ti': '4MATT1 - gestão de ativos de TI.webp',
-  usp: 'MBA Usp.jpg',
+  usp: 'MBA usp.png',
   ia: 'AI 1.jpg',
 }
 
@@ -45,4 +45,9 @@ export function fotoUrl(slot: string): string {
   const mapped = FOTO_ARQUIVO[slot]
   if (mapped && byFile.has(norm(mapped))) return byFile.get(norm(mapped))!
   return byBase.get(slot.toLowerCase()) ?? `/fotos/${slot}.jpg`
+}
+
+/** URL de um arquivo de src/images pelo nome exato (sem diferenciar maiúsculas), ou undefined. */
+export function srcImageUrl(file: string): string | undefined {
+  return byFile.get(norm(file))
 }
