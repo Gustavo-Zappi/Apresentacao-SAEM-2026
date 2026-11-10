@@ -28,31 +28,33 @@ export function Mural({ step }: SlideProps) {
   const first = useRef(true)
   useGSAP(
     () => {
-      gsap.from('.clip', {
-        y: 64,
-        rotation: (i, el: HTMLElement) => Number(el.dataset.r) + (i % 2 ? 4 : -4),
-        scale: 0.96,
-        autoAlpha: 0,
-        duration: 0.9,
-        stagger: 0.2,
-        ease: EASE.out,
-        delay: 0.5,
-      })
-    },
-    { scope: ref },
-  )
-  useGSAP(
-    () => {
-      const mounting = first.current
-      first.current = false
-      if (step >= 1) {
-        gsap.to('.clip:not(.hot)', { autoAlpha: 0.3, scale: 0.95, duration: 0.6, ease: EASE.soft, overwrite: 'auto' })
-        gsap.to('.clip.hot', { scale: 1.12, rotation: 0, duration: 0.85, ease: EASE.out, overwrite: 'auto' })
-        gsap.to('.clip-ring', { autoAlpha: 1, scale: 1, duration: 0.6, ease: EASE.out, delay: 0.15 })
-      } else if (!mounting) {
-        gsap.to('.clip:not(.hot)', { autoAlpha: 1, scale: 1, duration: 0.45, ease: EASE.soft, overwrite: 'auto' })
-        gsap.to('.clip.hot', { scale: 1, rotation: (_i, el: HTMLElement) => Number(el.dataset.r), duration: 0.5, ease: EASE.out, overwrite: 'auto' })
-        gsap.to('.clip-ring', { autoAlpha: 0, scale: 1.03, duration: 0.3 })
+      const lit = step >= 1
+      const clips = gsap.utils.toArray<HTMLElement>('.clip', ref.current)
+      // estado de destino de cada recorte neste passo (um lugar só decide: vale para a entrada, o clique e a volta)
+      const goal = (el: HTMLElement) => {
+        const r = Number(el.dataset.r)
+        if (!lit) return { autoAlpha: 1, scale: 1, rotation: r }
+        return el.classList.contains('hot') ? { autoAlpha: 1, scale: 1.12, rotation: 0 } : { autoAlpha: 0.3, scale: 0.95, rotation: r }
+      }
+      if (first.current) {
+        first.current = false
+        clips.forEach((el, i) => {
+          const g = goal(el)
+          gsap.fromTo(
+            el,
+            { y: 64, rotation: Number(el.dataset.r) + (i % 2 ? 4 : -4), scale: g.scale * 0.96, autoAlpha: 0 },
+            { y: 0, ...g, duration: 0.9, ease: EASE.out, delay: 0.5 + i * 0.2 },
+          )
+        })
+        gsap.set('.clip-ring', { autoAlpha: lit ? 1 : 0, scale: lit ? 1 : 1.03 })
+      } else {
+        // clique no meio da entrada: as entradas pendentes são canceladas e todos vão direto ao destino
+        gsap.killTweensOf(clips)
+        clips.forEach((el) => {
+          const hot = el.classList.contains('hot')
+          gsap.to(el, { y: 0, ...goal(el), duration: lit && hot ? 0.85 : 0.6, ease: lit && hot ? EASE.out : EASE.soft })
+        })
+        gsap.to('.clip-ring', { autoAlpha: lit ? 1 : 0, scale: lit ? 1 : 1.03, duration: lit ? 0.6 : 0.3, ease: EASE.out, delay: lit ? 0.15 : 0 })
       }
       return () => {
         first.current = true

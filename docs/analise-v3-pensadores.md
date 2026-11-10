@@ -8,7 +8,7 @@
 
 **Resumo oficial:** A Inteligência Artificial está mudando a forma como as organizações operam, tomam decisões e se estruturam. Nesta palestra, vamos ver como as empresas estão adotando a IA na prática, quais tecnologias estão por trás dessa transformação e que novas frentes de carreira em tecnologia e gestão estão se abrindo para os profissionais de engenharia.
 
-> Numeração: `#n` é o número do link (`/palco#10.3` = slide 10, passo 3), começando em 0. O canto inferior direito do palco agora mostra esse número.
+> Numeração: `#n` é o número do link (`/palco#10.3` = slide 10, passo 3), começando em 0. O canto inferior esquerdo do palco mostra esse número (o direito ficou com o relógio).
 
 ## 1. Diagnóstico em uma página
 
