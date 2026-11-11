@@ -2,9 +2,9 @@
 
 **Critério de sucesso:** o aluno sai entendendo que a IA já está na engenharia há décadas, que a IA generativa e os agentes abrem uma nova era, e que, como na eletrificação, o ganho vem de quem redesenha o processo.
 
-## Estrutura (25 slides, ≈ 66 min: 56 de conteúdo + 10 de perguntas)
+## Estrutura (26 slides, ≈ 68 min: 58 de conteúdo + 10 de perguntas)
 
-Numeração igual à do palco: `#n` no link e no canto da tela (`/palco#10.3` = slide 10, passo 3). Versão alinhada ao deck de 10/11/2026.
+Numeração igual à do palco: `#n` no link e no canto da tela (`/palco#10.3` = slide 10, passo 3). Versão alinhada ao deck de 11/11/2026.
 
 | # | Bloco | Conteúdo | Interação | Tempo |
 |---|---|---|---|---|
@@ -13,10 +13,12 @@ Numeração igual à do palco: `#n` no link e no canto da tela (`/palco#10.3` = 
 | 8-10 | 02 · Agentes | Agente como malha fechada, com malha de vazão 3D simulada · demo: agente dimensiona o sistema de bombeamento | Demo ao vivo (slide é backup) | 9,5 min |
 | 11-15 | 03 · Manchetes | Mural · Navier-Stokes · manchete × fato · escala de 10.000 agentes | | 7,5 min |
 | 16-18 | 04 · Já vimos esse filme | Pergunta retórica da eletricidade · fábrica 3D em 6 passos · "estamos no ano 4" | | 8,5 min |
-| 19-23 | 05 · Carreiras | Três gargalos · frentes de carreira · três ações | Votação 2: frente de carreira (#22) | 11,5 min |
-| 24 | Perguntas | | | 10 min |
+| 19-24 | 05 · Quem vai redesenhar o processo | Três gargalos · oportunidades por setor (Ipea) e onde a 4MATT atua · frentes de carreira para quem vem da engenharia · três ações | Votação 2: frente de carreira (#23) | 13,5 min |
+| 25 | Perguntas | | | 10 min |
 
 **Slides que se montam sozinhos (sem cliques):** #1, #2, #5, #9, #15, #18 e #19.
+
+**Mudanças de 11/11/2026:** novo slide de oportunidades por setor (#21, fonte Ipea) com o card da 4MATT; seção 05 renomeada para "Quem vai redesenhar o processo"; card da fábrica (#17) só com texto, no canto inferior esquerdo; 4MATT presente no discurso em #2, #9, #19, #21, #22 e #25.
 
 **Mudanças em relação à versão de 28 slides:**
 - A votação de uso de IA passou para depois da trajetória (#3).
@@ -41,6 +43,8 @@ Fala completa, teoria e perguntas prováveis de cada slide: [`roteiro-palestra-s
 | LEAP 71: motor projetado por modelo computacional, 5 kN, 2024 | [Metal AM](https://www.metal-am.com/leap-71-hot-fires-additively-manufactured-rocket-engine-designed-without-human-intervention/) |
 | Eletrificação: motores ≈5% da força motriz (1899), ≈50% (≈1920), ganho só com o redesenho da fábrica | Paul A. David, "The Dynamo and the Computer", AER P&P, 1990 ([resumo](https://dynamo-computer.pages.dev/)) |
 | Ford Highland Park, linha de montagem em 07/10/1913 | [Highland Park Ford Plant](https://en.wikipedia.org/wiki/Highland_Park_Ford_Plant) |
+| Oportunidades por setor (#21) | Ipea (confirmar publicação, ano e base) |
+| 4MATT: ServiceNow Elite Partner; Technology Excellence Partner Award 2024 e 2025 | [4matt.com.br](https://4matt.com.br/) |
 | Navier-Stokes, escala e disputa | `conceito-palestra-saem-2026.md` (status de 28/10/2026, rechecar) |
 
 ## Demo do agente: números conferidos

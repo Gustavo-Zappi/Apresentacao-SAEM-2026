@@ -59,7 +59,7 @@ export function Carreira({ step }: SlideProps) {
     { img: 'csn', icon: <IcCrane />, tag: 'INDÚSTRIA', title: 'CSN', text: 'Gestão de equipamentos de grande porte.' },
     { img: 'ativos-ti', icon: <IcServer />, tag: 'TECNOLOGIA', title: 'Gestão de Ativos de TI', text: 'De ativos físicos para ativos digitais.' },
     { img: 'usp', icon: <IcGrad />, tag: 'PÓS-GRADUAÇÃO', title: 'Gestão de Negócios · USP', text: 'A ponte da engenharia para a gestão.' },
-    { img: 'ia', icon: <IcSpark />, tag: 'HOJE', title: 'Inteligência Artificial', text: 'Head of AI na 4MATT.' },
+    { img: 'ia', icon: <IcSpark />, tag: 'HOJE', title: 'Inteligência Artificial', text: 'Head of AI na 4MATT, ServiceNow Elite Partner.' },
   ]
   useGSAP(
     () => {

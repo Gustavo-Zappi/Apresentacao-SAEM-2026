@@ -11,11 +11,11 @@ export const FOTO_ARQUIVO: Record<string, string> = {
   // espaço: 'arquivo-em-src-images.jpg'
   // slide 2: graduação
   ufsj: 'ufsj_csa_fachada_2016.jpg',
-  'trem-ki-voa': 'TKV3Equipe.jpg',
+  'trem-ki-voa': 'TKV5Camisas.jpg',
   ic: 'Iniciaçãocientifica.png',
   // slide 3: carreira
-  csn: 'CSN1.jpg',
-  'ativos-ti': '4MATT1 - gestão de ativos de TI.webp',
+  csn: 'CSN2.jpg',
+  'ativos-ti': '4MATT2 - gestão de ativos de TI.webp',
   usp: 'MBA usp.png',
   ia: 'AI 1.jpg',
 }
@@ -23,8 +23,6 @@ export const FOTO_ARQUIVO: Record<string, string> = {
 /** Enquadramento por espaço: `pos` = object-position; `fit: 'contain'` mostra a imagem inteira (ex.: documento). */
 export const FOTO_AJUSTE: Record<string, { pos?: string; fit?: 'cover' | 'contain' }> = {
   ic: { fit: 'contain' },
-  csn: { pos: '15% center' },
-  'ativos-ti': { pos: 'center 20%' },
   usp: { pos: 'center 35%' },
   ia: { pos: 'center 18%' },
 }

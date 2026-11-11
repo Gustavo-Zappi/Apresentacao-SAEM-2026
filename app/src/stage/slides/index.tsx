@@ -9,7 +9,7 @@ import { Fotos3D, NovaEra, Passado } from './ia-engenharia'
 import { AgenteDef, AgenteDemo } from './agentes'
 import { Escala, Manchete, ManchetexFato, Mural } from './navier'
 import { Ano4, FabricaHistoria } from './analogia'
-import { Acoes, Carreiras, Gargalos, Obrigado } from './futuro'
+import { Acoes, Carreiras, Gargalos, Obrigado, Oportunidades } from './futuro'
 
 const poll = (id: string, qid: string, minutes: number, notes: string, kicker?: string): SlideDef => ({
   id,
@@ -56,7 +56,7 @@ export const SLIDES: SlideDef[] = [
   },
   {
     id: 'carreira', title: 'Trajetória: CSN → TI → gestão → IA', steps: 1, flow: 'still', minutes: 3.5,
-    notes: 'O slide se monta sozinho (sem cliques). Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Pós-graduação em Gestão de Negócios pela USP: a ponte da engenharia para a gestão (antecipa as duas trilhas do slide de carreiras: tecnologia e gestão).\n4. Como se encontrou na IA.\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
+    notes: 'O slide se monta sozinho (sem cliques). Conte com suas palavras:\n1. CSN: gestão de equipamentos de grande porte. O que você aprendeu ali.\n2. Por que e como migrou para Gestão de Ativos de TI (o fio: gestão de ativos, de físicos para digitais).\n3. Pós-graduação em Gestão de Negócios pela USP: a ponte da engenharia para a gestão (antecipa as duas trilhas do slide de carreiras: tecnologia e gestão).\n4. Como se encontrou na IA. A 4MATT em uma frase: "uma empresa de serviços e tecnologia, ServiceNow Elite Partner no Brasil, que coloca IA para trabalhar dentro de grandes empresas".\nMensagem: a formação em mecânica é uma base, não uma gaiola.',
     Component: auto(Carreira, [1.5, 2.4, 3.3]),
   },
   // Pergunta ao público 1 de 2: logo depois da apresentação pessoal
@@ -86,7 +86,7 @@ export const SLIDES: SlideDef[] = [
   secao('s2', '02', 'Agentes de IA', 'Da resposta à execução.', 'secao-02'),
   {
     id: 'agente-def', title: 'O que é um agente', steps: 1, flow: 'none', minutes: 3,
-    notes: 'Sem cliques: o ciclo do agente se monta à esquerda (cada bloco tem uma cor) e, à direita, o mesmo ciclo acende num sistema que vocês conhecem: a malha de vazão de um bombeamento, em 3D e simulada de verdade. A cada ~11 s a válvula de gaveta fecha um pouco (perturbação), a vazão cai, o controlador sobe a frequência do inversor e a vazão volta a 30 m³/h: aponte isso na tela de tendência. Mesmas cores:\nObjetivo = setpoint 30 m³/h · Planejar = controlador (FIC/PID) · Ferramentas = inversor + bomba · Resultado = vazão na planta · Verificar = medidor de vazão (FT).\nDiferença: no agente, o controlador entende linguagem e as ferramentas são software (Python, tabelas, catálogo). Gancho: no próximo slide o agente dimensiona exatamente esse sistema.',
+    notes: 'Sem cliques: o ciclo do agente se monta à esquerda (cada bloco tem uma cor) e, à direita, o mesmo ciclo acende num sistema que vocês conhecem: a malha de vazão de um bombeamento, em 3D e simulada de verdade. A cada ~11 s a válvula de gaveta fecha um pouco (perturbação), a vazão cai, o controlador sobe a frequência do inversor e a vazão volta a 30 m³/h: aponte isso na tela de tendência. Mesmas cores:\nObjetivo = setpoint 30 m³/h · Planejar = controlador (FIC/PID) · Ferramentas = inversor + bomba · Resultado = vazão na planta · Verificar = medidor de vazão (FT).\nDiferença: no agente, o controlador entende linguagem e as ferramentas são software (Python, tabelas, catálogo). Ponte com a 4MATT: "é isso que a gente faz na 4MATT: agentes que executam tarefas reais dentro das empresas, com objetivo, ferramentas e verificação".\nGancho: no próximo slide o agente dimensiona exatamente esse sistema.',
     Component: AgenteDef,
   },
   {
@@ -134,13 +134,18 @@ export const SLIDES: SlideDef[] = [
   // ---------------------------------------------------------------- carreiras e fechamento
   {
     id: 'gargalos', title: 'O que a nova fábrica exige', steps: 1, flow: 'still', minutes: 3,
-    notes: 'Especificar (cota e tolerância), validar (ensaio e metrologia), governar (FMEA e normas).',
+    notes: 'Especificar (cota e tolerância), validar (ensaio e metrologia), governar (FMEA e normas).\nGovernar, na prática da 4MATT: cada agente tem dono, escopo do que pode fazer, fontes de dados conhecidas e critério para ser desligado. É gestão de ativos aplicada a agentes.',
     Component: auto(Gargalos, [1.4, 2.3]),
   },
-  secao('s5', '05', 'Quem vai redesenhar a fábrica', 'Frentes de carreira para quem vem da mecânica.', 'secao-05'),
+  secao('s5', '05', 'Quem vai redesenhar o processo', 'Frentes de carreira para quem vem da engenharia.', 'secao-05'),
+  {
+    id: 'oportunidades', title: 'Onde estão as oportunidades (Ipea)', steps: 3, flow: 'still', minutes: 2,
+    notes: 'Fonte: Ipea (parcela por setor).\n0. As barras crescem: "Quando a gente pensa em engenharia, pensa em indústria. Mas olhem: a indústria de transformação é 14%."\n1. Destaque: serviços para empresas (15,72%) + tecnologia e informação (3,97%) = 19,69%, mais que construção (17,88%), o maior setor isolado. "Somados, serviços e tecnologia são o maior espaço de oportunidade."\n2. 4MATT: "É aqui que a 4MATT atua: serviços e tecnologia para grandes empresas. Somos ServiceNow Elite Partner no Brasil e fomos reconhecidos pela ServiceNow como melhor parceiro de excelência técnica da América Latina em 2024 e 2025. No dia a dia, colocamos agentes de IA para trabalhar com governança: exatamente os gargalos que vimos." Sem exagero: fale do trabalho, não do tamanho da empresa.',
+    Component: Oportunidades,
+  },
   {
     id: 'carreiras', title: 'Frentes de carreira', steps: 2, flow: 'still', minutes: 4,
-    notes: 'Clique 1: trilha de gestão. Use a sua trajetória como prova.',
+    notes: 'Clique 1: trilha de gestão. Use a sua trajetória como prova.\nAs duas trilhas existem dentro da 4MATT: quem implanta e opera a tecnologia, e quem conduz a transformação nos clientes.',
     Component: Carreiras,
   },
   // Pergunta ao público 2 de 2: no fechamento
@@ -151,7 +156,7 @@ export const SLIDES: SlideDef[] = [
   },
   {
     id: 'fim', title: 'Perguntas', steps: 1, flow: 'surge', transition: 'wipe', minutes: 10,
-    notes: 'Perguntas da plateia. Se houver vagas ou estágio na 4MATT, mencione aqui.',
+    notes: 'Perguntas da plateia. Se houver vagas ou estágio na 4MATT, mencione aqui: "se vocês gostaram desse tipo de problema, a 4MATT trabalha com isso todos os dias".',
     Component: Obrigado,
   },
 ]
