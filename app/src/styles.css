@@ -560,3 +560,15 @@ html.projetor .op-src { color: #fff; }
 .enq-tag { font-style: normal; font: 600 10px var(--f-mono); letter-spacing: 0.06em; text-transform: uppercase; margin-left: 8px; padding: 2px 6px; border-radius: 4px; background: var(--c-purple); color: #fff; white-space: nowrap; vertical-align: 2px; }
 .enq-tag.ok { background: rgba(61, 220, 151, 0.25); color: #3DDC97; }
 .enq-back { margin-top: 6px; }
+
+/* ================================================================ PALCO: anel do mouse (tecla L) */
+.laser {
+  position: fixed; left: 0; top: 0; width: 76px; height: 76px; margin: -38px 0 0 -38px;
+  border-radius: 50%; border: 3px solid rgba(255, 59, 48, 0.95);
+  box-shadow: 0 0 20px 5px rgba(255, 59, 48, 0.45), inset 0 0 14px rgba(255, 59, 48, 0.3);
+  z-index: 35; pointer-events: none; opacity: 0; visibility: hidden;
+}
+.laser::after {
+  content: ''; position: absolute; inset: 26px; border-radius: 50%;
+  border: 2px solid rgba(255, 59, 48, 0.75);
+}

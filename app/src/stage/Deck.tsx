@@ -8,6 +8,7 @@ import { SyncContext } from './sync'
 import { participantId } from '../lib/participant'
 import { projector } from '../lib/display'
 import Clock from '../components/Clock'
+import Pointer from '../components/Pointer'
 
 type Pos = { i: number; s: number }
 
@@ -55,6 +56,14 @@ export default function Deck() {
   const [scale, setScale] = useState(1)
   const [help, setHelp] = useState(false)
   const [black, setBlack] = useState(false)
+  // anel vermelho no mouse: ligado por padrão, lembrado neste navegador
+  const [laser, setLaser] = useState(() => {
+    try {
+      return localStorage.getItem('saem-laser') !== '0'
+    } catch {
+      return true
+    }
+  })
   const [clock, setClock] = useState(() => {
     try { return localStorage.getItem('saem-relogio') !== '0' } catch { return true }
   })
@@ -224,6 +233,12 @@ export default function Deck() {
       else if (k === 'o') window.open('/notas', 'saem-notas', 'width=1100,height=760')
       else if (k === 'k') askKey()
       else if (k === 'c') projector.toggle()
+      else if (k === 'l') setLaser((v) => {
+        try {
+          localStorage.setItem('saem-laser', v ? '0' : '1')
+        } catch { /* sem storage: vale só nesta sessão */ }
+        return !v
+      })
       else if (k === 'r') {
         const qid = SLIDES[shownRef.current.i].question
         if (qid && confirm(`Apagar todas as respostas de "${qid}"?`)) live.resetQuestion(key, qid)
@@ -276,6 +291,7 @@ export default function Deck() {
         {clock && <Clock />}
       </div>
       <div ref={wipeRef} className="wipe" />
+      <Pointer on={laser && !black} />
       {black && <div style={{ position: 'fixed', inset: 0, background: '#000', zIndex: 40 }} />}
       <div className="progress" style={{ width: `${((shown.i + 1) / total) * 100}%` }} />
       <div className={`hud ${alert ? 'alert' : ''}`} onClick={(e) => { e.stopPropagation(); if (live.mode === 'supabase' && !keyOk) askKey() }}>
@@ -292,6 +308,7 @@ export default function Deck() {
             <div><kbd>B</kbd>tela preta</div>
             <div><kbd>T</kbd>relógio (hora de Brasília): {clock ? 'visível' : 'oculto'}</div>
             <div><kbd>C</kbd>modo projetor (mais contraste): {proj ? 'ligado' : 'desligado'}</div>
+            <div><kbd>L</kbd>anel vermelho no mouse: {laser ? 'ligado' : 'desligado'}</div>
             <div><kbd>O</kbd>abrir notas do apresentador</div>
             <div><kbd>K</kbd>informar chave do apresentador</div>
             <div><kbd>R</kbd>zerar respostas da pergunta atual</div>
