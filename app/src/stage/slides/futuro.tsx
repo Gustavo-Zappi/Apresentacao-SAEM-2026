@@ -5,8 +5,6 @@ import Slide from '../../components/Slide'
 import ImageSlot from '../../components/ImageSlot'
 import { IcBoard, IcCube, IcFactory, IcFlow, IcGauge, IcRocket, IcRuler, IcShield, IcSpark, IcWave } from '../../components/Icons'
 import type { ImgId } from '../../data/images'
-import QR from '../../components/QR'
-import { audienceUrl } from '../../config'
 import { SPEAKER } from '../speaker'
 import { FONTE_SETORES, SETORES, pctBR } from '../../data/setores'
 import type { SlideProps } from '../types'
@@ -176,14 +174,12 @@ export function Obrigado({ step }: SlideProps) {
     <Slide step={step} className="center">
       <h1 className="h-display" data-split style={{ fontSize: 180 }}>Perguntas?</h1>
       <p className="lead" data-in style={{ marginTop: 32 }}>Obrigado, SAEM 2026.</p>
-      <div data-in style={{ marginTop: 72, display: 'flex', gap: 56, alignItems: 'center' }}>
+      <div data-in style={{ marginTop: 88, display: 'flex', gap: 64, alignItems: 'center' }}>
+        <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 120, display: 'block' }} />
+        <i style={{ width: 2, height: 120, background: 'rgba(255,255,255,.3)', display: 'block' }} />
         <div style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
-          <div className="muted" style={{ fontSize: 32, marginTop: 6 }}>{SPEAKER.role}</div>
-        </div>
-        <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 64 }} />
-        <div className="qr-card" style={{ width: 200, padding: 14, borderRadius: 16 }}>
-          <QR url={audienceUrl()} />
+          <div style={{ fontSize: 44, fontWeight: 700 }}>{SPEAKER.name}</div>
+          <div className="muted" style={{ fontSize: 34, marginTop: 6 }}>{SPEAKER.role}</div>
         </div>
       </div>
     </Slide>
