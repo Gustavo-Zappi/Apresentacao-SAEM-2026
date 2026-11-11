@@ -81,6 +81,12 @@ export const QUESTIONS: Question[] = [
 
 export const QUESTION_BY_ID: Record<string, Question> = Object.fromEntries(QUESTIONS.map((q) => [q.id, q]))
 
+/**
+ * Votações que estão no deck, na ordem em que aparecem (painel "Ver enquetes" do celular).
+ * Mantenha igual às chamadas poll(...) em stage/slides/index.tsx. A última abre o resultado final.
+ */
+export const DECK_POLLS = ['uso-ia', 'trilha']
+
 const BLOCKLIST = [
   'porra', 'caralho', 'merda', 'puta', 'buceta', 'cu', 'foda', 'fdp', 'viado', 'arrombado', 'cacete', 'bosta', 'pinto', 'piroca',
 ]

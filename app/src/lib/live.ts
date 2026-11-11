@@ -29,7 +29,12 @@ export interface LiveBackend {
   /** Palco: novas respostas em tempo real. onStatus informa se o canal realtime está saudável. */
   onResponse(cb: (r: Resp) => void, onStatus?: (ok: boolean) => void): () => void
   resetQuestion(key: string, questionId: string): Promise<boolean>
+  /** Plateia: votos agregados por pergunta e opção (uma consulta para várias perguntas). */
+  results(questionIds: string[]): Promise<Results>
 }
+
+/** pergunta → opção → votos */
+export type Results = Record<string, Record<string, number>>
 
 const IDLE: LiveState = { question_id: null, phase: 'idle' }
 
@@ -127,6 +132,16 @@ function supabaseBackend(): LiveBackend {
       const { data, error } = await sb.rpc('reset_question', { p_key: key, p_question_id: questionId })
       return !error && data === true
     },
+    async results(questionIds) {
+      // view public.resultados (group by no banco): poucas linhas por consulta
+      const { data, error } = await sb.from('resultados').select('question_id, value, votos').in('question_id', questionIds)
+      if (error) throw error
+      const out: Results = {}
+      for (const r of (data as { question_id: string; value: string; votos: number }[]) ?? []) {
+        ;(out[r.question_id] ??= {})[r.value] = r.votos
+      }
+      return out
+    },
   }
 }
 
@@ -204,6 +219,15 @@ function localBackend(): LiveBackend {
       write(R_KEY, read<Resp[]>(R_KEY, []).filter((r) => r.question_id !== questionId))
       emit({ type: 'reset' })
       return true
+    },
+    async results(questionIds) {
+      const out: Results = {}
+      for (const r of read<Resp[]>(R_KEY, [])) {
+        if (!questionIds.includes(r.question_id)) continue
+        const q = (out[r.question_id] ??= {})
+        q[r.value] = (q[r.value] || 0) + 1
+      }
+      return out
     },
   }
 }

@@ -3,13 +3,16 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { live, type LiveState } from '../lib/live'
 import { participantId, recalledVote, rememberVote } from '../lib/participant'
-import { QUESTION_BY_ID, normalizeWord, type Question } from '../data/questions'
+import { DECK_POLLS, QUESTION_BY_ID, normalizeWord, type Question } from '../data/questions'
+import Enquetes from './Enquetes'
 import { AUDIENCE_POLL_MS } from '../config'
 
 /** App da plateia: segue o palco sozinho. Uma tela por fase da pergunta. */
 export default function Audience() {
   const [state, setState] = useState<LiveState | null>(null)
   const [offline, setOffline] = useState(false)
+  const [view, setView] = useState<'live' | 'enquetes'>(() => (location.hash === '#enquetes' ? 'enquetes' : 'live'))
+  const autoShown = useRef(false)
 
   useEffect(() => {
     document.body.style.overflow = 'auto'
@@ -29,6 +32,24 @@ export default function Audience() {
     }
   }, [])
 
+  // Votação nova aberta: volta para a tela de voto. Depois da última votação: mostra o resultado final (uma vez).
+  const last = DECK_POLLS[DECK_POLLS.length - 1]
+  const final =
+    !!state &&
+    ((state.question_id === last && (state.phase === 'closed' || state.phase === 'reveal')) ||
+      (state.phase === 'idle' && recalledVote(last) !== null))
+  // troca de tela: volta ao topo (a rolagem é do contêiner .aud, não da janela)
+  useEffect(() => {
+    document.querySelector('.aud')?.scrollTo(0, 0)
+  }, [view])
+  useEffect(() => {
+    if (state?.phase === 'open') setView('live')
+    else if (final && !autoShown.current) {
+      autoShown.current = true
+      setView('enquetes')
+    }
+  }, [state, final])
+
   const q = state?.question_id ? QUESTION_BY_ID[state.question_id] : undefined
   const screenKey = !state ? 'loading' : !q || state.phase === 'idle' ? 'idle' : `${q.id}`
 
@@ -39,12 +60,16 @@ export default function Audience() {
         <span>SAEM 2026 · UFJF</span>
         <span>{offline ? 'reconectando…' : live.mode === 'local' ? 'modo ensaio' : 'ao vivo'}</span>
       </div>
-      <div className="aud-main">
-        {screenKey === 'loading' && <Waiting title="Conectando…" sub="Só um instante." />}
-        {screenKey === 'idle' && <Waiting title="Olhe para o palco." sub="A próxima pergunta aparece aqui sozinha. Deixe esta página aberta." />}
-        {q && state && state.phase !== 'idle' && <QuestionScreen key={screenKey} q={q} phase={state.phase} />}
+      <div className="aud-main" style={view === 'enquetes' ? { justifyContent: 'flex-start' } : undefined}>
+        {view === 'enquetes' && <Enquetes state={state} final={final} onBack={() => setView('live')} />}
+        {view === 'live' && screenKey === 'loading' && <Waiting title="Conectando…" sub="Só um instante." />}
+        {view === 'live' && screenKey === 'idle' && <Waiting title="Olhe para o palco." sub="A próxima pergunta aparece aqui sozinha. Deixe esta página aberta." />}
+        {view === 'live' && q && state && state.phase !== 'idle' && <QuestionScreen key={screenKey} q={q} phase={state.phase} />}
       </div>
       <div className="aud-foot">
+        {view === 'live' && (
+          <button className="aud-link" onClick={() => setView('enquetes')}>Ver enquetes</button>
+        )}
         <img src="/logo-4matt-branco.png" alt="4MATT" />
         Respostas anônimas. Usadas só nesta palestra.
       </div>
