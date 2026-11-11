@@ -20,8 +20,12 @@ export type SubmitResult = { ok: true } | { ok: false; reason: 'duplicate' | 'cl
 export interface LiveBackend {
   mode: 'supabase' | 'local'
   getState(): Promise<LiveState>
-  /** Plateia: acompanha o estado (polling no Supabase, BroadcastChannel no modo local). */
-  watchState(cb: (s: LiveState) => void, pollMs: number): () => void
+  /**
+   * Plateia: acompanha o estado (polling no Supabase, BroadcastChannel no modo local).
+   * `onBeat` avisa a cada consulta: true = o banco respondeu (mesmo sem mudança), false = falhou.
+   * Sem ele, uma pergunta que fica minutos no ar pareceria queda de conexão.
+   */
+  watchState(cb: (s: LiveState) => void, pollMs: number, onBeat?: (ok: boolean) => void): () => void
   setState(key: string, questionId: string | null, phase: Phase): Promise<boolean>
   checkKey(key: string): Promise<boolean>
   submit(r: Resp): Promise<SubmitResult>
@@ -61,7 +65,7 @@ function supabaseBackend(): LiveBackend {
   return {
     mode: 'supabase',
     getState,
-    watchState(cb, pollMs) {
+    watchState(cb, pollMs, onBeat) {
       let stopped = false
       let last = ''
       let timer: number | undefined
@@ -70,6 +74,7 @@ function supabaseBackend(): LiveBackend {
         if (document.visibilityState === 'visible') {
           try {
             const s = await getState()
+            onBeat?.(true)
             const sig = `${s.question_id}|${s.phase}|${s.updated_at}`
             if (sig !== last) {
               last = sig
@@ -77,6 +82,7 @@ function supabaseBackend(): LiveBackend {
             }
           } catch {
             /* rede instável: tenta no próximo ciclo */
+            onBeat?.(false)
           }
         }
         // jitter evita que 200 celulares batam no banco no mesmo milissegundo
@@ -180,7 +186,8 @@ function localBackend(): LiveBackend {
     async getState() {
       return read<LiveState>(S_KEY, IDLE)
     },
-    watchState(cb) {
+    watchState(cb, _pollMs, onBeat) {
+      onBeat?.(true)
       cb(read<LiveState>(S_KEY, IDLE))
       const l = (m: Msg) => m.type === 'state' && cb(m.state)
       listeners.add(l)

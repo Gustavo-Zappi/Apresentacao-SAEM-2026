@@ -17,15 +17,21 @@ export default function Audience() {
   useEffect(() => {
     document.body.style.overflow = 'auto'
     let misses = 0
+    // conta consultas sem resposta do banco (não "sem mudança de estado":
+    // uma pergunta pode ficar minutos no ar e a conexão está ótima)
     const fail = window.setInterval(() => {
       misses++
       if (misses > 4) setOffline(true)
     }, AUDIENCE_POLL_MS * 2)
-    const off = live.watchState((s) => {
-      misses = 0
-      setOffline(false)
-      setState(s)
-    }, AUDIENCE_POLL_MS)
+    const off = live.watchState(
+      setState,
+      AUDIENCE_POLL_MS,
+      (ok) => {
+        if (!ok) return
+        misses = 0
+        setOffline(false)
+      },
+    )
     return () => {
       off()
       window.clearInterval(fail)
