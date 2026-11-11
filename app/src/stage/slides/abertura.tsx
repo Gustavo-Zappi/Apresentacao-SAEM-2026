@@ -11,6 +11,7 @@ export function Capa({ step }: SlideProps) {
   return (
     <Slide step={step}>
       <div className="kicker" data-in>II SAEM · Engenharia Mecânica · UFJF · 11/11/2026</div>
+      <img data-in src="/logo-4matt-branco.png" alt="4MATT" style={{ position: 'absolute', right: 128, top: 84, height: 92, display: 'block' }} />
       <h1 className="h-display" data-split style={{ fontSize: 120, marginTop: 96 }}>
         {TITULO.principal}:
       </h1>
@@ -25,8 +26,6 @@ export function Capa({ step }: SlideProps) {
           <div style={{ fontSize: 40, fontWeight: 700 }}>{SPEAKER.name}</div>
           <div className="muted" style={{ fontSize: 32, marginTop: 8 }}>{SPEAKER.role}</div>
         </div>
-        <i style={{ width: 2, height: 76, background: 'rgba(255,255,255,.28)', display: 'block' }} />
-        <img src="/logo-4matt-branco.png" alt="4MATT" style={{ height: 52, display: 'block' }} />
       </div>
       <div data-in style={{ position: 'absolute', right: 128, bottom: 96, width: 380, textAlign: 'center' }}>
         <div className="qr-card" style={{ padding: 22, borderRadius: 22 }}>
